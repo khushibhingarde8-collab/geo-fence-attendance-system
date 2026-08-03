@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCE</title>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='headerfooter.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='phoenix/phoenix.css') }}"
+    />
+
+    <script
+      src="{{ url_for('static', filename='phoenix/phoenix.js') }}"
+      defer
+    ></script>
+
+    <script
+      src="{{ url_for('static', filename='security.js') }}"
+      defer
+    ></script>
+  </head>
+  <body>
+    <div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00AM to 6:00PM</span>
+        <span>📍 Mumbai, India</span>
+        <div class="email-section">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=info@pceengineering.com"
+            >✉ info@pceengineering.com</a
+          >
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=mk@pceengineering.com"
+            >✉ mk@pceengineering.com</a
+          >
+        </div>
+      </div>
+      <div class="top-right">
+        <a
+          href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+          class="social">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a
+          href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov"
+          class="social">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <img src="static/phoenix/images_pheonix/PCE_2.png" alt="PCE Logo" />
+        </div>
+
+        <!-- HAMBURGER ICON -->
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+
+        <!-- NAV LINKS -->
+        <div class="nav-links" id="nav-links">
+          <!-- CLOSE BUTTON -->
+          <button class="close-menu-btn" id="close-menu">Close Menu</button>
+
+          <a href="/" class="nav-item active">Home</a>
+
+          <!-- ABOUT DROPDOWN -->
+          <div class="about-menu nav-item">
+            <div class="mobile-dropdown-toggle">About</div>
+
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/project">Projects</a>
+            </div>
+          </div>
+
+          <a href="/client" class="nav-item">Clients</a>
+
+          <a href="/phoenix" class="nav-item"> Phoenix Contact </a>
+
+          <a href="/contact" class="nav-item"> Contact </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= PHOENIX CONTACT HERO ================= -->
+    <section class="phoenix-hero-full"></section>
+
+        <!-- LinkedIn Button -->
+<div class="phoenix-linkedin">
+    <a href="https://www.linkedin.com/company/phoenix-contact-india/"
+       target="_blank"
+       class="linkedin-btn">
+
+        <i class="fab fa-linkedin"></i>
+        Visit Phoenix Contact on LinkedIn
+
+    </a>
+</div>
+
+    <!-- ================= PHOENIX section ================= -->
+    <section class="phoenix-section">
+      <!-- HERO BLOCK -->
+      <div class="phoenix-hero">
+        <h1>Powering Industrial Reliability with Phoenix Solutions</h1>
+        <p>
+          Advanced Protection, Control & Automation Products for Modern
+          Industries
+        </p>
+        <a href="/product" class="phoenix-btn">Explore Products</a>
+      </div>
+    </section>
+
+
+
+    <section>
+
+      <!-- PRODUCTS SECTION -->
+      <div class="phoenix-container" id="products">
+        <div class="phoenix-grid">
+          <!-- 1 -->
+          <div class="phoenix-card">
+            <div class="icon"><i class="fas fa-bolt"></i></div>
+            <h3>Surge Protection Devices (SPD)</h3>
+            <p>
+              Protect sensitive electrical systems from voltage spikes and
+              transient surges ensuring maximum safety and equipment longevity.
+            </p>
+            <button class="view-btn" onclick="goToProduct('spd')">
+              View More
+            </button>
+          </div>
+
+          <!-- 2 -->
+          <div class="phoenix-card">
+            <div class="icon"><i class="fas fa-battery-full"></i></div>
+            <h3>Power Supply & UPS Modules</h3>
+            <p>
+              Reliable industrial power solutions delivering stable and
+              uninterrupted performance for control panels and automation
+              systems.
+            </p>
+            <button class="view-btn" onclick="goToProduct('psu_ups')">
+              View More
+            </button>
+          </div>
+
+          <!-- 3 -->
+          <div class="phoenix-card">
+            <div class="icon"><i class="fas fa-random"></i></div>
+            <h3>Relays & Isolation Modules</h3>
+            <p>
+              High-performance switching and isolation modules ensuring signal
+              integrity and safe electrical separation.
+            </p>
+            <button class="view-btn" onclick="goToProduct('relay')">
+              View More
+            </button>
+          </div>
+
+          <!-- 4 -->
+          <div class="phoenix-card">
+            <div class="icon"><i class="fas fa-network-wired"></i></div>
+            <h3>Ethernet / Network Components</h3>
+            <p>
+              Industrial networking components including switches and
+              communication modules for seamless plant connectivity.
+            </p>
+            <button class="view-btn" onclick="goToProduct('network')">
+              View More
+            </button>
+          </div>
+
+          <!-- 5 -->
+          <div class="phoenix-card">
+            <div class="icon"><i class="fas fa-microchip"></i></div>
+            <h3>Digital / Analog Cards</h3>
+            <p>
+              Precision I/O cards enabling accurate monitoring and control of
+              field instruments in automated plants.
+            </p>
+            <button class="view-btn" onclick="goToProduct('io')">
+              View More
+            </button>
+          </div>
+
+          <!-- 6 -->
+          <div class="phoenix-card">
+            <div class="icon"><i class="fas fa-gears"></i></div>
+            <h3>Controllers</h3>
+            <p>
+              Advanced PLC and industrial controllers built for scalable,
+              high-performance automation systems.
+            </p>
+            <button class="view-btn" onclick="goToProduct('controller')">
+              View More
+            </button>
+          </div>
+
+          <!-- 7 -->
+          <div class="phoenix-card">
+            <div class="icon"><i class="fas fa-desktop"></i></div>
+            <h3>HMIs & Industrial Computers</h3>
+            <p>
+              User-friendly HMIs and rugged industrial PCs for real-time
+              monitoring and intelligent plant operation.
+            </p>
+            <button class="view-btn" onclick="goToProduct('hmi')">
+              View More
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WHY CHOOSE SECTION -->
+      <div class="why-section">
+        <h2>Why Choose PCE for Phoenix Products?</h2>
+        <div class="why-grid">
+          <div class="why-box">
+            <i class="fas fa-check-circle"></i>
+            <h4>Genuine Products</h4>
+          </div>
+
+          <div class="why-box">
+            <i class="fas fa-headset"></i>
+            <h4>Technical Support</h4>
+          </div>
+
+          <div class="why-box">
+            <i class="fas fa-truck-fast"></i>
+            <h4>Fast Delivery</h4>
+          </div>
+
+          <div class="why-box">
+            <i class="fas fa-industry"></i>
+            <h4>Industry Experience</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CERTIFICATE SECTION ================= -->
+    <section class="certificate-section">
+
+    <h2 class="cert-title">Our Certifications</h2>
+
+    <div class="certificate-container">
+
+        {% for c in phoenix_certificates %}
+
+        <div class="certificate-card">
+
+            <img
+                src="{{ url_for('phoenix_bp.phoenix_certificate_file', filename=c[2]) }}"
+                alt="{{ c[1] }}">
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+    <!-- FULLSCREEN VIEW -->
+    <div class="cert-popup" id="certPopup">
+      <span class="close-btn">&times;</span>
+      <img id="popupImg" src="" />
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Company -->
+        <div class="footer-box company-box">
+
+            <img src="static/home/logos/PCE_2.png" alt="PCE Logo" class="footer-logo">
+
+            <p>
+                PCE Consulting & Engineers LLP provides innovative engineering,
+                automation and industrial solutions with a commitment to quality,
+                safety and customer satisfaction.
+            </p>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-box">
+
+            <h3>Quick Links</h3>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/service">Services</a></li>
+                <li><a href="/project">Projects</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-box">
+
+            <h3>Contact Us</h3>
+
+            <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+            </p>
+
+            <p>
+                <i class="fa-solid fa-phone"></i>
+                +91-8693835656
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:info@pceengineering.com">
+                    info@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    projects@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    mk@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-clock"></i>
+                Mon - Sat | 9:00 AM - 6:00 PM
+            </p>
+
+        </div>
+
+        <!-- Social -->
+        <div class="footer-box">
+
+            <h3>Follow Us</h3>
+
+            <div class="footer-social">
+
+                <a href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+
+                <a href="https://www.youtube.com/@instpce3554" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 PCE Consulting & Engineers LLP. All Rights Reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+
+  </body>
+</html>

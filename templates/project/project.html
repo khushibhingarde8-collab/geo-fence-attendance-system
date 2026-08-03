@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCE</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='project/project.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='headerfooter.css') }}"
+    />
+
+    <script
+      src="{{ url_for('static', filename='project/project_data.js') }}"
+      defer
+    ></script>
+
+<script>
+  const logos = [
+  "{% for logo in client_logos %}",
+  "/{{ logo[0] }}",
+  "{% endfor %}"
+  ];
+</script>
+
+<script src="{{ url_for('static', filename='project/js/project.js') }}"></script>
+
+    <script
+      src="{{ url_for('static', filename='project/project.js') }}"
+      defer
+    ></script>
+
+    <script
+      src="{{ url_for('static', filename='security.js') }}"
+      defer
+    ></script>
+  </head>
+  <body>
+   <div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00AM to 6:00PM</span>
+        <span>📍 Mumbai, India</span>
+        <div class="email-section">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=info@pceengineering.com"
+            >✉ info@pceengineering.com</a
+          >
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=mk@pceengineering.com"
+            >✉ mk@pceengineering.com</a
+          >
+        </div>
+      </div>
+      <div class="top-right">
+        <a
+          href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+          class="social">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a
+          href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov"
+          class="social">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <img
+            src="{{ url_for('static', filename='project/images_project/PCE_2.png') }}"
+            alt="PCE Logo"
+          />
+        </div>
+
+        <!-- HAMBURGER -->
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+
+        <!-- NAV LINKS -->
+        <div class="nav-links" id="nav-links">
+          <!-- CLOSE BUTTON -->
+          <button class="close-menu-btn" id="close-menu">Close Menu</button>
+
+          <a href="/" class="nav-item"> Home </a>
+
+          <!-- ABOUT -->
+          <div class="about-menu nav-item">
+            <div class="mobile-dropdown-toggle">About</div>
+
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/website_project">Projects</a>
+            </div>
+          </div>
+
+          <a href="/website-client" class="nav-item">Clients</a>
+
+          <a href="/phoenix" class="nav-item"> Phoenix Contact </a>
+
+          <a href="/contact" class="nav-item"> Contact </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= PROJECT HERO ================= -->
+    <section class="project-hero-full"></section>
+
+    <!-- ================= SERVICES BLOCK ================= -->
+    <section class="services-wrapper">
+      <!-- 🔥 NEW HEADER SECTION (LEFT + RIGHT) -->
+      <div class="project-header">
+        <!-- LEFT SIDE (YOUR ORIGINAL CONTENT - SAME) -->
+        <div class="project-left">
+          <h2 class="services-main-heading">
+          {{ project_page[0] }}
+          </h2>
+
+          <div class="section-intro">
+            <p>
+            {{ project_page[1] }}
+            </p>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE (CIRCULAR LOGO SYSTEM) -->
+        <div class="project-right">
+          <div class="logo-circle">
+            <!-- CENTER COMPANY LOGO -->
+            <div class="center-logo">
+              <img
+                src="{{ url_for('static', filename='project/images_project/PCE_2.png') }}"
+                alt="Company Logo"
+              />
+            </div>
+
+            <!-- ROTATING CLIENT LOGOS -->
+            <div class="logo-track" id="logoTrack"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔽 KEEP YOUR ORIGINAL GRID SAME -->
+<div class="services-container">
+
+    <div class="services-grid">
+
+        {% for card in website_project_cards %}
+
+        <div class="card">
+
+            {% if card[3] %}
+            <img
+                src="/{{ card[3] }}"
+                alt="{{ card[1] }}">
+            {% else %}
+            <img
+                src="{{ url_for('static', filename='project/images_project/default.jpg') }}"
+                alt="{{ card[1] }}">
+            {% endif %}
+
+            <div class="icon-box">
+                <i class="{{ card[4] }}"></i>
+            </div>
+
+            <div class="card-content">
+
+                <h3>{{ card[1] }}</h3>
+
+                <p>
+                    {{ card[2] }}
+                </p>
+
+                <a href="/project-list?category={{ card[5] }}">
+                    Projects List
+                    <span>→</span>
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</section>
+
+<section class="project-slider-section">
+
+    <h2>Our Completed Projects</h2>
+
+    <div class="slider-container">
+
+        <div class="slider-track">
+
+            {% for project in website_projects %}
+
+            <div class="slide-card"
+                 onclick="openPopup(
+                    '{{ project[0] }}',
+                    `{{ project[2] }}`,
+                    '{{ project[9] }}',
+                    '{{ project[1] }}',
+                    '{{ project[7] }}',
+                    `{{ project[3] }}`
+                 )">
+
+                <h3>{{ project[2] }}</h3>
+
+                <div class="company">
+                    {{ project[9] }}
+                </div>
+
+                <p>
+                    {{ project[1] }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+<div id="popup" class="popup">
+
+    <div class="popup-content">
+
+        <span onclick="closePopup()">×</span>
+
+        <h3 id="popupTitle"></h3>
+
+        <div id="popupDesc"></div>
+
+    </div>
+
+</div>
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+      <div class="container footer-container">
+        <!-- Company Info -->
+        <div class="footer-box">
+          <h3>PCE</h3>
+          <p>
+            PCE Consulting and Engineers LLP provides optimized engineering,
+            automation, and technical consulting solutions.
+          </p>
+        </div>
+
+        <div class="footer-box">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/service">Services</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="footer-box">
+          <h4>Contact</h4>
+          <p>
+            📍 Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+          </p>
+          <p>✉ info@pceengineering.com</p>
+          <p>📞 +91-8693835656</p>
+          <p>Working Hours: Mon-Sat 9:00 AM - 6:00 PM</p>
+        </div>
+
+        <!-- Social Links -->
+        <div class="footer-box">
+          <h4>Follow Us</h4>
+          <div class="social-links">
+            <a
+              href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+              >in</a
+            >
+            <a href="https://www.youtube.com/@instpce3554">▶</a>
+            <a href="#">𝕏</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Footer -->
+      <div class="footer-bottom">
+        <p>© 2026 PCE Consulting and Engineers LLP. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>

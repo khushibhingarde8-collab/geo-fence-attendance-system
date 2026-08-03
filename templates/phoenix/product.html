@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCE</title>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='headerfooter.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='phoenix/phoenix.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='phoenix/catelogue_page.css') }}"
+    />
+
+    <script
+      src="{{ url_for('static', filename='phoenix/phoenix.js') }}"
+      defer
+    ></script>
+
+    <script
+      src="{{ url_for('static', filename='security.js') }}"
+      defer
+    ></script>
+  </head>
+  <body>
+   <div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00AM to 6:00PM</span>
+        <span>📍 Mumbai, India</span>
+        <div class="email-section">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=info@pceengineering.com"
+            >✉ info@pceengineering.com</a
+          >
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=mk@pceengineering.com"
+            >✉ mk@pceengineering.com</a
+          >
+        </div>
+      </div>
+      <div class="top-right">
+        <a
+          href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+          class="social">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a
+          href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov"
+          class="social">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <img src="static/phoenix/images_pheonix/PCE_2.png" alt="PCE Logo" />
+        </div>
+
+        <!-- HAMBURGER ICON -->
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+
+        <!-- NAV LINKS -->
+        <div class="nav-links" id="nav-links">
+          <!-- CLOSE BUTTON -->
+          <button class="close-menu-btn" id="close-menu">Close Menu</button>
+
+          <a href="/" class="nav-item">Home</a>
+
+          <!-- ABOUT DROPDOWN -->
+          <div class="about-menu nav-item">
+            <div class="mobile-dropdown-toggle">About</div>
+
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/project">Projects</a>
+            </div>
+          </div>
+
+          <a href="/client" class="nav-item">Clients</a>
+
+          <a href="/phoenix" class="nav-item"> Phoenix Contact </a>
+
+          <a href="/contact" class="nav-item"> Contact </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= PHOENIX CONTACT HERO ================= -->
+    <section class="phoenix-hero-full"></section>
+    <a href="/phoenix" class="back-btn-animated">
+      <span class="arrow">←</span>
+      <span class="text">Back to Phoenix</span>
+    </a>
+    <section class="catalog-page">
+      <div class="catalog-header">
+        <h1>Complete Phoenix Product Catalog</h1>
+        <p>
+          Browse the full range of Phoenix Contact industrial products supplied
+          by PCE. Refer to the complete technical catalog below.
+        </p>
+      </div>
+
+      <div class="pdf-grid">
+
+{% for c in phoenix_catalogs %}
+
+    <div class="pdf-wrapper">
+
+        <iframe
+            src="{{ url_for('phoenix_bp.phoenix_catalog_file', filename=c[2]) }}"
+            class="pdf-viewer">
+        </iframe>
+
+        <div class="catalog-actions">
+
+            <a
+                href="{{ url_for('phoenix_bp.phoenix_catalog_file', filename=c[2]) }}"
+                download
+                class="download-btn">
+
+                Download {{ c[1] }}
+
+            </a>
+
+        </div>
+
+    </div>
+
+{% endfor %}
+
+      </div>
+
+
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Company -->
+        <div class="footer-box company-box">
+
+            <img src="static/home/logos/PCE_2.png" alt="PCE Logo" class="footer-logo">
+
+            <p>
+                PCE Consulting & Engineers LLP provides innovative engineering,
+                automation and industrial solutions with a commitment to quality,
+                safety and customer satisfaction.
+            </p>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-box">
+
+            <h3>Quick Links</h3>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/service">Services</a></li>
+                <li><a href="/project">Projects</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-box">
+
+            <h3>Contact Us</h3>
+
+            <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+            </p>
+
+            <p>
+                <i class="fa-solid fa-phone"></i>
+                +91-8693835656
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:info@pceengineering.com">
+                    info@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    projects@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    mk@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-clock"></i>
+                Mon - Sat | 9:00 AM - 6:00 PM
+            </p>
+
+        </div>
+
+        <!-- Social -->
+        <div class="footer-box">
+
+            <h3>Follow Us</h3>
+
+            <div class="footer-social">
+
+                <a href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+
+                <a href="https://www.youtube.com/@instpce3554" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 PCE Consulting & Engineers LLP. All Rights Reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+  </body>
+</html>

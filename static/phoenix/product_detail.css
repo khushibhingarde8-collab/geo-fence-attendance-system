@@ -1,0 +1,283 @@
+/* ================= BODY ================= */
+body {
+  background: #ffffff;
+  font-family: "Helvetica", "Arial", sans-serif;
+  margin: 0;
+}
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+/* ================= SECTION ================= */
+.details-section {
+  padding: 100px 8%;
+  min-height: 100vh;
+  background: #fbfbfd;
+
+  opacity: 0;
+  transform: translateY(60px);
+  transition: all 1s ease;
+}
+
+.details-section.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ================= TOP ROW ================= */
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 50px;
+  margin-bottom: 40px;
+}
+
+.text-area {
+  max-width: 650px;
+}
+
+/* ================= TITLE ================= */
+#title {
+  font-size: 42px;
+  color: #0b0a24;
+  margin-bottom: 10px;
+}
+
+/* ================= DESCRIPTION ================= */
+.desc {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #0b0a24;
+  margin: 0;
+  font-family: "Helvetica", "Arial", sans-serif;
+}
+
+/* ================= IMAGE ================= */
+.product-img {
+  width: 380px;
+  flex-shrink: 0;
+
+  transition: transform 0.8s ease;
+}
+
+/* SCROLL SHOW */
+.product-img.animate-bottom.show {
+  transform: translateY(0);
+}
+
+/* HOVER ZOOM (FORCE PRIORITY) */
+.product-img:hover {
+  transform: scale(1.5) !important;
+}
+/* ================= GRID ================= */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+/* ================= BOX ================= */
+.box {
+  background: linear-gradient(135deg, #0b0a24, #1a192f);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+
+  opacity: 0;
+  transform: translateY(60px);
+  transition: 0.8s ease;
+}
+
+/* ENTRY DIRECTIONS */
+.box:nth-child(1) {
+  transform: translateX(-80px);
+}
+.box:nth-child(2) {
+  transform: translateY(80px);
+}
+.box:nth-child(3) {
+  transform: translateX(80px);
+}
+
+/* SHOW (scroll OR hover) */
+/* SCROLL EFFECT ONLY */
+.box.show {
+  opacity: 1;
+  transform: translate(0);
+}
+
+/* HOVER EFFECT ONLY */
+.box:hover {
+  opacity: 1;
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
+}
+
+/* COLORS */
+#features {
+  border-top: 4px solid #ff5e00;
+}
+#advantages {
+  border-top: 4px solid #ff5e00;
+}
+#specs {
+  border-top: 4px solid #ff5e00;
+}
+
+/* ================= TEXT STYLING ================= */
+.box h2 {
+  margin-bottom: 15px;
+  font-size: 24px;
+  color: #ffffff;
+}
+
+/* LIST */
+.box ul {
+  list-style: none;
+  padding: 0;
+}
+
+.box ul li {
+  padding: 10px 0;
+  border-bottom: 1px solid #2d3748;
+  font-size: 18px;
+  color: #d1d5db;
+  padding-left: 25px;
+  position: relative;
+}
+
+.box ul li::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  color: #ff5e00;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #2d3748;
+  color: #d1d5db;
+}
+
+/* ================= BUTTON ================= */
+.back-btn {
+  display: block;
+  margin: 60px auto 0;
+  padding: 14px 30px;
+
+  border: none;
+  border-radius: 30px;
+
+  background: linear-gradient(135deg, #ff8c00, #ff5e00);
+  color: #fff;
+
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.4s;
+}
+
+.back-btn:hover {
+  transform: scale(1.1) translateY(-3px);
+}
+
+/* ================= SCROLL ANIMATION BASE ================= */
+/* BASE (hidden state) */
+.animate-left,
+.animate-right,
+.animate-bottom {
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+/* DIRECTIONS */
+.animate-left {
+  transform: translateX(-80px);
+}
+
+.animate-right {
+  transform: translateX(80px);
+}
+
+.animate-bottom {
+  transform: translateY(60px);
+}
+
+/* SHOW (when scroll hits) */
+.animate-left.show,
+.animate-right.show,
+.animate-bottom.show {
+  opacity: 1;
+  transform: translate(0);
+}
+
+@media (max-width: 768px) {
+  /* SECTION PADDING */
+  .details-section {
+    padding: 60px 5%;
+  }
+
+  /* TOP ROW → STACK LAYOUT */
+  .top-row {
+    flex-direction: column;
+    gap: 25px;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* TITLE */
+  #title {
+    font-size: 28px;
+  }
+
+  /* DESCRIPTION */
+  .desc {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* IMAGE FIX */
+  .product-img {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+  }
+
+  /* GRID → SINGLE COLUMN */
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* BOX */
+  .box {
+    padding: 20px;
+  }
+
+  .box h2 {
+    font-size: 20px;
+  }
+
+  .box ul li {
+    font-size: 14px;
+  }
+
+  td {
+    font-size: 14px;
+  }
+}

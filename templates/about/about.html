@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+ <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+   
+    <link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='about/about.css') }}"
+/>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='headerfooter.css') }}"
+/>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<!-- <script
+  src="{{ url_for('static', filename='security.js') }}"
+  defer
+></script> -->
+
+<script
+  src="{{ url_for('static', filename='about/about.js') }}"
+  defer
+></script>
+
+  <body>
+<div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00AM to 6:00PM</span>
+        <span>📍 Mumbai, India</span>
+        <div class="email-section">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=info@pceengineering.com"
+            >✉ info@pceengineering.com</a
+          >
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=mk@pceengineering.com"
+            >✉ mk@pceengineering.com</a
+          >
+        </div>
+      </div>
+      <div class="top-right">
+        <a
+          href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+          class="social">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a
+          href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov"
+          class="social">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <img src="static/home/logos/PCE_2.png" alt="PCE Logo" />
+        </div>
+        <!-- HAMBURGER ICON -->
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+
+        <!-- NAV LINKS -->
+        <div class="nav-links" id="nav-links">
+          <!-- CLOSE BUTTON -->
+          <button class="close-menu-btn" id="close-menu">Close Menu</button>
+
+          <a href="/" class="nav-item active">Home</a>
+
+          <!-- ABOUT DROPDOWN -->
+          <div class="about-menu nav-item">
+            <div class="mobile-dropdown-toggle">About</div>
+
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/project">Projects</a>
+            </div>
+          </div>
+
+          <a href="/client" class="nav-item">Clients</a>
+
+          <a href="/phoenix" class="nav-item">
+            Phoenix Contact
+          </a>
+
+          <a href="/contact" class="nav-item"> Contact </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= HERO SECTION ================= -->
+
+<section class="hero">
+
+    <div class="hero-left">
+
+       {% if about_hero and about_hero.image %}
+    <img src="{{ url_for('static', filename='about/images_about/' ~ about_hero.image) }}">
+        {% else %}
+    <img src="{{ url_for('static', filename='about/images_about/default.jpg') }}">
+        {% endif %}
+
+    </div>
+
+    <div class="hero-right">
+
+        <div class="hero-content">
+
+            <h1>{{ about_hero.title if about_hero else 'About Us' }}</h1>
+
+            <p>{{ about_hero.description if about_hero else '' }}</p>
+
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- ================= 15 YEARS SECTION =================--> 
+<section class="experience-section animate animate-bottom">
+
+    <div class="experience-left animate animate-left">
+
+        <div class="circle-wrapper">
+
+            <div class="circle-ring"></div>
+
+            {% for item in circle_texts %}
+            <div class="circle-text text{{ loop.index }}">
+              {{ item.text|replace('\n','<br>')|safe }}
+            </div>
+            {% endfor %}
+
+            <div class="circle-center">
+              <span class="exp-number">
+              {{ experience.years }}+
+              </span>
+
+            <span class="exp-text">
+               {{ experience.title }}
+            </span>
+          </div>
+
+        </div>
+
+    </div>
+
+ 
+
+      <!-- RIGHT SIDE -->
+     
+<div class="experience-right animate animate-right">
+
+    <p>
+        {{ profile.description if profile else "" }}
+    </p>
+
+    <div class="profile-image-box">
+
+        {% if profile and profile.image %}
+        <img src="{{ url_for('static',
+            filename='about/images_about/' ~ profile.image) }}"
+             alt="Team Image">
+        {% endif %}
+
+        <!--<a href="{{ url_for('about_bp.profile') }}">
+            <button class="profile-btn">
+                View Profile →
+            </button>-->
+        </a>
+
+    </div>
+
+</div>
+</section>
+
+<section class="commitment-section animate animate-bottom">
+
+    <div class="commitment-container">
+
+        <!-- LEFT -->
+        <div class="commitment-left animate animate-left">
+
+            <h2 class="section-title blue">
+                {{ commitment.heading if commitment else "" }}
+            </h2>
+
+            <div class="quote-wrapper">
+
+                <div class="director-image">
+                    {% if commitment and commitment.image %}
+                    <img
+                        src="{{ url_for('static', filename='about/images_about/' ~ commitment.image) }}"
+                        alt="{{ commitment.author }}">
+                    {% endif %}
+                </div>
+
+                <div class="commitment-box">
+                    <p class="quote">
+                        "{{ commitment.quote if commitment else '' }}"
+                    </p>
+
+                    <p class="author">
+                        — {{ commitment.author if commitment else "" }}
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="commitment-right animate animate-right">
+
+            <h2 class="section-title orange">YOUR SATISFACTION</h2>
+
+            <div class="features">
+
+                <div class="feature-card">
+                    <div class="icon">⛑</div>
+                    <h4>100% Safe Hours</h4>
+                    <p>During Execution</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">⚙</div>
+                    <h4>100% Optimize & Accurate</h4>
+                    <p>At delivery/Handover</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">⏱</div>
+                    <h4>100% Optimize & Accurate</h4>
+                    <p>Following Project Schedule</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- ================= TEAM SECTION ================= -->
+<section class="team-section animate animate-zoom">
+
+    <h2 class="team-title">Meet Our Team</h2>
+
+    <div class="team-grid">
+
+        {% for member in team_members %}
+
+        <div class="team-card" onclick="openMember(this)">
+
+            <img src="{{ url_for('static',
+            filename='about/images_about/' ~ member.image) }}">
+
+            <div class="team-info">
+
+                <h3 class="member-name">
+                    {{ member.name }}
+                </h3>
+
+                <p class="member-designation">
+                    {{ member.designation }}
+                </p>
+
+            </div>
+
+            <div class="member-popup">
+
+                <p>
+                    {{ member.description }}
+                </p>
+
+                <ul>
+
+                    {% if member.experience %}
+                    <li>
+                        <strong>Experience:</strong>
+                        {{ member.experience }}
+                    </li>
+                    {% endif %}
+
+                    {% if member.email %}
+                    <li>
+                        <strong>Email:</strong>
+                        {{ member.email }}
+                    </li>
+                    {% endif %}
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+    <div class="team-modal" id="teamModal">
+      <div class="team-modal-box">
+        <button class="close-btn" onclick="closeMember()">&times;</button>
+
+        <div id="modalContent"></div>
+      </div>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Company -->
+        <div class="footer-box company-box">
+
+            <img src="static/home/logos/PCE_2.png" alt="PCE Logo" class="footer-logo">
+
+            <p>
+                PCE Consulting & Engineers LLP provides innovative engineering,
+                automation and industrial solutions with a commitment to quality,
+                safety and customer satisfaction.
+            </p>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-box">
+
+            <h3>Quick Links</h3>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/service">Services</a></li>
+                <li><a href="/project">Projects</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-box">
+
+            <h3>Contact Us</h3>
+
+            <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+            </p>
+
+            <p>
+                <i class="fa-solid fa-phone"></i>
+                +91-8693835656
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:info@pceengineering.com">
+                    info@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    projects@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    mk@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-clock"></i>
+                Mon - Sat | 9:00 AM - 6:00 PM
+            </p>
+
+        </div>
+
+        <!-- Social -->
+        <div class="footer-box">
+
+            <h3>Follow Us</h3>
+
+            <div class="footer-social">
+
+                <a href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+
+                <a href="https://www.youtube.com/@instpce3554" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 PCE Consulting & Engineers LLP. All Rights Reserved.
+        </p>
+
+    </div>
+
+</footer>
+  </body>
+</html>

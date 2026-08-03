@@ -1,0 +1,119 @@
+.list-hero {
+  height: 580px;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("/static/project/images_project/PROJECT.jpg") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  padding-left: 60px;
+  color: #fff;
+}
+
+.list-container {
+  width: 90%;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.project-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: 0.4s;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+}
+
+.project-card h3 {
+  color: #0b0a24;
+  font-size: 20px;
+  font-family: "Helvetica", "Arial", sans-serif;
+}
+
+.project-meta {
+  margin: 10px 0;
+  color: #ff5e00;
+}
+
+.project-desc {
+  line-height: 1.6;
+  font-size: 16px;
+  font-family: "Helvetica", "Arial", sans-serif;
+}
+
+/* 🔥 GLASS BUTTON */
+.top-back-btn {
+  position: fixed;
+  top: 90px;
+  left: 30px;
+  z-index: 999;
+}
+
+.top-back-btn a {
+  padding: 10px 20px;
+  border-radius: 30px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  transition: 0.3s;
+}
+
+.top-back-btn a:hover {
+  background: rgba(255, 94, 0, 0.9);
+  box-shadow: 0 10px 30px rgba(255, 94, 0, 0.5);
+}
+
+/* 🔥 PROJECT LIST CARD ANIMATION (DEFAULT HIDDEN) */
+.project-card {
+  opacity: 0;
+  transform: translateY(80px); /* from bottom */
+  transition: all 0.8s ease;
+}
+
+/* 🔥 SHOW EFFECT */
+.project-card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 🔥 WRAPPER (CENTER POSITION) */
+.back-wrapper {
+  width: 90%;
+  margin: -40px auto 40px; /* pulls it slightly over hero */
+  display: flex;
+  justify-content: flex-start; /* left align */
+  z-index: 5;
+  position: relative;
+}
+
+/* 🔥 GLASS BUTTON */
+.glass-back {
+  padding: 12px 26px;
+  border-radius: 40px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  transition: all 0.3s ease;
+}
+
+/* 🔥 HOVER */
+.glass-back:hover {
+  background: rgba(255, 94, 0, 0.95);
+  box-shadow: 0 10px 30px rgba(255, 94, 0, 0.4);
+  transform: translateY(-3px);
+}

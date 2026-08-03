@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Employee Dashboard</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='employee/employee.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+      
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-left">
+      <span>⏰ Mon - Sat 10:00 to 6:00</span>
+      <span>📍 Mumbai, India</span>
+      <span>✉ info@pceengineering.com</span>
+    </div>
+    <div class="top-right">
+      <a href="#" class="social linkedin">in</a>
+      <a href="#" class="social twitter">X</a>
+      <a href="#" class="social youtube">▶</a>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='logos/PCE_2.png') }}">
+      </div>
+
+
+      <!-- <div class="welcome-2">
+      <h2 class="welcome-text-2">Welcome to PCE 👋</h2>
+    </div> -->
+
+
+      <div class="nav-links">
+        <a href="#" class="nav-item active">Home</a>
+
+        <!-- ABOUT DROPDOWN -->
+        <!-- <div class="about-menu nav-item">
+            About
+            <div class="about-dropdown">
+              <a href="about (2)/about/about.html">About Us</a>
+              <a href="#">Services</a>
+              <a href="#">Projects</a>
+            </div>
+          </div>
+
+          <a href="#" class="nav-item">Clients</a>
+          <a href="#" class="nav-item">Phoenix Contact</a>
+          <a href="Contact/Contact/contact.html" class="nav-item">Contact</a> -->
+
+
+
+        <!-- ACCOUNT -->
+        <div class="account nav-item">
+          Account
+          <div class="dropdown">
+            <a href="login.html">Login</a>
+            <a href="signup.html">Sign Up</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <h3>Employee Dashboard</h3>
+
+      <button onclick="showSection('profile')">My Info</button>
+      <button onclick="showSection('salary')">Generate Salary Slip</button>
+      <button onclick="showSection('tds')">TDS Certificate</button>
+      <button onclick="showSection('resume')">Download Resume</button>
+      <button onclick="showSection('leave')">Apply Leave</button>
+
+      <button onclick="showSection('password')">Change Password</button>
+
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- WELCOME -->
+      <!-- <div class="welcome">
+      <h2 class="welcome-text">Welcome to PCE 👋</h2>
+    </div> -->
+
+      <div class="welcome">
+        <h2 class="welcome-text">Welcome to Employee Portal !</h2>
+      </div>
+
+      {% if emp %}
+
+      <!-- PROFILE -->
+      <div class="profile-section">
+        <div class="profile-img-wrapper">
+          {% set gender = emp[10] %}
+          {% set photo = emp[17] %}
+
+          {% if photo and photo != '' %}
+
+          {% if photo.startswith('http') or photo.startswith('/') %}
+          <img src="{{ photo }}" class="profile-img" id="profileImg">
+          {% else %}
+          <img src="/{{ photo }}" class="profile-img" id="profileImg">
+          {% endif %}
+
+          {% else %}
+
+          {% if gender and gender.lower() == 'female' %}
+          <img src="{{ url_for('static', filename='logos/female.png') }}" class="profile-img">
+
+          {% else %}
+          <img src="{{ url_for('static', filename='logos/male.png') }}" class="profile-img">
+          {% endif %}
+
+          {% endif %}
+
+          <!-- Hidden file input form -->
+          <form action="/upload_profile_photo" method="POST" enctype="multipart/form-data" id="photoForm">
+            <input type="file" name="photo" accept="image/*" id="photoInput" style="display:none;"
+              onchange="previewAndUpload(this)">
+          </form>
+
+          <!-- + button overlay -->
+          <div class="photo-upload-btn" onclick="document.getElementById('photoInput').click()" title="Change Photo">+
+          </div>
+        </div>
+
+        <!-- Delete Button -->
+        {% if photo %}
+        <form action="/delete_profile_photo" method="POST">
+          <button type="submit" class="photo-delete-btn" title="Delete Photo">
+            ✕
+          </button>
+        </form>
+        {% endif %}
+
+        <h3>{{ emp[2] }} {{ emp[3] }}</h3>
+        <p><strong>Employee Code:</strong> {{ emp[1] }}</p>
+        <div class="status active">Active</div>
+      </div>
+
+      {% endif %}
+
+      <!-- CONTENT -->
+      <div class="content-section">
+
+        <!-- PROFILE DETAILS -->
+        <div id="profile" class="tab">
+          <h2>Employee Information</h2>
+
+          {% if emp %}
+          <div class="info-grid">
+            <div>First Name:<b> {{ emp[2] }}</b></div>
+            <div>Last Name: <b> {{ emp[3] }}</b></div>
+            <div>Phone:<b> {{ emp[6] }}</b></div>
+            <div>DOB:<b> {{ emp[4] }}</b></div>
+            <div>Joining Date:<b> {{ emp[5] }}</b></div>
+            <div>Experience:<b> {{ experience_text }}</b></div>
+            <div>Email:<b> {{ emp[7] }}</b></div>
+
+            <div>Location Name:<b> {{ emp[11] }}</b></div>
+            <div>Grade Name:<b> {{ emp[12] }}</b></div>
+            <div>Project:<b> {{ emp[13] }}</b></div>
+
+            <div>Aadhar Number:<b> {{ emp[14] }}</b></div>
+            <div>Pan Number:<b> {{ emp[15] }}</b></div>
+            <div>Department:<b> {{ emp[16] }}</b></div>
+
+            <div>Company Email:<b> {{ emp[8] }}</b></div>
+
+            <div>Reporting To:<b> {{ emp[20] }}</b></div>
+            <div>Total Working Days:<b> 240</b></div>
+            <div>Leaves Taken:<b> {{ total_leaves }}</b></div>
+            <div>Remaining Leaves:<b>0</b></div>
+
+          </div>
+          {% else %}
+          <p style="color:red;">No employee data found</p>
+          {% endif %}
+        </div>
+
+        <!-- SALARY -->
+        <div id="salary" class="tab">
+          <h2>Generate Salary Slip</h2>
+
+          <form action="/employee_salary_slip" method="POST">
+
+    <div class="salary-field">
+
+            <label>Month</label>
+
+            <select name="month" required>
+
+                <option value="">Select Month</option>
+
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+
+            </select> 
+
+        </div>
+<br>
+        <!-- Year -->
+        <div class="salary-field">
+
+            <label>Year</label>
+
+            <select name="year" required>
+
+                <option value="">Select Year</option>
+
+                {% for y in range(2014,2051) %}
+                    <option value="{{ y }}">{{ y }}</option>
+                {% endfor %}
+
+            </select>
+
+        </div> <br>
+
+        <button type="submit" class="salary-view-btn">
+            Generate Salary Slip
+        </button>
+
+
+</form>
+        </div>
+
+
+        <!-- TDS -->
+        <div id="tds" class="tab">
+
+         
+
+          <div class="tds-card">
+
+            <h2 class="section-title">TDS Certificates</h2>
+
+            <div class="tds-filters">
+
+              <select id="tds_quarter">
+                <option value="">Select Quarter</option>
+                <option value="Q1">Q1</option>
+                <option value="Q2">Q2</option>
+                <option value="Q3">Q3</option>
+                <option value="Q4">Q4</option>
+              </select>
+
+              <select id="tds_year">
+                <option value="">Select Year</option>
+                {% for y in years %}
+                <option value="{{ y }}">{{ y }}</option>
+                {% endfor %}
+              </select>
+
+              <button class="tds-btn" onclick="searchTDS()">Search</button>
+
+            </div>
+
+            <div id="tds_result" class="tds-result"></div>
+
+          </div>
+
+        </div>
+
+
+        <!-- RESUME -->
+        <div id="resume" class="tab">
+
+    <h2>Resume</h2>
+
+    {% if emp[18] %}
+        <p class="resume-status success">
+            ✓ Current Resume :
+            <b>{{ emp[18] }}</b>
+        </p> <br>
+    {% else %}
+        <p class="resume-status error">
+            No Resume Uploaded
+        </p>
+    {% endif %}
+
+    <form
+        action="/upload_resume"
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+        <label class="choose-file-btn">
+            Choose Resume: <br>
+            <input
+                type="file"
+                name="resume"
+                id="resumeFile"
+                accept=".pdf,.doc,.docx"
+                onchange="showFileName()"
+                hidden
+            >
+        </label>
+
+        <span id="fileName">
+            <b> No file selected </b>
+        </span>
+
+        <br><br>
+
+        <button type="submit" class="upload-btn">
+            Upload / Update Resume
+        </button>
+
+    </form>
+
+    <br>
+
+    {% if emp[18] %}
+    <a href="/download_resume" class="download-btn">
+       Download Current Resume
+    </a>
+    {% endif %}
+
+</div>
+
+
+        <!-- LEAVE MANAGEMENT -->
+        <div id="leave" class="tab">
+
+          <!-- HEADER -->
+          <div class="leave-header">
+
+            <div class="leave-header-left">
+              <h1>Leave Management</h1>
+
+              <div class="leave-user">
+                👤 Employee Portal
+              </div>
+            </div>
+
+            <button class="leave-btn leave-apply-btn" onclick="openModal()">
+              + Apply Leave
+            </button>
+
+          </div>
+
+          <!-- CARDS -->
+          <div class="leave-cards">
+
+            <div class="leave-card">
+              <small>Available Leaves</small>
+              <h2 id="available">0</h2>
+            </div>
+
+            <div class="leave-card">
+              <small>Pending Requests</small>
+              <h2 id="pending">0</h2>
+            </div>
+
+            <div class="leave-card">
+              <small>Approved This Year</small>
+              <h2 id="approved">0</h2>
+            </div>
+
+          </div>
+
+          <!-- TABS -->
+          <div class="leave-tabs">
+
+            <div class="leave-tab active" onclick="loadRequests(this)">
+              My Requests
+            </div>
+
+            <div class="leave-tab" onclick="loadHistory(this)">
+              History
+            </div>
+
+          </div>
+
+          <!-- FILTERS -->
+          <div class="leave-filters">
+
+            <select id="monthFilter">
+
+              <option value="">All Months</option>
+
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+
+            </select>
+
+            <select id="yearFilter">
+              <option value="">All Years</option>
+            </select>
+
+            <select id="statusFilter">
+
+              <option value="">All Status</option>
+
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Cancelled">Cancelled</option>
+
+            </select>
+
+            <button class="leave-btn leave-filter-btn" onclick="applyFilters()">
+              Apply Filter
+            </button>
+
+          </div>
+
+          <!-- TABLE -->
+          <div class="leave-table-box">
+
+            <table class="leave-table-new">
+
+              <thead id="thead"></thead>
+
+              <tbody id="tbody"></tbody>
+
+            </table>
+
+          </div>
+        
+        </div>
+
+
+          <!-- MODAL -->
+          <div class="leave-modal" id="modal">
+
+            <div class="leave-modal-content">
+
+              <div class="leave-modal-header">
+
+                <h3>Apply Leave</h3>
+
+                <p>
+                  Submit your leave request professionally
+                </p>
+
+              </div>
+
+              <div class="leave-form-group">
+
+                <label>From Date</label>
+
+                <input type="date" id="from" name="start_date">
+
+              </div>
+
+              <div class="leave-form-group">
+
+                <label>To Date</label>
+
+                <input type="date" id="to" name="end date">
+
+              </div>
+
+              <div class="leave-form-row">
+
+                <div class="leave-form-group">
+
+                  <label>Total Days</label>
+
+                  <input type="number" id="days" readonly>
+
+                </div>
+
+                <div class="leave-form-group">
+
+                  <label>Leave Type</label>
+
+                  <select id="leaveType">
+
+                    <option value="Full Day">
+                      Full Day
+                    </option>
+
+                    <option value="Half Day">
+                      Half Day
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+              <div class="leave-form-group">
+
+                <label>Reason</label>
+
+                <textarea id="reason" placeholder="Enter leave reason..."></textarea>
+
+              </div>
+
+              <div class="leave-modal-buttons">
+
+                <button class="btn close-btn" onclick="closeModal()">
+                  Cancel
+                </button>
+
+                <button class="btn submit-btn" onclick="applyLeave()">
+                  Submit Request
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        
+
+        <!-- CHANGE PASSWORD -->
+        <div id="password" class="tab">
+          
+      <h2>Change Password</h2>
+          <form action="/change_employee_password" method="POST" style="max-width: 400px;">
+            
+            {% with messages = get_flashed_messages(with_categories=true, category_filter=["pwd_error", "pwd_success"]) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  {% if category == 'pwd_success' %}
+                  <div class="alert alert-{{ category }}" style="color: green; margin-bottom: 15px;">
+                  {% else %}
+                  <div class="alert alert-{{ category }}" style="color: red; margin-bottom: 15px;">
+                  {% endif %}
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <div class="salary-field">
+              <label>Current Password</label>
+              <input type="password" name="current_password" required style="width: 100%; padding: 8px; margin-top: 5px;">
+            </div>
+
+            <div class="salary-field">
+              <label>New Password</label>
+              <input type="password" name="new_password" required style="width: 100%; padding: 8px; margin-top: 5px;">
+            </div>
+
+            <div class="salary-field">
+              <label>Confirm New Password</label>
+              <input type="password" name="confirm_password" required style="width: 100%; padding: 8px; margin-top: 5px;">
+            </div>
+
+            <button type="submit" class="salary-view-btn" style="margin-top: 15px;">
+              Update Password
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+
+  <footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Company -->
+        <div class="footer-box company-box">
+
+            <img src="static/home/logos/PCE_2.png" alt="PCE Logo" class="footer-logo">
+
+            <p>
+                PCE Consulting & Engineers LLP provides innovative engineering,
+                automation and industrial solutions with a commitment to quality,
+                safety and customer satisfaction.
+            </p>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-box">
+
+            <h3>Quick Links</h3>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/service">Services</a></li>
+                <li><a href="/project">Projects</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-box">
+
+            <h3>Contact Us</h3>
+
+            <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+            </p>
+
+            <p>
+                <i class="fa-solid fa-phone"></i>
+                +91-8693835656
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:info@pceengineering.com">
+                    info@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    projects@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    mk@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-clock"></i>
+                Mon - Sat | 9:00 AM - 6:00 PM
+            </p>
+
+        </div>
+
+        <!-- Social -->
+        <div class="footer-box">
+
+            <h3>Follow Us</h3>
+
+            <div class="footer-social">
+
+                <a href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+
+                <a href="https://www.youtube.com/@instpce3554" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 PCE Consulting & Engineers LLP. All Rights Reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+  <!-- Wish Popup -->
+  <div id="wishModal" class="wish-modal">
+
+    <div class="wish-modal-content">
+
+      <span class="wish-close">&times;</span>
+
+      <img src="{{ url_for('static', filename='logos/PCE_2.png') }}" class="wish-logo">
+
+      <h2 id="wishTitle"></h2>
+
+      <h3>
+        {{ emp[2] }} {{ emp[3] }} <br>
+      </h3>
+
+      <p id="wishMessage"></p>
+
+      <div class="wish-footer">
+        Thanks & Regards,<br>
+        <strong>Team PCE</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    var showBirthdayPopup =
+      "{{ show_birthday_popup }}" === "True";
+
+    var showAnniversaryPopup =
+      "{{ show_anniversary_popup }}" === "True";
+
+    var employeeName = "{{ emp[2] }} {{ emp[3] }}";
+
+    console.log("Birthday:", showBirthdayPopup);
+    console.log("Anniversary:", showAnniversaryPopup);
+  </script>
+
+  <script src="{{ url_for('static', filename='employee/employee.js') }}"></script>
+
+</body>
+
+</html>
+

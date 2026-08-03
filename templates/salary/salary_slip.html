@@ -1,0 +1,330 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Salary Slip</title>
+
+    <style>
+      /* PAGE */
+      body {
+        background: #e6e6e6;
+        font-family: "Helvetica", "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* MAIN SLIP */
+      .container {
+        width: 100%;
+        max-width: 750px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 40px 50px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      /* LOGO */
+      .logo {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .logo img {
+        width: 300px;
+      }
+
+      .header-divider {
+        border-top: 3px solid #000;
+        margin: 10px 0;
+      }
+
+      /* ADDRESS */
+      .address {
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+
+      /* DATE */
+      .date {
+        text-align: right;
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      /* TABLES */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 3px solid #000;
+        margin-bottom: 20px;
+      }
+
+      td, th {
+        border: 1.5px solid #000;
+        padding: 8px 10px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      /* TABLE 1: EMPLOYEE INFO */
+      .emp-table td:nth-child(1),
+      .emp-table td:nth-child(3) {
+        text-align: center;
+        width: 25%;
+      }
+      .emp-table td:nth-child(2),
+      .emp-table td:nth-child(4) {
+        text-align: center;
+        width: 25%;
+      }
+
+      /* TABLE 2: EARNINGS AND DEDUCTIONS */
+      .salary-table th {
+        text-align: center;
+      }
+      
+      .salary-table td:nth-child(1),
+      .salary-table td:nth-child(3) {
+        text-align: center;
+        width: 30%;
+      }
+      .salary-table td:nth-child(2),
+      .salary-table td:nth-child(4) {
+        text-align: center;
+        width: 20%;
+      }
+
+      /* TABLE 3: TOTALS */
+      .total-table td:nth-child(1),
+      .total-table td:nth-child(3) {
+        text-align: center;
+        width: 30%;
+      }
+      .total-table td:nth-child(2),
+      .total-table td:nth-child(4) {
+        text-align: center;
+        width: 20%;
+      }
+
+      /* TABLE 4: NET SALARY */
+      .net-table td:nth-child(1) {
+        text-align: center;
+        width: 30%;
+      }
+      .net-table td:nth-child(2) {
+        text-align: center;
+        width: 70%;
+      }
+      .net-table .words-row td {
+        height: 30px;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      /* SIGNATURE */
+      .signature-section {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        margin-top: 40px;
+        margin-bottom: 0;
+      }
+
+      /* Signature block: image + label */
+      .sign-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .sign-img {
+        width: 110px;
+        height: 80px;
+        object-fit: contain;
+      }
+
+      .sign-text {
+        font-weight: bold;
+        font-size: 13px;
+        margin-top: 4px;
+        text-align: center;
+      }
+
+      /* Stamp block: image only, no label */
+      .stamp-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-left: 20px;
+      }
+
+      .stamp-img {
+        width: 90px;
+        height: 90px;
+        object-fit: contain;
+      }
+
+      .footer-line {
+        border-top: 3px solid #000;
+        margin-top: 15px;
+      }
+
+
+
+      /* DOWNLOAD BUTTON */
+      .download-btn {
+        display: block;
+        width: 180px;
+        margin: 20px auto;
+        padding: 12px 15px;
+        background-color: #0056b3;
+        color: white;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+      .download-btn:hover {
+        background-color: #004494;
+      }
+
+      /* PRINT SETTINGS (Fixes the cutting issue) */
+      @media print {
+        @page {
+          size: A4 portrait;
+          margin: 15mm;
+        }
+
+        body {
+          background: #fff;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .container {
+          box-shadow: none;
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          max-width: 100%;
+        }
+
+        .download-btn {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <button class="download-btn" onclick="window.print()">Download PDF</button>
+
+    <div class="container">
+      
+      <!-- LOGO -->
+      <div class="logo">
+        <img src="{{ url_for('static', filename='home/logos/PCE_2.png') }}" alt="PCE Consulting & Engineers LLP" />
+      </div>
+
+      <div class="header-divider"></div>
+
+      <!-- ADDRESS -->
+      <div class="address">
+        Unit No.2140,Oberoi Garden Estate,D wing,Second Floor,Chandivali Farm Road, Adjacent to<br>
+        Chandivali Studio,Chandivali-Andheri (E),Mumbai 400 072
+      </div>
+
+      <!-- DATE -->
+      <div class="date">
+        {{ payment_date }}
+      </div>
+
+      <!-- EMPLOYEE DETAILS -->
+      <table class="emp-table">
+        <tr>
+          <td>Employee ID</td>
+          <td>{{ employee_id }}</td>
+          <td>Employee Name</td>
+          <td>{{ name }}</td>
+        </tr>
+        <tr>
+          <td>Salary Period</td>
+          <td>{{ month[:3] }}-{{ year % 100 }}</td>
+          <td>Designation</td>
+          <td>{{ designation }}</td>
+        </tr>
+      </table>
+
+      <!-- EARNINGS & DEDUCTIONS -->
+      <table class="salary-table">
+        <tr>
+          <th colspan="2">Earnings</th>
+          <th colspan="2">Deduction</th>
+        </tr>
+
+        {% set max_rows = [earnings|length, deductions|length]|max %} 
+        {% for i in range(max_rows) %}
+        <tr>
+          <td>
+            {% if earnings[i] is defined %}{{ earnings[i].name }}{% endif %}
+          </td>
+          <td>
+            {% if earnings[i] is defined %}₹ {{ "%.2f"|format(earnings[i].amount) }}{% endif %}
+          </td>
+          <td>
+            {% if deductions[i] is defined %}{{ deductions[i].name }}{% endif %}
+          </td>
+          <td>
+            {% if deductions[i] is defined %}₹ {{ "%.2f"|format(deductions[i].amount) }}{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+
+      <!-- TOTALS -->
+      <table class="total-table">
+        <tr>
+          <td>Total Earnings</td>
+          <td>₹ {{ "%.2f"|format(total_earnings) }}</td>
+          <td>Total Deduction</td>
+          <td>₹ {{ "%.2f"|format(total_deductions) }}</td>
+        </tr>
+      </table>
+
+      <!-- NET SALARY -->
+      <table class="net-table">
+        <tr>
+          <td>Net Salary</td>
+          <td>₹ {{ "%.2f"|format(payment) }}</td>
+        </tr>
+        <tr class="words-row">
+          <td colspan="2">{{ payment_words }}</td>
+        </tr>
+      </table>
+
+      <!-- SIGNATURE SECTION -->
+      <div class="signature-section">
+        <!-- Signature: image + label -->
+        <div class="sign-block">
+          <img src="{{ url_for('static', filename='home/logos/signature.png') }}" class="sign-img" onerror="this.style.display='none'" />
+          <div class="sign-text">Signature</div>
+        </div>
+        <!-- Stamp: image only, no label -->
+        <div class="stamp-block">
+          <img src="{{ url_for('static', filename='logos/pcestamp.png') }}" class="stamp-img" onerror="this.style.display='none'" />
+        </div>
+      </div>
+
+      <!-- FULL WIDTH BOTTOM LINE -->
+      <div class="footer-line"></div>
+
+    </div>
+  </body>
+</html>

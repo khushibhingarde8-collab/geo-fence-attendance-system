@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <script
+      src="{{ url_for('static', filename='security.js') }}"
+      defer
+    ></script>
+
+    <title>Login - PCE</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='home/auth.css') }}"
+    />
+
+    
+  </head>
+  <body>
+    <div class="auth-container">
+      <div class="logo-container">
+        <img src="static/home/logos/PCE_2.png" class="logo" alt="Logo" />
+      </div>
+      <h2>Login</h2>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <script>
+        alert("{{ message }}");
+      </script>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
+      <form id="loginForm" method="POST" action="/login">
+        <label>Select Role</label>
+        <select id="role" required>
+          <option value="">Choose Role</option>
+          <option value="admin">Admin</option>
+          <option value="employee">Employee</option>
+        </select>
+
+        <label>Email</label>
+        <input
+          type="email"
+          id="loginEmail"
+          maxlength="30"
+          name="email"
+          placeholder="Enter your email"
+          required
+        />
+
+        <label>Password</label>
+        <input
+          type="password"
+          id="loginPassword"
+          maxlength="20"
+          minlength="8"
+          name="password"
+          placeholder="Enter password"
+          required
+        />
+
+        <button type="submit">Login</button>
+      </form>
+
+      <p>New Employee? <a href="/signup">Sign Up</a></p>
+    </div>
+  </body>
+</html>

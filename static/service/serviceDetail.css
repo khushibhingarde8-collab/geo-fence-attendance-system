@@ -1,0 +1,386 @@
+body {
+  margin: 0;
+  font-family: "Helvetica", "Arial", sans-serif;
+  background: #ffffff;
+}
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* HERO */
+.detail-hero {
+  position: relative;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url("images_s/engineering.jpg") center/cover no-repeat;
+}
+
+.detail-hero .overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+}
+
+/* ===== SECTION LEVEL ANIMATION ===== */
+
+.section-animate {
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+/* Directions */
+.animate-bottom {
+  transform: translateY(100px);
+}
+
+.animate-left {
+  transform: translateX(-100px);
+}
+
+.animate-right {
+  transform: translateX(100px);
+}
+
+/* SHOW */
+.section-animate.show {
+  opacity: 1;
+  transform: translate(0);
+}
+
+/* BACK BUTTON POSITION (TOP) */
+.top-back-wrapper {
+  padding: 20px 10%;
+}
+
+/* CENTER HEADING BELOW BACK BUTTON */
+.service-heading-wrap {
+  text-align: center;
+  margin: 10px 0 0 0; /* small gap only */
+}
+
+.service-heading {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #0b0a24;
+
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(20px);
+  transition: all 0.8s ease;
+}
+
+/* BLUR FADE ANIMATION */
+.animate-blur.show {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+/* MAIN */
+.detail-container {
+  display: flex;
+  background: #fbfbfb;
+  gap: 50px;
+  padding: 80px 10%;
+  align-items: center;
+  margin-bottom: 80px;
+}
+
+/* LEFT */
+.detail-left {
+  flex: 1;
+
+  opacity: 0;
+  transform: translateX(-120px);
+  transition: 0.9s ease;
+}
+
+.detail-left.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.detail-left p {
+  font-size: 16px;
+  color: #0b0a24;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+.detail-left h3 {
+  margin-bottom: 15px;
+  font-size: 25px;
+  color: #0b0a24;
+}
+
+.detail-left ul {
+  padding-left: 20px;
+}
+
+.detail-left li {
+  margin-bottom: 10px;
+  color: #0b0a24;
+  font-size: 16px;
+}
+
+/* RIGHT */
+.detail-right {
+  flex: 1;
+
+  opacity: 0;
+  transform: translateX(120px);
+  transition: 0.8s ease;
+}
+
+.detail-right.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.detail-right img {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* BACK BUTTON (GLASS EFFECT PREMIUM) */
+.back-btn {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 12px 28px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+
+  color: #fff;
+  background: #ff5e00;
+
+  position: relative;
+  overflow: hidden;
+}
+
+/* GLASS HOVER */
+.back-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: 0.5s;
+}
+
+.back-btn:hover::before {
+  left: 100%;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .detail-container {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* ================= PARTNER ================= */
+.partner-grid,
+.team-grid {
+  width: 100%;
+}
+.partner-section {
+  padding: 80px 10%;
+  text-align: center;
+  background: #fbfbfb;
+}
+
+.section-title {
+  font-size: 38px;
+  margin-bottom: 40px;
+  color: #0b0a24;
+}
+
+.partner-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.partner-card {
+  padding: 30px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+  color: #0b0a24;
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-size: 16px;
+}
+
+.partner-card i {
+  font-size: 40px;
+  color: #ff5e00;
+  margin-bottom: 15px;
+}
+
+.partner-card:hover {
+  transform: translateY(-10px);
+}
+
+/* ================= TEAM ================= */
+.team-section {
+  padding: 80px 10%;
+  background: #fbfbfb;
+  text-align: center;
+}
+
+/* ===== TEAM CARD HOVER (ORANGE PREMIUM) ===== */
+.team-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: visible;
+}
+
+/* ORANGE GLOW HOVER */
+.team-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 50px #7fa0de;
+  z-index: 5;
+}
+
+/* ORANGE TOP BORDER ANIMATION */
+.team-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 4px;
+  background: #ff5e00;
+  transition: 0.4s;
+}
+
+.team-card:hover::before {
+  width: 100%;
+}
+
+/* IMAGE */
+.team-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* TEXT */
+.team-card h4 {
+  margin: 5px 0;
+  color: #0b0a24;
+  font-size: 22px;
+  font-family: "Helvetica", "Arial", sans-serif;
+}
+
+.team-card p {
+  color: #18165d;
+  font-size: 16px;
+  font-family: "Helvetica", "Arial", sans-serif;
+}
+
+/* ===== CONTINUOUS SCROLL TEAM ===== */
+
+.team-scroll {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.team-track {
+  display: flex;
+  gap: 30px;
+  width: max-content;
+  animation: teamScroll 20s linear infinite;
+}
+
+/* PAUSE ON HOVER */
+.team-scroll:hover .team-track {
+  animation-play-state: paused;
+}
+
+/* CARD SIZE FIX (IMPORTANT) */
+.team-card {
+  min-width: 280px;
+  max-width: 280px;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+/* SCROLL ANIMATION */
+@keyframes teamScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .team-card {
+    min-width: 220px;
+    max-width: 220px;
+  }
+
+  .team-track {
+    gap: 20px;
+  }
+}
+
+/* ================= ANIMATIONS ================= */
+.animate-left,
+.animate-right,
+.animate-up {
+  opacity: 0;
+  transition: 0.8s ease;
+}
+
+.animate-left {
+  transform: translateX(-60px);
+}
+.animate-right {
+  transform: translateX(60px);
+}
+.animate-up {
+  transform: translateY(80px);
+}
+
+.show {
+  opacity: 1 !important;
+  transform: translate(0) !important;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .detail-extra {
+    flex-direction: column;
+  }
+
+  .partner-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCE</title>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+      
+    <link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='service/service.css') }}"
+/>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='service/serviceDetail.css') }}"
+/>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='headerfooter.css') }}"
+/>
+
+<script
+  src="{{ url_for('static', filename='service/serviceDetail.js') }}"
+  defer
+></script>
+
+<script
+  src="{{ url_for('static', filename='security.js') }}"
+  defer
+></script>
+
+  </head>
+  <body>
+    <div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00AM to 6:00PM</span>
+        <span>📍 Mumbai, India</span>
+        <div class="email-section">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=info@pceengineering.com"
+            >✉ info@pceengineering.com</a
+          >
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=mk@pceengineering.com"
+            >✉ mk@pceengineering.com</a
+          >
+        </div>
+      </div>
+      <div class="top-right">
+        <a
+          href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+          class="social">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a
+          href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov"
+          class="social">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+   <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <img
+            src="{{ url_for('static', filename='project/images_project/PCE_2.png') }}"
+            alt="PCE Logo"
+          />
+        </div>
+
+        <!-- HAMBURGER -->
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+
+        <!-- NAV LINKS -->
+        <div class="nav-links" id="nav-links">
+          <!-- CLOSE BUTTON -->
+          <button class="close-menu-btn" id="close-menu">Close Menu</button>
+
+          <a href="/" class="nav-item"> Home </a>
+
+          <!-- ABOUT -->
+          <div class="about-menu nav-item">
+            <div class="mobile-dropdown-toggle">About</div>
+
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/project">Projects</a>
+            </div>
+          </div>
+
+          <a href="/client" class="nav-item"> Clients </a>
+
+          <a href="/phoenix" class="nav-item"> Phoenix Contact </a>
+
+          <a href="/contact" class="nav-item"> Contact </a>
+        </div>
+      </div>
+    </nav>
+
+<!-- ================= SERVICE HERO ================= -->
+<section class="service-hero-full">
+  <div class="breadcrumb-floating">
+    <span class="home-icon">🏠</span>
+    <span>HOME</span>
+    <span class="slash">/</span>
+    <span>SERVICES</span>
+  </div>
+
+  
+</section>
+
+<!-- BACK BUTTON BELOW HERO -->
+<div class="top-back-wrapper">
+  <a href="/service" class="back-btn">← Back</a>
+</div>
+<div class="service-heading-wrap">
+  <h2 id="service-heading" class="service-heading animate-blur">
+    <!-- JS will insert title -->
+  </h2>
+</div>
+
+<!-- ================= Main ================= -->
+<section class="detail-container section-animate animate-bottom">
+
+    <!-- LEFT -->
+    <div class="detail-left">
+        <p id="service-description"></p>
+
+        <h3>Our Expertise</h3>
+        <ul id="service-list"></ul>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="detail-right">
+        <img id="service-image" src="">
+    </div>
+</section>
+
+
+<!-- ================= WHY PARTNER ================= -->
+<section class="partner-section section-animate animate-bottom">
+
+  <h2 class="section-title">Why Partner With Us</h2>
+
+  <div class="partner-grid">
+
+    <div class="partner-card animate-up">
+      <i class="fas fa-award"></i>
+      <h4>Proven Expertise</h4>
+      <p>Trusted by industries with consistent delivery excellence.</p>
+    </div>
+
+    <div class="partner-card animate-up">
+      <i class="fas fa-clock"></i>
+      <h4>On-Time Delivery</h4>
+      <p>Projects completed within committed timelines.</p>
+    </div>
+
+    <div class="partner-card animate-up">
+      <i class="fas fa-headset"></i>
+      <h4>24/7 Support</h4>
+      <p>Continuous technical support and assistance.</p>
+    </div>
+
+    <div class="partner-card animate-up">
+      <i class="fas fa-lightbulb"></i>
+      <h4>Innovative Solutions</h4>
+      <p>Modern engineering approaches for better results.</p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= TEAM ================= -->
+<section class="team-section section-animate animate-bottom">
+
+  <!-- HEADING (BLUR EFFECT) -->
+  <h2 class="section-title animate-blur" id="team-heading">
+    Meet The Innovators Behind Our Solutions
+  </h2>
+
+  <!-- TEAM SCROLL WRAPPER -->
+<div class="team-scroll">
+
+  <div class="team-track" id="team-container">
+    <!-- JS will insert cards -->
+  </div>
+
+</div>
+</section>
+
+</body>
+</html>
+
+<footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Company -->
+        <div class="footer-box company-box">
+
+            <img src="static/home/logos/PCE_2.png" alt="PCE Logo" class="footer-logo">
+
+            <p>
+                PCE Consulting & Engineers LLP provides innovative engineering,
+                automation and industrial solutions with a commitment to quality,
+                safety and customer satisfaction.
+            </p>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-box">
+
+            <h3>Quick Links</h3>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/service">Services</a></li>
+                <li><a href="/project">Projects</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-box">
+
+            <h3>Contact Us</h3>
+
+            <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+            </p>
+
+            <p>
+                <i class="fa-solid fa-phone"></i>
+                +91-8693835656
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:info@pceengineering.com">
+                    info@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    projects@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    mk@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-clock"></i>
+                Mon - Sat | 9:00 AM - 6:00 PM
+            </p>
+
+        </div>
+
+        <!-- Social -->
+        <div class="footer-box">
+
+            <h3>Follow Us</h3>
+
+            <div class="footer-social">
+
+                <a href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+
+                <a href="https://www.youtube.com/@instpce3554" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 PCE Consulting & Engineers LLP. All Rights Reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+
+  </body>
+</html>

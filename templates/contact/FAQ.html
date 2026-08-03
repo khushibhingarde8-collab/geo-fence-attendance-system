@@ -1,0 +1,723 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ</title>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+      
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='contact/FAQ.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='headerfooter.css') }}"
+    />
+
+    <script
+      src="{{ url_for('static', filename='contact/FAQ.js') }}"
+      defer
+    ></script>
+
+    <script
+      src="{{ url_for('static', filename='contact/contact.js') }}"
+      defer
+    ></script>
+
+    <script
+      src="{{ url_for('static', filename='security.js') }}"
+      defer
+    ></script>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Helvetica", "Arial", sans-serif;
+        background: #ffffff;
+      }
+
+      /* IMPORTANT FIX: push content below fixed header */
+      .faq-section {
+        margin-top: 140px; /* adjust based on your header height */
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00AM to 6:00PM</span>
+        <span>📍 Mumbai, India</span>
+        <div class="email-section">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=info@pceengineering.com"
+            >✉ info@pceengineering.com</a
+          >
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=mk@pceengineering.com"
+            >✉ mk@pceengineering.com</a
+          >
+        </div>
+      </div>
+      <div class="top-right">
+        <a
+          href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+          class="social">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a
+          href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov"
+          class="social">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <img src="static/contact/images_contact/PCE_2.png" alt="PCE Logo" />
+        </div>
+
+        <div class="nav-links">
+          <a href="/" class="nav-item">Home</a>
+
+          <!-- ABOUT DROPDOWN -->
+          <div class="about-menu nav-item">
+            About
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/project">Projects</a>
+            </div>
+          </div>
+
+          <a href="/client" class="nav-item">Clients</a>
+          <a href="/phoenix" class="nav-item">Phoenix Contact</a>
+          <a href="/contact" class="nav-item">Contact</a>
+        </div>
+      </div>
+    </nav>
+
+    <section class="faq-section">
+      <a href="/contact" class="faq-back-btn"> <span>←</span> Back </a>
+      <div class="faq-header">
+        <h2>Frequently Asked Questions</h2>
+        <p>
+          Find quick answers to common questions about our services, projects,
+          and support. We aim to provide clear and helpful information to make
+          your experience smooth and efficient.
+        </p>
+      </div>
+      <!-- SEARCH BAR -->
+      <div class="faq-search">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search your question..."
+        />
+      </div>
+
+      <div class="faq-container">
+        <!-- CATEGORIES -->
+        <!-- DESKTOP BUTTONS -->
+        <div class="faq-categories desktop-filter">
+          <button class="active" data-cat="general">General</button>
+          <button data-cat="request">Request</button>
+          <button data-cat="services">Services</button>
+          <button data-cat="projects">Projects</button>
+          <button data-cat="training">Training</button>
+          <button data-cat="technical">Technical Support</button>
+          <button data-cat="products">Products</button>
+        </div>
+
+        <!-- FAQ CONTENT -->
+        <div class="faq-content">
+          <!-- GENERAL -->
+          <div class="faq-group active" data-cat="general">
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">What does PCE Consulting do?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                We provide engineering consulting, automation solutions, and
+                technical services for industrial projects.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Where is your company located?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                We are based in Andheri (East), Mumbai, India.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">How can I contact your team?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                You can use our contact form, email us, or call directly.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you work with international clients?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we provide services to both domestic and international
+                clients.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">What industries do you serve?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                We work with manufacturing, automation, infrastructure, and
+                engineering sectors.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">What makes your company unique?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                We focus on customized engineering solutions with practical and
+                cost-effective implementation.
+              </div>
+            </div>
+          </div>
+
+          <!-- REQUEST -->
+          <div class="faq-group" data-cat="request">
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">How can I request a quote?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                You can submit a request using our “Send Message” form on the
+                contact page.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">What details are required for a quote?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Provide project scope, requirements, timelines, and any
+                supporting documents.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text"
+                  >How long does it take to receive a response?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                We typically respond within 24–48 working hours.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Can I attach files with my request?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, you can upload documents such as drawings, PDFs, or
+                specifications.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Is consultation free?</span><span>+</span>
+              </div>
+              <div class="faq-a">
+                Initial discussions are usually free; detailed consulting may be
+                chargeable.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text"
+                  >Can I modify my request after submission?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, you can contact us via email to update your request
+                details.
+              </div>
+            </div>
+          </div>
+
+          <!-- SERVICES -->
+          <div class="faq-group" data-cat="services">
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">What services do you offer?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                We offer engineering consultancy, automation, manpower services,
+                and technical training.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you provide customized solutions?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, all our services are tailored to specific project
+                requirements.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you handle turnkey projects?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we manage projects from planning to execution and delivery.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you provide on-site support?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, our engineers can provide on-site assistance when required.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Can you upgrade existing systems?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we modernize and optimize existing engineering systems.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you offer maintenance services?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we provide ongoing maintenance and support services.
+              </div>
+            </div>
+          </div>
+
+          <!-- PROJECTS -->
+          <div class="faq-group" data-cat="projects">
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text"
+                  >What types of projects have you completed?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                We have completed industrial automation, electrical, and
+                infrastructure projects.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Can I see your past projects?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, you can visit our Projects page to view completed work.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you handle large-scale projects?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we are equipped to handle both small and large-scale
+                projects.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text"
+                  >Do you collaborate with other companies?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we collaborate with partners when required for complex
+                projects.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">What is your project timeline process?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Timelines depend on scope, but we ensure structured planning and
+                timely delivery.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you provide project reports?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we provide detailed reports and documentation.
+              </div>
+            </div>
+          </div>
+
+          <!-- TRAINING -->
+          <div class="faq-group" data-cat="training">
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you offer training programs?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we provide technical training programs for students and
+                professionals.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">What topics are covered in training?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Topics include automation, PLC, electrical systems, and
+                industrial practices.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Are certificates provided?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, participants receive certificates after completion.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Is training online or offline?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                We offer both online and offline training options.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Who can enroll in training?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Students, engineers, and working professionals can enroll.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">How can I register for training?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                You can contact us or submit a request through our website.
+              </div>
+            </div>
+          </div>
+
+          <!-- PRODUCTS -->
+          <div class="faq-group" data-cat="products">
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you supply engineering products?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we supply industrial automation and electrical products.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Which brands do you work with?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                We work with trusted industry brands like Phoenix Contact.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you provide product installation?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, installation and setup services are available.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Are your products certified?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, all products meet industry standards and certifications.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you offer product warranty?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, products come with manufacturer warranty.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Can I request a product demo?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">Yes, demos can be arranged upon request.</div>
+            </div>
+          </div>
+
+          <!-- TECHNICAL -->
+          <div class="faq-group" data-cat="technical">
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you provide technical support?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we offer technical support for all our services and
+                products.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">How can I request support?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                You can contact us via phone, email, or support request form.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">What are your support hours?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Support is available during business hours, Monday to Saturday.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Do you provide emergency support?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, emergency support is available for critical issues.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Can you troubleshoot remotely?</span
+                ><span>+</span>
+              </div>
+              <div class="faq-a">
+                Yes, we provide remote troubleshooting support when possible.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-q">
+                <span class="text">Is support chargeable?</span><span>+</span>
+              </div>
+              <div class="faq-a">
+                Basic support may be free; advanced support may incur charges.
+              </div>
+            </div>
+          </div>
+
+          <!-- NO RESULT -->
+          <p id="noResult">No results found 😔</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Company -->
+        <div class="footer-box company-box">
+
+            <img src="static/home/logos/PCE_2.png" alt="PCE Logo" class="footer-logo">
+
+            <p>
+                PCE Consulting & Engineers LLP provides innovative engineering,
+                automation and industrial solutions with a commitment to quality,
+                safety and customer satisfaction.
+            </p>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-box">
+
+            <h3>Quick Links</h3>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/service">Services</a></li>
+                <li><a href="/project">Projects</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-box">
+
+            <h3>Contact Us</h3>
+
+            <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+            </p>
+
+            <p>
+                <i class="fa-solid fa-phone"></i>
+                +91-8693835656
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:info@pceengineering.com">
+                    info@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    projects@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    mk@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-clock"></i>
+                Mon - Sat | 9:00 AM - 6:00 PM
+            </p>
+
+        </div>
+
+        <!-- Social -->
+        <div class="footer-box">
+
+            <h3>Follow Us</h3>
+
+            <div class="footer-social">
+
+                <a href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+
+                <a href="https://www.youtube.com/@instpce3554" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 PCE Consulting & Engineers LLP. All Rights Reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+  </body>
+</html>

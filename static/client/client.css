@@ -1,0 +1,462 @@
+/* ================= CLIENT HERO SECTION ================= */
+.client-hero-full {
+  width: 100%;
+  height: 640px;
+  background: url("/static/client/images_client/client.jpg") center/cover
+    no-repeat;
+  position: relative;
+  /*border-radius: 0 0 35px 35px;*/
+  overflow: hidden;
+}
+
+/* Sub Text Line */
+.clients-subtext {
+  font-size: 16px;
+  color: #0b0a24; /* SAME COLOR as title */
+  max-width: 750px;
+  margin: 10px auto 50px auto; /* center + spacing below */
+  line-height: 1.2;
+}
+@media (max-width: 768px) {
+  .client-hero-full {
+    height: 620px;
+    background-size: cover; /* FIXED */
+    background-position: center top;
+    background-repeat: no-repeat;
+  }
+
+  .breadcrumb-floating {
+    top: auto;
+    bottom: 20px;
+    left: 15px;
+    font-size: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-hero-full {
+    height: 450px;
+    background-size: cover; /* FIXED */
+    background-position: center top;
+    background-repeat: no-repeat;
+  }
+
+  .breadcrumb-floating {
+    font-size: 11px;
+    padding: 8px 12px;
+    left: 12px;
+    bottom: 15px;
+    gap: 6px;
+  }
+}
+/* ================= CLIENT SECTION ================= */
+.clients-section {
+  padding: 100px 8%;
+  background: #fbfbfd;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(80px);
+  transition: 1s ease;
+}
+.clients-section.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.animate-section {
+  opacity: 0;
+  transform: translateY(80px);
+  transition: 1s;
+}
+
+.animate-section.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* INITIAL STATE */
+.slide-left,
+.slide-right {
+  opacity: 0;
+  transition: 1s ease;
+}
+
+/* LEFT SIDE */
+.slide-left {
+  transform: translateX(-150px);
+}
+
+/* RIGHT SIDE */
+.slide-right {
+  transform: translateX(150px);
+}
+
+/* WHEN VISIBLE */
+.slide-left.show,
+.slide-right.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.client-main-title {
+  font-size: 40px;
+  margin-bottom: 40px;
+  color: #0b0a24;
+}
+
+@keyframes typing {
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+.reveal-text {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: 0.8s ease;
+}
+
+.reveal-text.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Client Grid */
+.client-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.client-info-box {
+  background: #ffffff;
+  padding: 50px;
+  border-radius: 20px;
+  margin-bottom: 60px;
+
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  transition: 0.4s;
+}
+.client-logo-box {
+  background: #ffffff;
+  padding: 50px;
+  border-radius: 20px;
+  margin-bottom: 60px;
+
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  transition: 0.4s;
+}
+
+/* hover lift */
+.client-info-box:hover,
+.client-logo-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+
+.client-card {
+  width: 170px;
+  height: 190px;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fbfbfd;
+  border-radius: 14px;
+  border-top: 3px solid transparent;
+  backdrop-filter: blur(10px);
+
+  clip-path: polygon(
+    25% 6.7%,
+    75% 6.7%,
+    100% 50%,
+    75% 93.3%,
+    25% 93.3%,
+    0% 50%
+  );
+
+  transition: 0.5s;
+  cursor: pointer;
+
+  opacity: 0;
+  transform: translate(-60px, 60px) scale(0.9);
+  transition: all 0.6s ease;
+}
+
+/* 🔥 TOP EDGE GLOW (HEXAGON SAFE) */
+.client-card::after {
+  content: "";
+  position: absolute;
+  top: 5.7%; /* aligns with top edge of hexagon */
+  left: 25%;
+  width: 50%;
+  height: 6px;
+
+  background: #ff5e00;
+
+  opacity: 0;
+  transition: 0.3s ease;
+}
+
+/* 🔥 SHOW ON HOVER */
+.client-card:hover::after {
+  opacity: 1;
+}
+
+/* 🔥 KEEP YOUR HOVER LIFT */
+.client-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 20px 40px rgba(255, 94, 0, 0.3);
+}
+
+/* Directions */
+.from-left {
+  transform: translateX(-80px);
+}
+.from-right {
+  transform: translateX(80px);
+}
+.from-top {
+  transform: translateY(-80px);
+}
+.from-bottom {
+  transform: translateY(80px);
+}
+.client-card.show {
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+}
+
+/* Gradient Border 
+.client-card::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+ 
+  clip-path: inherit;
+  z-index:-1;
+}*/
+
+/* Glow Hover */
+
+.client-card img {
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    padding: 25px;
+
+    clip-path: polygon(
+        25% 6.7%,
+        75% 6.7%,
+        100% 50%,
+        75% 93.3%,
+        25% 93.3%,
+        0% 50%
+    );
+
+    transition: 0.4s ease;
+}
+
+
+.client-card:hover img {
+  transform: scale(1.2) rotate(360deg);
+}
+
+/* ================= CLIENT LOGO MOBILE FIX ================= */
+
+@media (max-width: 768px) {
+  .client-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 👈 2 logos per row */
+    gap: 15px;
+  }
+
+  .client-card {
+    width: 100%;
+    height: 130px; /* 👈 smaller height */
+    transform: scale(1); /* avoid oversized animation issues */
+  }
+
+  .client-card img {
+    max-width: 80px; /* 👈 reduce logo size */
+  }
+
+  .client-logo-box {
+    padding: 25px;
+  }
+
+  .client-info-box {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-grid {
+    grid-template-columns: repeat(2, 1fr); /* still 2 per row */
+    gap: 10px;
+  }
+
+  .client-card {
+    height: 110px;
+  }
+
+  .client-card img {
+    max-width: 65px;
+  }
+}
+
+/* ===== SECTION ===== */
+.testimonial-section {
+  margin-top: 120px;
+  padding: 80px 0;
+  background: #fbfbfd;
+  overflow: visible; /* allow cards to animate outside section */
+  opacity: 0;
+  transform: translateY(80px);
+  transition: 1s ease-out;
+  background-size: 400% 400%;
+  animation: gradientMove 12s ease infinite;
+  min-height: 500px; /* use px unit and make it taller */
+}
+.testimonial-section.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.testimonial-title {
+  text-align: center;
+  font-size: 40px;
+  color: #0b0a24;
+  margin-bottom: 40px;
+  display: block;
+  width: 100%;
+}
+
+/* ===== CONTAINER ===== */
+.scroll-wrapper {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  height: 100%;
+}
+
+.testimonial-container {
+  display: flex;
+  gap: 30px;
+  overflow: hidden;
+  padding: 40px 60px;
+  height: 100%;
+  scroll-behavior: auto;
+}
+.testimonial-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== GLASS CARDS ===== */
+.testimonial-card {
+  width: 220px;
+  height: 230px; /* 🔥 controlled height */
+
+  flex-shrink: 0;
+
+  padding: 18px;
+  border-radius: 18px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+
+  background: white;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+  transform: translateY(60px);
+  opacity: 0.4;
+
+  transition: all 0.6s ease;
+}
+.testimonial-card.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.testimonial-card:hover {
+  transform: scale(1.05);
+}
+
+/* ===== CENTER CARD ===== */
+.testimonial-card.active {
+  transform: scale(1.2) !important;
+  opacity: 1;
+  z-index: 5;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.25),
+    0 0 40px #ff8c00,
+    /* orange glow */ 0 0 80px #ff5e00,
+    /* deep glow */ inset 0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+/* ===== HOVER EFFECT ===== */
+.testimonial-card:hover {
+  transform: scale(1.1) !important;
+  opacity: 1;
+}
+
+/* TEXT */
+.testimonial-card h4 {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.testimonial-card p {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.client-name {
+  margin-top: 10px;
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+/* ===== SCROLL ANIMATION ===== */
+.testimonial-card {
+  opacity: 1;
+}
+
+.testimonial-card.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.6s ease;
+}
+.testimonial-container {
+  align-items: flex-end;
+  height: 100%;
+}
+

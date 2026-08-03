@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+   
+    <link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='client/client.css') }}"
+/>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='headerfooter.css') }}"
+/>
+
+<script
+  src="{{ url_for('static', filename='security.js') }}"
+  defer
+></script>
+
+<script
+  src="{{ url_for('static', filename='client/Client.js') }}"
+  defer
+></script>
+  </head>
+  <body>
+
+
+   <div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00AM to 6:00PM</span>
+        <span>📍 Mumbai, India</span>
+        <div class="email-section">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=info@pceengineering.com"
+            >✉ info@pceengineering.com</a
+          >
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=mk@pceengineering.com"
+            >✉ mk@pceengineering.com</a
+          >
+        </div>
+      </div>
+      <div class="top-right">
+        <a
+          href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+          class="social">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a
+          href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov"
+          class="social">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <img src="static/client/images_client/PCE_2.png" alt="PCE Logo" />
+        </div>
+
+        <!-- HAMBURGER ICON -->
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+
+        <!-- NAV LINKS -->
+        <div class="nav-links" id="nav-links">
+          <!-- CLOSE BUTTON -->
+          <button class="close-menu-btn" id="close-menu">Close Menu</button>
+
+          <a href="/" class="nav-item active">Home</a>
+
+          <!-- ABOUT DROPDOWN -->
+          <div class="about-menu nav-item">
+            <div class="mobile-dropdown-toggle">About</div>
+
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/website_project">Projects</a>
+            </div>
+          </div>
+
+          <a href="/website-client" class="nav-item">Clients</a>
+
+          <a href="/phoenix" class="nav-item">
+            Phoenix Contact
+          </a>
+
+          <a href="/contact" class="nav-item"> Contact </a>
+
+        
+        </div>
+      </div>
+    </nav>
+
+<!-- ================= CLIENT SECTION ================= -->
+<section class="client-hero-full">
+
+</section>
+
+<section class="clients-section">
+
+    <!-- Client Content -->
+    <div class="client-info-box slide-left">
+
+        {% if client_content %}
+
+        <h2 class="client-main-title">
+            {{ client_content[0] }}
+        </h2>
+
+        <p class="clients-subtext">
+            {{ client_content[1] }}
+        </p>
+
+        {% else %}
+
+        <h2 class="client-main-title">
+            Trusted by Clients
+        </h2>
+
+        <p class="clients-subtext">
+            We work with leading companies worldwide.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+    <!-- Client Logos -->
+    <div class="client-logo-box slide-right">
+
+        <div class="client-grid">
+
+            {% if clients %}
+
+                {% for client in clients %}
+
+                <a
+                href="{{ client[3] if client[3] else '#' }}"
+                target="_blank"
+                class="client-card">
+
+                    <div class="client-logo-shape">
+
+                        <img
+                        src="/{{ client[2] }}"
+                        alt="{{ client[1] }}">
+
+                    </div>
+
+                </a>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>No clients available.</p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= TESTIMONIALS ================= -->
+
+<!-- <section class="testimonial-section">
+
+    <div class="testimonial-wrapper">
+
+        <h2 class="testimonial-title">
+            What Our Clients Say
+        </h2>
+
+        <div class="scroll-wrapper">
+
+            <div class="scroll-left"></div>
+
+            <div class="scroll-right"></div>
+
+            <div class="testimonial-container" id="testimonialContainer">
+
+                {% if testimonials %}
+
+                    {% for testimonial in testimonials %}
+
+                    <div class="testimonial-card">
+
+                        <h4>{{ testimonial[1] }}</h4>
+
+                        <p>{{ testimonial[4] }}</p>
+
+                        <div class="client-name">
+                            - {{ testimonial[2] }}
+
+                            {% if testimonial[3] %}
+                                , {{ testimonial[3] }}
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="testimonial-card">
+
+                        <h4>No Testimonials Yet</h4>
+
+                        <p>
+                            Testimonials will appear here once they are added from the admin panel.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section> -->
+    
+    <!-- ================= FOOTER ================= -->
+<footer class="footer">
+      <div class="container footer-container">
+        <!-- Company Info -->
+        <div class="footer-box">
+          <h3>PCE</h3>
+          <p>
+            PCE Consulting and Engineers LLP provides optimized engineering,
+            automation, and technical consulting solutions.
+          </p>
+        </div>
+
+        <div class="footer-box">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/service">Services</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="footer-box">
+          <h4>Contact</h4>
+          <p>
+            📍 Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+          </p>
+          <p>✉ info@pceengineering.com</p>
+          <p>📞 +91-8693835656</p>
+          <p>Working Hours: Mon-Sat 9:00 AM - 6:00 PM</p>
+        </div>
+
+        <!-- Social Links -->
+        <div class="footer-box">
+          <h4>Follow Us</h4>
+          <div class="social-links">
+            <a
+              href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+              >in</a
+            >
+            <a href="https://www.youtube.com/@instpce3554">▶</a>
+            <a href="#">𝕏</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Footer -->
+      <div class="footer-bottom">
+        <p>© 2026 PCE Consulting and Engineers LLP. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>

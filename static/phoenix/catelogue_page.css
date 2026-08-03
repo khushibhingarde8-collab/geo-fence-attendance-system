@@ -1,0 +1,293 @@
+/* =============================
+   Phoenix Catalog Page Styles
+============================= */
+html,
+body {
+  overflow-x: hidden;
+}
+/* ===== CATALOG PAGE ===== */
+.catalog-page {
+  padding: 100px 8%;
+  background: #fbfbfd;
+  border-radius: 35px;
+
+  opacity: 0;
+  transform: translateY(80px);
+  transition: all 1s ease;
+}
+
+/* FIXED */
+.catalog-page.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== HEADER ===== */
+.catalog-header {
+  text-align: center;
+  margin-bottom: 60px;
+  color: #0b0a24;
+}
+
+.catalog-header h1 {
+  font-size: 38px;
+  margin-bottom: 20px;
+  font-family: "Helvetica", "Arial", sans-serif;
+}
+
+.catalog-header p {
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 750px;
+  margin: auto;
+  font-family: "Helvetica", "Arial", sans-serif;
+}
+
+/* ===== PDF GRID ===== */
+.pdf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+}
+
+/* ===== PDF WRAPPER ===== */
+.pdf-wrapper {
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+
+  transition: all 0.4s ease;
+}
+
+/* 🔥 HOVER EFFECT */
+.pdf-wrapper:hover {
+  transform: scale(1.03) translateY(-5px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== LEFT PDF ANIMATION ===== */
+.pdf-left {
+  opacity: 0;
+  transform: translateX(-150px);
+  transition: all 1s ease;
+}
+
+.pdf-left.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ===== RIGHT PDF ANIMATION ===== */
+.pdf-right {
+  opacity: 0;
+  transform: translateX(150px);
+  transition: all 1s ease;
+}
+
+.pdf-right.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ===== PDF VIEWER ===== */
+.pdf-viewer {
+  width: 100%;
+  height: 600px;
+  border: none;
+  border-radius: 10px;
+}
+
+/* ===== ACTION BUTTON ===== */
+.catalog-actions {
+  text-align: center;
+}
+
+.download-btn {
+  display: inline-block;
+  padding: 14px 30px;
+  background: linear-gradient(135deg, #ff8c00, #ff5e00);
+  background-size: 200% 200%;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 30px;
+  font-size: 16px;
+  transition: all 0.4s ease;
+}
+
+/* 🔥 BUTTON HOVER */
+.download-btn:hover {
+  background-position: right center;
+  transform: scale(1.1) translateY(-3px);
+  box-shadow: 0 10px 25px rgba(255, 94, 0, 0.6);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+  .pdf-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================= BACK BUTTON ================= */
+.back-btn-animated {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 30px 10%;
+  padding: 12px 28px;
+
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+
+  color: #fff;
+  background: linear-gradient(135deg, #ff8c00, #ff5e00);
+
+  border-radius: 40px;
+  position: relative;
+  overflow: hidden;
+
+  transition: all 0.4s ease;
+
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+/* HOVER */
+.back-btn-animated:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 12px 30px rgba(255, 94, 0, 0.6);
+}
+
+/* CLICK */
+.back-btn-animated:active {
+  transform: scale(0.95);
+}
+
+/* TEXT */
+.back-btn-animated .text {
+  position: relative;
+  z-index: 2;
+}
+
+/* ARROW ANIMATION */
+.back-btn-animated .arrow {
+  font-size: 18px;
+  transition: 0.4s;
+}
+
+.back-btn-animated:hover .arrow {
+  transform: translateX(-5px);
+}
+
+/* SHINE EFFECT */
+.back-btn-animated::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+
+  transition: 0.6s;
+}
+
+.back-btn-animated:hover::before {
+  left: 100%;
+}
+
+/* GLOW BORDER EFFECT */
+.back-btn-animated::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 40px;
+  background: linear-gradient(135deg, #ff8c00, #ff5e00);
+  filter: blur(12px);
+  opacity: 0;
+  transition: 0.4s;
+  z-index: 0;
+}
+
+.back-btn-animated:hover::after {
+  opacity: 0.6;
+}
+
+/* ENTRY ANIMATION */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* animation reduce in mobile*/
+@media (max-width: 600px) {
+  .pdf-left {
+    transform: translateY(40px); /* instead of X */
+  }
+
+  .pdf-right {
+    transform: translateY(40px);
+  }
+
+  .box:nth-child(1),
+  .box:nth-child(2),
+  .box:nth-child(3) {
+    transform: translateY(40px);
+  }
+}
+
+/* catalogue reduce size in mobile */
+@media (max-width: 600px) {
+  /* Reduce overall section padding */
+  .catalog-page {
+    padding: 50px 5%;
+    border-radius: 20px;
+  }
+
+  /* Reduce heading spacing */
+  .catalog-header {
+    margin-bottom: 25px;
+  }
+
+  .catalog-header h1 {
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+
+  .catalog-header p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Make PDF grid tighter */
+  .pdf-grid {
+    gap: 20px;
+  }
+
+  /* 🔥 MAIN FIX: reduce PDF height */
+  .pdf-viewer {
+    height: 300px; /* was 600px */
+  }
+
+  /* Reduce wrapper padding */
+  .pdf-wrapper {
+    padding: 10px;
+  }
+
+  /* Reduce button size */
+  .download-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}

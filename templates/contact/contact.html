@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCE</title>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+      
+    <link rel="stylesheet" href="{{ url_for('static', filename='contact/contact.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='headerfooter.css') }}">
+
+    <script src="{{ url_for('static', filename='contact/contact.js') }}" defer></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='contact/FAQ.css') }}">
+    
+     <script src="{{ url_for('static', filename='contact/security_c.js') }}" defer></script> 
+  </head>
+  <body>
+
+
+    <div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00AM to 6:00PM</span>
+        <span>📍 Mumbai, India</span>
+        <div class="email-section">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=info@pceengineering.com"
+            >✉ info@pceengineering.com</a
+          >
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=mk@pceengineering.com"
+            >✉ mk@pceengineering.com</a
+          >
+        </div>
+      </div>
+      <div class="top-right">
+        <a
+          href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+          class="social">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a
+          href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov"
+          class="social">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+ <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <img src="static/contact/images_contact/PCE_2.png" alt="PCE Logo" />
+        </div>
+
+        <!-- HAMBURGER ICON -->
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+
+        <!-- NAV LINKS -->
+        <div class="nav-links" id="nav-links">
+          <!-- CLOSE BUTTON -->
+          <button class="close-menu-btn" id="close-menu">Close Menu</button>
+
+          <a href="/" class="nav-item active">Home</a>
+
+          <!-- ABOUT DROPDOWN -->
+          <div class="about-menu nav-item">
+            <div class="mobile-dropdown-toggle">About</div>
+
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/project">Projects</a>
+            </div>
+          </div>
+
+          <a href="/client" class="nav-item">Clients</a>
+
+          <a href="/phoenix" class="nav-item">
+            Phoenix Contact
+          </a>
+
+          <a href="/contact" class="nav-item"> Contact </a>
+        </div>
+      </div>
+    </nav>
+
+
+
+    <section class="contact-hero">
+  <section class="contact-hero-full">
+  
+  
+</section>
+<section class="contact-section">
+  <div class="contact-container">
+
+    <!-- LEFT SIDE -->
+    <div class="contact-left-side">
+
+      <!-- ================= BLOCK 1 ================= -->
+      <div class="contact-left-block animate slide-left">
+
+        <div class="contact-left-block">
+
+          <h2 class="left-title">
+            Keep In Touch
+          </h2>
+
+          <p class="left-desc">
+            {{ contact_data.description }}
+          </p>
+
+          <div class="left-info">
+
+            <!-- Address -->
+            <div class="info-row">
+              <i class="fa-solid fa-location-dot"></i>
+              <div>
+                <h4>Our Address</h4>
+                <p>{{ contact_data.short_address }}</p>
+              </div>
+            </div>
+
+            <!-- Emails -->
+            <div class="info-row">
+              <i class="fa-solid fa-envelope"></i>
+              <div>
+                <h4>General Inquiries</h4>
+
+                <p>{{ contact_data.email1 }}</p>
+
+                {% if contact_data.email2 %}
+                <p>{{ contact_data.email2 }}</p>
+                {% endif %}
+
+              </div>
+            </div>
+
+            <!-- Phones -->
+            <div class="info-row">
+              <i class="fa-solid fa-phone"></i>
+              <div>
+                <h4>Call Us</h4>
+
+                <p>{{ contact_data.phone1 }}</p>
+
+                {% if contact_data.phone2 %}
+                <p>{{ contact_data.phone2 }}</p>
+                {% endif %}
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= BLOCK 2 ================= -->
+      <div class="office-hours-block animate slide-bottom">
+
+        <h3>Office Hours</h3>
+
+        <div class="hours-row">
+          <span>Monday - Friday</span>
+          <span>{{ contact_data.weekday_hours }}</span>
+        </div>
+
+        <div class="hours-row">
+          <span>Saturday</span>
+          <span>{{ contact_data.saturday_hours }}</span>
+        </div>
+
+        <div class="hours-row">
+          <span>Sunday</span>
+          <span class="closed">Closed</span>
+        </div>
+
+      </div>
+      <div class="office-social">
+
+    {% if social_links.facebook_link %}
+    <a href="{{ social_links.facebook_link }}"
+       target="_blank"
+       rel="noopener noreferrer">
+        <i class="fa-brands fa-facebook-f"></i>
+    </a>
+    {% endif %}
+
+    {% if social_links.twitter_link %}
+    <a href="{{ social_links.twitter_link }}"
+       target="_blank"
+       rel="noopener noreferrer">
+        <i class="fa-brands fa-x-twitter"></i>
+    </a>
+    {% endif %}
+
+    {% if social_links.whatsapp_link %}
+    <a href="{{ social_links.whatsapp_link }}"
+       target="_blank"
+       rel="noopener noreferrer">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+    {% endif %}
+
+    {% if social_links.linkedin_link %}
+    <a href="{{ social_links.linkedin_link }}"
+       target="_blank"
+       rel="noopener noreferrer">
+        <i class="fa-brands fa-linkedin-in"></i>
+    </a>
+    {% endif %}
+
+</div>
+
+</div>
+
+    <!-- RIGHT SIDE -->
+    <div class="contact-right-side animate slide-right">
+
+      <span class="quote-badge">
+        <i class="fa-solid fa-circle"></i> Request A Quote
+      </span>
+
+      <h2 class="right-title">
+        Send Us a <span>Message</span>
+      </h2>
+
+      <form class="contact-form"
+            id="contactForm"
+            action="/send-email"
+            method="POST"
+            enctype="multipart/form-data">
+
+        <div class="form-row">
+          <input type="text"
+                 name="name"
+                 placeholder="Your Name"
+                 required>
+
+          <input type="email"
+                 name="email"
+                 placeholder="Email Address"
+                 required>
+        </div>
+
+        <div class="form-row">
+          <input type="tel"
+                 name="phone"
+                 placeholder="Phone"
+                 required
+                 pattern="[7-9]{1}[0-9]{9}"
+                 maxlength="10">
+
+          <select name="inquiry_type" required>
+            <option value="">Select Inquiry Type</option>
+            <option>General Inquiry</option>
+            <option>Request Quote</option>
+            <option>Engineering Consultancy</option>
+            <option>Manpower Services</option>
+            <option>Training Programs</option>
+            <option>Project Collaboration</option>
+            <option>Technical Support</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <input type="file"
+                 name="attachment"
+                 accept=".pdf,.doc,.docx,.jpg,.png">
+        </div>
+
+        <textarea
+          name="message"
+          placeholder="Type Your Message"
+          required></textarea>
+
+        <button type="submit" class="send-btn">
+          Send Message
+        </button>
+
+        <p class="success-msg" style="display:none;">
+          ✅ Message sent successfully!
+        </p>
+
+      </form>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="map-section animate slide-bottom">
+    <div class="map-container">
+
+        <h2>Our Office Location</h2>
+
+        <div class="map-box">
+    {% if contact_data.map_link %}
+    <iframe
+        src="{{ contact_data.map_link }}"
+        width="100%"
+        height="100%"
+        style="border:0;"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin">
+    </iframe>
+    {% endif %}
+</div>
+
+    </div>
+</section>
+
+<section class="faq-section animate slide-bottom">
+  <div class="faq-container">
+
+    <!-- LEFT SIDE TITLE -->
+    <div class="faq-title">
+      <p class="faq-small">FAQ</p>
+      <h2>FREQUENTLY ASKED QUESTIONS</h2>
+      <a href="/FAQ" class="faq-view-more">View More +</a>
+    </div>
+
+    <!-- FAQ BOXES -->
+    <div class="faq-grid">
+
+      {% for faq in faqs %}
+
+      <div class="faq-item {% if loop.first %}active{% endif %} animate slide-bottom">
+
+        <div class="faq-question">
+          <span>{{ faq[2] }}</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+
+        <div class="faq-answer">
+          <p>
+            {{ faq[3] }}
+          </p>
+        </div>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+</section>
+
+
+    <footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Company -->
+        <div class="footer-box company-box">
+
+            <img src="static/home/logos/PCE_2.png" alt="PCE Logo" class="footer-logo">
+
+            <p>
+                PCE Consulting & Engineers LLP provides innovative engineering,
+                automation and industrial solutions with a commitment to quality,
+                safety and customer satisfaction.
+            </p>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-box">
+
+            <h3>Quick Links</h3>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/service">Services</a></li>
+                <li><a href="/project">Projects</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-box">
+
+            <h3>Contact Us</h3>
+
+            <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+            </p>
+
+            <p>
+                <i class="fa-solid fa-phone"></i>
+                +91-8693835656
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:info@pceengineering.com">
+                    info@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    projects@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    mk@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-clock"></i>
+                Mon - Sat | 9:00 AM - 6:00 PM
+            </p>
+
+        </div>
+
+        <!-- Social -->
+        <div class="footer-box">
+
+            <h3>Follow Us</h3>
+
+            <div class="footer-social">
+
+                <a href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+
+                <a href="https://www.youtube.com/@instpce3554" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 PCE Consulting & Engineers LLP. All Rights Reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+  </body>
+</html>

@@ -1,0 +1,185 @@
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: "Helvetica", "Arial", sans-serif;
+  background-color: #ffffff;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* ✅ Dynamic Expansion */
+  min-height: 100vh;
+
+  /* ✅ Prevent overflow issues */
+  box-sizing: border-box;
+}
+
+/* ================= AUTH CONTAINER ================= */
+
+.auth-container {
+  background: rgb(255, 255, 255);
+
+  padding: 40px;
+
+  /* ✅ Better desktop size */
+  width: 420px;
+  max-width: 95%;
+
+  border-radius: 10px;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border: 2px solid #ff5e00;
+
+  /* ✅ Dynamic expansion */
+  height: auto;
+  min-height: fit-content;
+
+  /* ✅ Safe scaling */
+  box-sizing: border-box;
+
+  overflow: visible;
+
+  transition: 0.3s ease;
+}
+/* ================= HEADING ================= */
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #0b0c2a;
+
+  /* ✅ Responsive Typography */
+  font-size: clamp(24px, 4vw, 32px);
+
+  word-wrap: break-word;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.auth-logo {
+  width: 90px; /* adjust size */
+  height: auto;
+  object-fit: contain;
+  display: inline-block;
+}
+
+/* ================= LABEL ================= */
+
+.auth-container label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+  color: #ff8c00;
+
+  /* ✅ Long labels safe */
+  word-wrap: break-word;
+}
+
+/* ================= INPUTS ================= */
+
+.auth-container input,
+.auth-container select {
+  width: 100%;
+
+  padding: 10px;
+  margin-top: 5px;
+
+  border: 1.5px solid #555;
+  border-radius: 5px;
+  outline: none;
+
+  /* ✅ Prevent width breaking */
+  box-sizing: border-box;
+
+  /* ✅ Responsive text */
+  font-size: 15px;
+
+  /* ✅ Smooth UI */
+  transition: 0.3s ease;
+}
+
+/* Focus Effect */
+.auth-container input:focus,
+.auth-container select:focus {
+  border-color: #ff5e00;
+  box-shadow: 0 0 8px rgba(255, 94, 0, 0.2);
+}
+
+/* ================= BUTTON ================= */
+
+.auth-container button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+
+  background-color: #0b0c2a;
+  color: white;
+
+  border: none;
+  border-radius: 5px;
+
+  cursor: pointer;
+  font-weight: bold;
+
+  transition: 0.3s ease;
+
+  /* ✅ Responsive button text */
+  font-size: 15px;
+
+  /* ✅ Prevent overflow */
+  box-sizing: border-box;
+}
+
+.auth-container button:hover {
+  background-color: #ff5e00;
+
+  /* ✅ Premium hover */
+  transform: translateY(-2px);
+}
+
+/* ================= PARAGRAPH ================= */
+
+.auth-container p {
+  text-align: center;
+  margin-top: 15px;
+
+  /* ✅ Dynamic text spacing */
+  line-height: 1.6;
+
+  /* ✅ Long text safe */
+  word-wrap: break-word;
+}
+
+/* ================= LINKS ================= */
+
+.auth-container a {
+  color: #0b0c2a;
+  font-weight: bold;
+  text-decoration: none;
+
+  transition: 0.3s ease;
+}
+
+.auth-container a:hover {
+  color: #ff5e00;
+}
+
+/* ================= MOBILE RESPONSIVE ================= */
+
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+  }
+
+  .auth-container {
+    width: 100%;
+    max-width: 100%;
+
+    padding: 28px 20px;
+    border-radius: 8px;
+  }
+}

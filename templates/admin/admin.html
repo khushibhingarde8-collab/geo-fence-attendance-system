@@ -1,0 +1,5671 @@
+<!DOCTYPE html>
+<body>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/static/admin/admin.css">  
+</head>
+
+<body>
+  <div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00 to 6:00</span>
+        <span>📍 Mumbai, India</span>
+        <span>✉ info@pceengineering.com</span>
+      </div>
+      <div class="top-right">
+        <a href="/logout">Logout</a>
+        <a href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all" class="social linkedin">in</a>
+        
+        <a href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov" class="social youtube">▶</a>
+      </div>
+    </div>
+
+    <nav class="navbar">
+  <div class="nav-container">    
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logos/PCE_2.png') }}">
+    </div>
+
+
+        <div class="menu-toggle" onclick="toggleSidebar()">
+    ☰
+</div>
+
+    <div class="nav-links" id="nav-links">
+
+      <!-- CLOSE BUTTON -->
+          <button class="close-menu-btn" id="close-menu">Close Menu</button>
+
+
+      <a href="/" class="nav-item">Home</a>
+      
+      <!-- ABOUT DROPDOWN -->
+          <div class="about-menu nav-item">
+            <div class="mobile-dropdown-toggle">About</div>
+
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/project">Projects</a>
+            </div>
+          </div>
+
+      <a href="/client" class="nav-item" >Client</a>
+
+      <a href="/phoenix" class="nav-item"> Phoenix Contact </a>
+
+      <a href="/contact" class="nav-item">Contact</a>
+
+      <!-- <div class="account nav-item">
+         <div class="mobile-dropdown-toggle">Account</div>
+
+            <div class="dropdown">
+              <a href="/login">Login</a>
+              <a href="/signup">Sign Up</a>
+            </div>
+      </div> -->
+    </div>
+  </div>
+</nav>
+
+
+
+
+<div class="admin-container">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <h2 class="logo">PCE ADMIN</h2>
+    <ul>
+      <li onclick="showSection('dashboard')">Dashboard</li>
+      <li onclick="showSection('clients')">Clients</li>
+      <li onclick="showSection('projects')">Projects</li>
+      <li onclick="showSection('employees')">Employees</li>
+      <li onclick="showSection('department-designation')">Department & Designation</li>
+      <li onclick="showSection('location-grade')">Location & Grade</li>
+      <li onclick="showSection('emplogin')">Employee Login</li>
+      <li onclick="showSection('leaves')">Manage Leaves</li>
+      <li onclick="showSection('tdscert')">Upload TDS</li> 
+      <li onclick="showSection('salary')">Salary</li>
+      <li onclick="showSection('attendance-report')">Attendance Report</li>
+        <!-- Website Dropdown -->
+  <li class="sidebar-dropdown">
+
+    <div class="dropdown-title" onclick="toggleSidebarDropdown('websiteMenu')">
+      Website ▼
+    </div>
+
+    <ul class="dropdown-menu" id="websiteMenu">
+
+      <li onclick="showSection('news')">
+        News
+      </li>
+
+      <li onclick="showSection('homepage')">
+        Homepage
+      </li>
+
+      <li onclick="showSection('gallery')">
+        Gallery
+      </li>
+
+      <li onclick="showSection('service')">
+          Services
+      </li>
+
+      <li onclick="showSection('website_clients')">
+          Website Clients
+      </li>
+
+      <li onclick="showSection('website-project-management')">
+          Projects
+      </li>
+
+      <li onclick="showSection('aboutHero')">
+        About Us
+      </li>
+
+      <!-- <li onclick="showSection('profile')">
+          Profile Page
+      </li> -->
+
+      <li onclick="showSection('contact')">
+          Contact Page
+      </li>
+
+      <li onclick="showSection('faq')">
+          FAQ Management
+      </li>
+
+      <li onclick="showSection('phoenix-admin')">
+        Phoenix Management</li>
+
+    </ul>
+
+  </li>
+      
+    </ul>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+
+    
+    <!-- DASHBOARD -->
+
+    <section id="dashboard" class="section active">
+
+      <div class="welcome-msg">
+        <h2>Welcome back, Admin!</h2>
+        <p>Manage your system from the dashboard.</p>
+
+        <div class="dashboard-date">
+        <br><span id="today-date"></span>
+        </div>
+      </div> 
+
+     
+
+      <h1>Admin Dashboard</h1>
+      <div class="dashboard-cards">
+
+      <div class="dash-card">
+      <h3>Clients</h3>
+      <span>{{ client_count }}</span>
+      </div>
+
+      <div class="dash-card">
+      <h3>Projects</h3>
+      <span>{{ project_count }}</span>
+      </div>
+
+      <div class="dash-card">
+      <h3>Employees</h3>
+      <span>{{ employee_count }}</span>
+      </div>
+
+      </div>
+    </section>
+    
+
+    <!-- CLIENTS -->
+    <section id="clients" class="section">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>Manage Clients</h1>
+      <a href="/export/clients" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+    </div>
+
+
+
+      {% with messages = get_flashed_messages(category_filter=["client_msg"]) %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert success">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form class="form-grid" method="POST" action="/save_client">
+        <input type="hidden" name="client_id" id="client_id">
+
+        <div class="form-group">
+            <label>Client Name</label>
+            <input type="text" name="client_name" id="client_name" maxlength="50" oninput="validateNameField('client_name')" required>
+            <span id="client_name-error" class="error-text"></span>
+        </div>
+      
+        <div class="form-group">
+            <label>Client Code</label>
+            <input type="text" name="client_code" id="client_code" maxlength="15" required>
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" id="email" oninput="validateEmailField('email')" required>
+            <span id="email-error" class="error-text"></span>
+        </div>
+        
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="text" name="phone" id="phone" maxlength="15" minlength="10" pattern="[0-9]{10}" oninput="validatePhoneField('phone')" required>
+            <span id="phone-error" class="error-text"></span>
+        </div>
+
+        <div class="form-group">
+            <label>GST Number</label>
+            <input type="text" name="gst_number" id="gst_number" maxlength="15" style="text-transform:uppercase">
+        </div>
+
+        <div class="form-group">
+            <label>PAN Number</label>
+            <input type="text" name="pan_number" id="client_pan_number" maxlength="10" style="text-transform:uppercase">
+        </div>
+
+        <div class="form-group">
+            <label>City</label>
+            <input type="text" name="city" id="city" maxlength="30" required>
+        </div>
+
+        <div class="form-group">
+            <label>State</label>
+            <input type="text" name="state" id="state" maxlength="30" required>
+        </div>
+
+        <div class="form-group">
+            <label>Country</label>
+            <input type="text" name="country" id="country" maxlength="30" required>
+        </div>
+  
+        <div class="btn-group full-width">
+            <button type="submit" name="action" value="INSERT" id="add-button" class="add-button">Add</button>
+            <button type="submit" name="action" value="UPDATE" id="update-btn" class="update-btn">Update</button>
+        </div>
+      </form>
+
+      <!-- <h2>Last 4 Clients</h2> -->
+    <div class="table-responsive">
+    <table class="admin-table">
+    <tr>
+<th>ID</th>
+<th>Name</th>
+<th>Code</th>
+<th>Email</th>
+<th>Phone</th>
+<th>GST Number</th>
+<th>PAN Number</th>
+<th>City</th>
+<th>Action</th>
+</tr>
+
+{% for client in clients %}
+<tr>
+<td>{{ client[0] }}</td>  <!-- client_id -->
+<td>{{ client[1] }}</td>  <!-- client_name -->
+<td>{{ client[2] }}</td>  <!-- client_code -->
+<td>{{ client[4] }}</td>  <!-- email -->
+<td>{{ client[5] }}</td>  <!-- phone -->
+<td>{{client[11] }}</td> <!-- GST -->
+<td>{{client[12] }}</td> <!-- PAN -->
+<td>{{ client[7] }}</td>  <!-- city -->
+
+
+<td>
+<form method="POST" action="/save_client" style="display:inline;">
+<input type="hidden" name="client_id" value="{{ client[0] }}">
+<input type="hidden" name="client_name" value="{{ client[1] }}">
+<input type="hidden" name="client_code" value="{{ client[2] }}">
+<input type="hidden" name="email" value="{{ client[4] }}">
+<input type="hidden" name="phone" value="{{ client[5] }}">
+<input type="hidden" name="gst_number" value="{{ client[11] }}">
+<input type="hidden" name="pan_number" value="{{ client[12] }}">
+<input type="hidden" name="city" value="{{ client[7] }}">
+<button type="button"
+    class="update-btn"
+    onclick="fillClientForm(
+    '{{ client[0] }}',
+    '{{ client[1] }}',
+    '{{ client[2] }}',
+    '{{ client[4] }}',
+    '{{ client[5] }}',
+    '{{ client[11] }}',
+    '{{ client[12] }}',
+    '{{ client[7] }}',
+    '{{ client[8] }}',
+    '{{ client[9] }}'
+    )">
+    Update
+</button>
+</form>
+
+<form method="POST" action="/save_client" style="display:inline;">
+<input type="hidden" name="client_id" value="{{ client[0] }}">
+<button name="action" value="DELETE" class="delete-btn"
+onclick="return confirm('Are you sure you want to delete this client?')">
+Delete
+</button>
+</form>
+
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="section">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>Manage Projects</h1>
+      <a href="/export/projects" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+    </div>
+
+
+      {% with messages = get_flashed_messages(category_filter=["project_msg"]) %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert success">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+
+      <form method="POST" action="/save_project">
+
+    <!-- <label>Project ID</label>
+    <input type="text" name="project_id" > -->
+    <input type="hidden" name="project_id" id="project_id">
+
+    <label>Project Name</label>
+    <input type="text" name="project_name" id="project_name" maxlength="50" required>
+
+    <label>Client ID</label>
+    <input type="text" name="client_id" id="project_client_id" required>
+
+    <label>Start Date</label>
+    <input type="date" name="start_date" id="start_date" required>
+
+    <label>End Date</label>
+    <input type="date" name="end_date" id="end_date" required>
+
+    <label>Status</label>
+    <select name="project_status" id="project_status">
+        <option value="">Select Status</option>
+        <option value="ongoing">Ongoing</option>
+        <option value="completed">Completed</option>
+        <option value="on_hold">On Hold</option>
+    </select>
+
+  <div class="btn-group">
+    <button type="submit" name="action" value="INSERT" id="add-button" class="add-button">Add</button>
+    <button type="submit" name="action" value="UPDATE" id="update-btn" class="update-btn">Update</button>
+    <!-- <button type="submit" name="action" value="DELETE" class="delete-btn">Delete</button> -->
+  </div>
+
+</form>
+
+  
+<!-- <h2>Last 4 Projects</h2> -->
+ <div class="table-responsive">
+<table class="admin-table">
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Client ID</th>
+<th>Start Date</th>
+<th>End Date</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+{% for project in projects %}
+<tr>
+<td>{{ project[0] }}</td>
+<td>{{ project[1] }}</td>
+<td>{{ project[2] }}</td>
+<td>{{ project[3] }}</td>
+<td>{{ project[4] }}</td>
+<td>{{ project[5] }}</td>
+<td>
+
+<form method="POST" action="/save_project" style="display:inline;">
+<input type="hidden" name="project_id" value="{{ project[0] }}">
+<input type="hidden" name="project_name" value="{{ project[1] }}">
+<input type="hidden" name="client_id" value="{{ project[2] }}">
+<input type="hidden" name="project_status" value="{{ project[5] }}">
+<button type="button"
+    class="update-btn"
+    id="update-btn"
+    onclick="fillProjectForm(
+        '{{ project[0] }}',
+        '{{ project[1] }}',
+        '{{ project[2] }}',
+        '{{ project[3] }}',
+        '{{ project[4] }}',
+        '{{ project[5] }}'
+    )">
+    Update
+</button>
+</form>
+
+<form method="POST" action="/save_project" style="display:inline;">
+<input type="hidden" name="project_id" value="{{ project[0] }}">
+<button 
+    onclick="return confirm('Are you sure you want to delete this project?')" 
+    name="action" 
+    value="DELETE" 
+    class="delete-btn">
+    Delete
+</button>
+</form>
+
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+    </section>
+
+
+
+
+    <!-- EMPLOYEES -->
+    <section id="employees" class="section">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>Manage Employees</h1>
+      <a href="/export/employees" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+    </div>
+
+
+      {% with messages = get_flashed_messages(category_filter=["employee_msg"]) %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert success">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+
+      <form class="form-grid" method="POST" action="/save_employee">
+          
+          <input type="hidden" name="employee_id" id="employee_id">
+              
+          <div class="form-group">
+              <label>Employee Code</label>
+              <input type="text" name="employee_code" id="employee_code" maxlength="15" onkeyup="checkEmployeeCode()" required>
+          </div>
+              
+          <div class="form-group">
+              <label>First Name</label>
+              <input type="text" name="first_name" id="first_name" maxlength="50" oninput="validateNameField('first_name')" required>
+              <span id="first_name-error" class="error-text"></span>
+          </div>
+              
+          <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" name="last_name" id="last_name" maxlength="50" oninput="validateNameField('last_name')" required>
+              <span id="last_name-error" class="error-text"></span>
+          </div>
+              
+          <div class="form-group">
+              <label>Date of Birth</label>
+              <input type="date" name="dob" id="dob" required>
+          </div>
+              
+          <div class="form-group">
+              <label>Date of Joining</label>
+              <input type="date" name="doj" id="doj" required>
+          </div>
+              
+          <div class="form-group">
+              <label>Project</label>
+              <select name="project_id" id="project_id_emp" required>
+                  <option value="">Select Project</option>
+                  {% for project in projects %}
+                      <option value="{{ project[0] }}">{{ project[1] }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+              
+          <div class="form-group">
+              <label>Phone</label>
+              <input type="text" name="phone" id="phone_emp" maxlength="10" minlength="10" pattern="[0-9]{10}" oninput="validatePhoneField('phone_emp')" required>
+              <span id="phone_emp-error" class="error-text"></span>
+          </div>
+              
+          <div class="form-group">
+              <label>Aadhar Number</label>
+              <input type="text" name="aadhar_number" id="aadhar_number" maxlength="12" minlength="12" pattern="[0-9]{12}" required>
+          </div>
+              
+          <div class="form-group">
+              <label>PAN Number</label>
+              <input type="text" name="pan_number" id="pan_number" maxlength="10" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" required>
+          </div>
+    
+          <div class="form-group">
+              <label>Personal Email</label>
+              <input type="email" name="email" id="email_emp" oninput="validateEmailField('email_emp')" required>
+              <span id="email_emp-error" class="error-text"></span>
+          </div>
+    
+          <div class="form-group">
+              <label>Company Email</label>
+              <input type="email" name="comp_mail" id="comp_mail" oninput="validateEmailField('comp_mail')" required>
+              <span id="comp_mail-error" class="error-text"></span>
+          </div>
+    
+          <div class="form-group">
+              <label>Gender</label>
+              <div class="gender-group">
+                  <label><input type="radio" name="gender" value="Male"> Male</label>
+                  <label><input type="radio" name="gender" value="Female"> Female</label>
+                  <label><input type="radio" name="gender" value="Other"> Other</label>
+              </div>
+          </div>
+    
+          <div class="form-group">
+              <label>Department</label>
+              <select name="department_id" required>
+                  {% for d in departments %}
+                    <option value="{{ d[0] }}">{{ d[1] }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+    
+          <div class="form-group">
+              <label>Designation</label>
+              <select name="designation_id" required>
+                  {% for ds in designations %}
+                    <option value="{{ ds[0] }}">{{ ds[1] }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+          
+          <div class="form-group">
+              <label>Reporting Manager</label>
+              <select name="reporting_manager_id" id="reporting_manager_id">
+                  <option value="">Select Reporting Manager</option>
+                  {% for manager in managers %}
+                      <option value="{{ manager[0] }}">{{ manager[1] }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+    
+          <div class="form-group">
+              <label>Location</label>
+              <select name="location_id" id="location_id" required>
+                  <option value="">Select Location</option>
+                  {% for loc in locations %}
+                      <option value="{{ loc[0] }}">{{ loc[1] }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+    
+          <div class="form-group">
+              <label>Grade</label>
+              <select name="grade_id" id="grade_id" required>
+                  <option value="">Select Grade</option>
+                  {% for g in grades %}
+                      <option value="{{ g[0] }}">{{ g[1] }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+    
+          <div class="btn-group full-width">
+              <button type="submit" name="action" value="INSERT" class="add-button">Add</button>
+              <button type="submit" name="action" value="UPDATE" class="update-btn">Update</button> 
+          </div>
+        </form>
+
+    
+<!-- <h2>Last 4 Employees</h2> -->
+ <div class="table-responsive">
+<table class="admin-table">
+<tr>
+  <th>ID</th>
+  <th>Code</th>
+  <th>Name</th>
+  <th>DOB</th>
+  <th>DOJ</th>
+  <th>Phone</th>
+  <th>Aadhar</th>
+  <th>PAN</th>
+  <th>Email</th>
+  <th>Company Email</th>
+  <th>Reporting To</th>
+  <th>Action</th>
+</tr>
+
+{% for emp in employees %}
+<tr>
+<td>{{ emp[0] }}</td> <!-- ID -->
+<td>{{ emp[1] }}</td> <!-- Code -->
+<td>{{ emp[2] }} {{ emp[3] }}</td> <!-- Name -->
+
+<td>{{ emp[4] }}</td> <!-- DOB -->
+<td>{{ emp[5] }}</td> <!-- DOJ -->
+
+<!-- <td>{{ emp[6] }}</td> Project -->
+
+<td>{{ emp[6] }}</td> <!-- Phone -->
+<td>{{ emp[7] }}</td> <!-- Aadhar -->
+<td>{{ emp[8] }}</td> <!-- PAN -->
+<td>{{ emp[9] }}</td> <!-- email -->
+<td>{{ emp[10] }}</td> <!-- comp_mail -->
+<td>{{ emp[13] or '-' }}</td> <!-- reporting to-->
+
+<form method="POST" action="/save_employee" style="display:inline;">
+<input type="hidden" name="employee_id" value="{{ emp[0] }}">
+<input type="hidden" name="employee_code" value="{{ emp[1] }}">
+<input type="hidden" name="first_name" value="{{ emp[2] }}">
+<input type="hidden" name="last_name" value="{{ emp[3] }}">
+<input type="hidden" name="dob" value="{{ emp[4] }}">
+<input type="hidden" name="doj" value="{{ emp[5] }}">
+<!-- <input type="hidden" name="project_id" value="{{ emp[6] }}"> -->
+<input type="hidden" name="phone" value="{{ emp[6] }}">
+<input type="hidden" name="aadhar_number" value="{{ emp[7] }}">
+<input type="hidden" name="pan_number" value="{{ emp[8] }}">
+<input type="hidden" name="email" value="{{ emp[9] }}">
+<input type="hidden" name="comp_mail" value="{{ emp[10] }}">
+<input type="hidden" name="reporting_manager_id" value="{{ emp[12] }}">
+
+
+
+
+<td>
+<button type="button"
+class="update-btn"
+onclick="fillEmployeeForm(
+'{{ emp[0] }}',
+'{{ emp[1] }}',
+'{{ emp[2] }}',
+'{{ emp[3] }}',
+'{{ emp[4] }}',
+'{{ emp[5] }}',
+'{{ emp[6] }}',
+'{{ emp[7] }}',
+'{{ emp[8] }}',
+'{{ emp[9] }}',
+'{{ emp[10] }}',
+'{{ emp[11] }}',
+'{{ emp[12] }}',
+'{{ emp[14] }}',
+'{{ emp[15] }}',
+'{{ emp[16] }}'
+)">
+Update
+</button>
+</form>
+
+
+<form method="POST" action="/save_employee" style="display:inline;">
+<input type="hidden" name="employee_id" value="{{ emp[0] }}">
+<button 
+    onclick="return confirm('Are you sure you want to delete this employee?')" 
+    name="action" 
+    value="DELETE" 
+    class="delete-btn">
+    Delete
+</button>
+</form>
+
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+    </section>
+
+
+
+  <section id="department-designation" class="section">
+  <h1>Add Department & Designation</h1>
+
+  {% with messages = get_flashed_messages(category_filter=["dept_desig_msg"]) %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert success">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- TAB BUTTONS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="openTab(event, 'departmentTab')">Department</button>
+    <button class="tab-btn" onclick="openTab(event, 'designationTab')">Designation</button>
+  </div>
+
+  <!-- ===== DEPARTMENT TAB ===== -->
+  <div id="departmentTab" class="tab-content active">
+   
+    <h2>Department</h2> <br>
+    <a href="/export/departments" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+    <br><br>
+    <form method="POST" action="/save_department">
+      <input type="hidden" name="department_id" id="department_id">
+
+      <label>Department Name</label>
+      <input type="text" name="department_name" id="department_name" required>
+
+      <div class="btn-group">
+        <button type="submit" name="action" value="INSERT" class="add-button">Add</button>
+        <button type="submit" name="action" value="UPDATE" class="update-btn">Update</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+    <table class="admin-table">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Action</th>
+      </tr>
+
+      {% for d in departments %}
+      <tr>
+        <td>{{ d[0] }}</td>
+        <td>{{ d[1] }}</td>
+        <td>
+          <button type="button" class="update-btn"
+          onclick="fillDepartmentForm('{{ d[0] }}','{{ d[1] }}')">
+          Update
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+  </div>
+
+    </div>
+
+  <!-- ===== DESIGNATION TAB ===== -->
+  <div id="designationTab" class="tab-content">
+   
+    <h2>Designation</h2>
+    <br>
+     <a href="/export/designations" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+<br><br>
+    <form method="POST" action="/save_designation">
+      <input type="hidden" name="designation_id" id="designation_id">
+
+      <label>Designation Name</label>
+      <input type="text" name="designation_name" id="designation_name" required>
+
+      <div class="btn-group">
+        <button type="submit" name="action" value="INSERT" class="add-button">Add</button>
+        <button type="submit" name="action" value="UPDATE" class="update-btn">Update</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+    <table class="admin-table">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Action</th>
+      </tr>
+
+      {% for ds in designations %}
+      <tr>
+        <td>{{ ds[0] }}</td>
+        <td>{{ ds[1] }}</td>
+        <td>
+          <button type="button" class="update-btn"
+          onclick="fillDesignationForm('{{ ds[0] }}','{{ ds[1] }}')">
+          Update
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    </div>
+
+  </div>
+</section>
+
+
+
+<!-- LOCATION & GRADE -->
+<section id="location-grade" class="section">
+
+  <h1>Add Location & Grade</h1>
+
+  {% with messages = get_flashed_messages(category_filter=["location_grade_msg"]) %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert success">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- TAB BUTTONS -->
+  <div class="tabs">
+    <button class="tab-btn active"
+      onclick="openLocationGradeTab(event, 'locationTab')">
+      Location
+    </button>
+
+    <button class="tab-btn"
+      onclick="openLocationGradeTab(event, 'gradeTab')">
+      Grade
+    </button>
+  </div>
+
+  <!-- ================= LOCATION TAB ================= -->
+
+  <div id="locationTab" class="tab-content active">
+
+    <h2>Location</h2><br>
+    <a href="/export/locations" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+    <br><br>
+    <form class="form-grid" method="POST" action="/save_location">
+
+      <input type="hidden" name="location_id" id="location_id">
+
+      <div class="form-group">
+        <label>Location Name</label>
+        <input type="text" name="location_name" id="location_name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Country</label>
+        <input type="text" name="country" id="location_country" required>
+      </div>
+
+      <div class="form-group">
+        <label>State</label>
+        <input type="text" name="state" id="location_state" required>
+      </div>
+
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" name="city" id="location_city" required>
+      </div>
+
+      <div class="form-group">
+        <label>Latitude</label>
+        <input type="text" name="latitude" id="latitude" required>
+      </div>
+
+      <div class="form-group">
+        <label>Longitude</label>
+        <input type="text" name="longitude" id="longitude" required>
+      </div>
+
+      <div class="form-group full-width">
+        <label>Radius (Meters)</label>
+        <input type="text" name="radius" id="radius" required>
+      </div>
+
+      <div class="btn-group full-width">
+        <button type="submit" name="action" value="INSERT" class="add-button">Add</button>
+        <button type="submit" name="action" value="UPDATE" class="update-btn">Update</button>
+      </div>
+
+    </form>
+
+    <div class="table-responsive">
+    <table class="admin-table">
+      <tr>
+        <th>ID</th>
+        <th>Location</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Country</th>
+        <th>Action</th>
+      </tr>
+
+      {% for l in locations %}
+      <tr>
+
+        <td>{{ l[0] }}</td>
+        <td>{{ l[1] }}</td>
+        <td>{{ l[4] }}</td>
+        <td>{{ l[3] }}</td>
+        <td>{{ l[2] }}</td>
+
+        <td>
+
+          <button type="button"
+                  class="update-btn"
+
+          onclick="fillLocationForm(
+            '{{ l[0] }}',
+            '{{ l[1] }}',
+            '{{ l[2] }}',
+            '{{ l[3] }}',
+            '{{ l[4] }}',
+            '{{ l[5] }}',
+            '{{ l[6] }}',
+            '{{ l[7] }}'
+          )">
+
+          Update
+          </button>
+
+        </td>
+
+      </tr>
+      {% endfor %}
+
+    </table>
+    </div>
+
+  </div>
+
+  <!-- ================= GRADE TAB ================= -->
+
+  <div id="gradeTab" class="tab-content">
+
+    <h2>Grade</h2><br>
+     <a href="/export/grades" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+    <br><br>
+
+    <form class="form-grid" method="POST" action="/save_grade">
+
+      <input type="hidden" name="grade_id" id="grade_id">
+
+      <div class="form-group">
+        <label>Grade Name</label>
+        <input type="text" name="grade_name" id="grade_name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Grade Level</label>
+        <input type="number" name="grade_level" id="grade_level" required>
+      </div>
+
+      <div class="btn-group full-width">
+        <button type="submit" name="action" value="INSERT" class="add-button">Add</button>
+        <button type="submit" name="action" value="UPDATE" class="update-btn">Update</button>
+      </div>
+
+    </form>
+
+    <div class="table-responsive">
+    <table class="admin-table">
+
+      <tr>
+        <th>ID</th>
+        <th>Grade Name</th>
+        <th>Level</th>
+        <th>Action</th>
+      </tr>
+
+      {% for g in grades %}
+      <tr>
+
+        <td>{{ g[0] }}</td>
+        <td>{{ g[1] }}</td>
+        <td>{{ g[2] }}</td>
+
+        <td>
+
+          <button type="button"
+                  class="update-btn"
+
+          onclick="fillGradeForm(
+            '{{ g[0] }}',
+            '{{ g[1] }}',
+            '{{ g[2] }}'
+          )">
+
+          Update
+          </button>
+
+        </td>
+
+      </tr>
+      {% endfor %}
+
+    </table>
+    </div>
+        
+  </div>
+
+</section>
+
+
+
+
+
+     <!-- Add employee login -->
+    <section id="emplogin" class="section">
+      <h1>Manage Logins</h1>
+
+      {% with messages = get_flashed_messages(category_filter=["login_msg"]) %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert success">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- TAB BUTTONS -->
+      <div class="tabs">
+        <button class="tab-btn login-tab-btn active" onclick="openLoginTab(event, 'employeeLoginTab')">
+          Employee Login
+        </button>
+        <button class="tab-btn login-tab-btn" onclick="openLoginTab(event, 'adminLoginTab')">
+          Admin Login
+        </button>
+      </div>
+
+      <!-- ===== EMPLOYEE LOGIN TAB ===== -->
+      <div id="employeeLoginTab" class="login-tab-content active">
+        <h2 style="margin-bottom:20px;">Create Employee Login</h2>
+         <a href="/export/employee-logins" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+<br><br>
+
+        <form method="POST" action="/add_employee_login">
+            <label>Employee Email</label>
+            <input type="email" name="email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <label>Role</label>
+            <select name="role_id">
+                <option value="2">Employee</option>
+            </select>
+          
+            <button type="submit" class="login-btn">Create Login</button>
+        </form>
+
+        <br><hr><br>
+        <h2>Employee Logins</h2>
+
+        <table class="admin-table">
+    <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for login in employee_logins %}
+    <tr>
+        <td>{{ login[0] }}</td>
+        <td>{{ login[1] }}</td>
+        <td>{{ "Active" if login[2] else "Inactive" }}</td>
+        <td>
+            <a href="/delete_login/{{ login[0] }}"
+               class="delete-btn"
+               onclick="return confirm('Delete this employee login?')">
+                Delete
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+        </table>
+      </div>
+
+      <!-- ===== ADMIN LOGIN TAB ===== -->
+      <div id="adminLoginTab" class="login-tab-content" style="display:none;">
+        <h2 style="margin-bottom:20px;">Create Admin Login</h2>
+         <a href="/export/admin-logins" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+<br><br>
+        <form method="POST" action="/add_admin_login">
+            <label>Admin Email</label>
+            <input type="email" name="email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <label>Role</label>
+            <select name="role_id">
+                <option value="1">Admin</option>
+            </select>
+
+            <button type="submit" class="login-btn">Create Admin Login</button>
+        </form>
+
+        <br><hr><br>
+
+<h2>Admin Logins</h2>
+
+<table class="admin-table">
+    <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for login in admin_logins %}
+    <tr>
+        <td>{{ login[0] }}</td>
+        <td>{{ login[1] }}</td>
+        <td>{{ "Active" if login[2] else "Inactive" }}</td>
+        <td>
+            <a href="/delete_login/{{ login[0] }}"
+               class="delete-btn"
+               onclick="return confirm('Delete this admin login?')">
+                Delete
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+      </div>
+
+    </section>
+
+
+    <!-- MANAGE LEAVES -->
+    <section id="leaves" class="section">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>Manage Employee Leaves</h1>
+      <a href="/export/leaves" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+    </div>
+
+
+      {% with messages = get_flashed_messages(category_filter=["leave_msg"]) %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert success">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      <table>
+        <tr>
+          <th>Employee</th>
+          <th>Dates</th>
+          <th>Reason</th>
+          <th>Action</th>
+        </tr>
+        {% for leave in pending_leaves %}
+        <tr>
+          <td>{{ leave[1] }} {{ leave[2] }}</td>
+          <td>{{ leave[3] }} to {{ leave[4] }}</td>
+          <td>{{ leave[5] }}</td>
+          <td>
+            <a href="/update_leave/{{ leave[0] }}/Approved" class="add-button" style="padding:5px 10px; text-decoration:none; border-radius:5px;">Approve</a>
+            <a href="/update_leave/{{ leave[0] }}/Rejected" class="delete-btn" style="padding:5px 10px; text-decoration:none; border-radius:5px;">Reject</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% if not pending_leaves %}
+        <p>No pending leave requests.</p>
+      {% endif %}
+    </section>
+
+
+
+    <!-- TDS -->
+    <section id="tdscert" class="section">
+
+      <h1>Upload Quarterly TDS ZIP</h1>
+       <a href="/export/tds" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+<br><br>
+        
+      {% with messages = get_flashed_messages(category_filter=["tds_mesg"]) %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert success">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form action="/upload_tds_zip"
+            method="POST"
+            enctype="multipart/form-data">
+          
+          <label>Select ZIP File</label>
+          
+          <input type="file"
+                 name="zip_file"
+                 accept=".zip"
+                 required>
+          <br><br>
+          <button type="submit"
+                  class="update-btn">
+              Upload ZIP
+          </button>
+        
+      </form>
+
+      <br><hr><br>
+
+  <!-- LAST 4 UPLOADED FILES -->
+ 
+
+  <table class="tds-table" border="1" width="100%">
+      <tr>
+          <th>ID</th>
+          <th>File Name</th>
+          <th>Uploaded On</th>
+          <th>Action</th>
+      </tr>
+
+      {% for file in recent_tds %}
+      <tr>
+          <td>{{ file[0] }}</td>
+          <td>{{ file[1] }}</td>
+          <td>{{ file[2] }}</td>
+
+          <td>
+            <form action="/delete_tds_zip/{{ file[0] }}" method="POST">
+        <button type="submit"
+                class="delete-btn"
+                onclick="return confirm('Delete this ZIP record?')">
+            Delete
+        </button>
+    </form>
+        </td>
+      </tr>
+      {% endfor %}
+  </table>
+      
+  </section>
+
+
+
+    <!-- ATTENDANCE REPORT -->
+<section id="attendance-report" class="section">
+
+    <h1>Monthly Attendance Report</h1>
+
+    <div class="top-card">
+
+        <div class="controls">
+
+            <div class="field">
+                <label>Month</label>
+                <select id="month">
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Year</label>
+                <input type="number" id="year">
+            </div>
+
+            <div class="field">
+                <label>Employee ID</label>
+                <input type="number" id="emp_id">
+            </div>
+
+            <div class="field">
+                <label>Department</label>
+                <select id="department">
+                    <option value="">All Departments</option>
+                </select>
+            </div>
+            <br>
+            <button class="btn generate" onclick="loadReport()">
+                Generate Report
+            </button>
+
+            <button class="btn pdf" onclick="downloadPDF()">
+                Download PDF
+            </button>
+
+        </div>
+        <br>
+        <div class="legend">
+            <b>Status Legend:</b><br>
+
+            P = Present |
+            A = Absent |
+            HD = Half Day |
+            H = Holiday |
+            L = Approved Leave |
+            WO = Weekly Off
+        </div>
+
+    </div>
+
+    <div class="report-card">
+        <div class="table-container">
+            <table id="reportTable"></table>
+        </div>
+    </div>
+
+</section>
+
+
+    <!-- NEWS -->
+   
+  <section id="news" class="section">
+
+      <div class="card">
+
+    <div class="card-header">
+        <h2>News Management</h2><br>
+         <a href="/export/news" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+<br><br>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" action="/save_news">
+
+            <input type="hidden" name="news_id" id="news_id">
+
+            <label>Title</label>
+            <input type="text" name="title" id="news_title" class="form-control" required>
+
+            <label>Description</label>
+            <textarea name="description" id="news_description" class="form-control" required></textarea>
+
+            <label>Date</label>
+            <input type="date" name="news_date" id="news_date" class="form-control" required>
+
+            <label>External Link</label>
+            <input type="url" name="external_link" id="external_link" class="form-control">
+
+            <br>
+
+            <button type="submit" name="action" value="INSERT" class="add-button">
+                Add News
+            </button>
+
+            <button type="submit" name="action" value="UPDATE" class="update-btn">
+                Update News
+            </button>
+
+        </form>
+
+        <br>
+
+        <table border="1" width="100%">
+
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Link</th>
+                <th>Action</th>
+            </tr>
+
+            {% for news in news_list %}
+
+            <tr>
+                <td>{{ news[0] }}</td>
+                <td>{{ news[1] }}</td>
+                <td>{{ news[2] }}</td>
+                <td>{{ news[3] }}</td>
+
+                <td>
+                    {% if news[4] %}
+                    <a href="{{ news[4] }}" target="_blank">Open Link</a>
+                    {% else %}
+                    No Link
+                    {% endif %}
+                </td>
+
+                <td>
+
+                    <button type="button"
+                        class="update-btn"
+                        onclick="fillNews(
+                            '{{ news[0] }}',
+                            '{{ news[1] }}',
+                            '{{ news[2] }}',
+                            '{{ news[3] }}',
+                            '{{ news[4] }}'
+                        )">
+                        Edit
+                    </button>
+
+                    <form method="POST" action="/save_news" style="display:inline;">
+                        <input type="hidden" name="news_id" value="{{ news[0] }}">
+
+                        <button type="submit"
+                            name="action"
+                            value="DELETE"
+                            class="delete-btn"
+                            onclick="return confirm('Delete news?')">
+                            Delete
+                        </button>
+                    </form>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+  </div>
+
+  </section>
+
+
+  <!--- home -->
+
+<section id="homepage" class="section active">
+<div class="card">
+
+    <div class="card-body">.
+
+        <h3>Our Purpose</h3><br>
+         <a href="/export/home-purpose" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+<br>
+
+        <div class="purpose-container">
+
+            {% for purpose in purposes %}
+
+            <div class="purpose-card">
+
+                <form action="/save_home_purpose" method="POST">
+
+                    <input type="hidden" name="id" value="{{ purpose[0] }}">
+
+                    <label><b>{{ purpose[1] }}</b></label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        value="{{ purpose[2] }}"
+                        class="form-control">
+
+                    <textarea
+                        name="description"
+                        rows="8"
+                        class="form-control">{{ purpose[3] }}</textarea>
+
+                    <button
+                        type="submit"
+                        class="update-btn">
+                        Update
+                    </button>
+
+                </form>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+</div>
+
+<h1 class="section-divider">
+    Achievements Management
+</h1>
+<div class="card">
+
+    
+
+    <div class="card-body">
+
+        <div class="achievement-grid">
+
+            <!-- Projects -->
+            <div class="achievement-card">
+
+                <h3>Projects Completed</h3>
+
+                <input
+                    type="number"
+                    value="{{ project_count }}"
+                    readonly
+                    class="form-control">
+
+                <small>Auto calculated from Projects module</small>
+
+            </div>
+
+            <!-- Clients -->
+            <div class="achievement-card">
+
+                <h3>Industry Clients</h3>
+
+                <input
+                    type="number"
+                    value="{{ client_count }}"
+                    readonly
+                    class="form-control">
+
+                <small>Auto calculated from Clients module</small>
+
+            </div>
+
+            <!-- Experience -->
+            <div class="achievement-card">
+
+            <h3>Years Experience</h3>
+
+                <input
+                    type="number"
+                    value="{{ years_experience }}"
+                    readonly
+                    class="form-control">
+
+                <small>Calculated automatically</small>
+
+            </div>
+
+            <!-- Engineers -->
+            <div class="achievement-card">
+
+                <form action="/save_engineers_trained" method="POST">
+
+                    <h3>Engineers Trained</h3>
+
+                    <input
+                        type="number"
+                        name="engineers_trained"
+                        value="{{ engineers_trained }}"
+                        class="form-control"
+                        required>
+
+                    <button
+                        type="submit"
+                        class="update-btn">
+                        Update
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="card" style="margin-top:30px;">
+
+    <div class="card-header">
+        <h2>Journey Management</h2><br>
+         <a href="/export/journey" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+<br><br>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" action="/save_journey">
+
+            <input
+                type="hidden"
+                name="journey_id"
+                id="journey_id">
+
+            <label>Year</label>
+
+            <input
+                type="text"
+                name="year"
+                id="journey_year"
+                class="form-control"
+                required>
+
+            <label>Title</label>
+
+            <input
+                type="text"
+                name="title"
+                id="journey_title"
+                class="form-control"
+                required>
+
+            <label>Description</label>
+
+            <textarea
+                name="description"
+                id="journey_description"
+                rows="5"
+                class="form-control"
+                required></textarea>
+
+            <br>
+
+            <div class="btn-group">
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="INSERT"
+                    class="add-button">
+                    Add
+                </button>
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="UPDATE"
+                    class="update-btn">
+                    Update
+                </button>
+
+            </div>
+
+        </form>
+
+        <br>
+
+        <table border="1" width="100%">
+
+            <tr>
+                <th>ID</th>
+                <th>Year</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+
+            {% for journey in journeys %}
+
+            <tr>
+
+                <td>{{ journey[0] }}</td>
+                <td>{{ journey[1] }}</td>
+                <td>{{ journey[2] }}</td>
+                <td>{{ journey[3] }}</td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="update-btn"
+                        onclick="fillJourney(
+                          '{{ journey[0] }}',
+                          '{{ journey[1] }}',
+                          '{{ journey[2] }}',
+                          '{{ journey[3] }}'
+                      )">
+                        Edit
+                    </button>
+
+                    <form
+                        method="POST"
+                        action="/save_journey"
+                        style="display:inline;">
+
+                        <input
+                            type="hidden"
+                            name="journey_id"
+                            value="{{ journey[0] }}">
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="DELETE"
+                            class="delete-btn"
+                            onclick="return confirm('Delete this journey?')">
+                            Delete
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+</div>
+<div class="card" style="margin-top:30px;">
+
+    <div class="card-header">
+        <h2>Scope Of Business Management</h2><br>
+         <a href="/export/business-scope" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+<br><br>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" action="/save_business_scope">
+
+            <input
+                type="hidden"
+                name="scope_id"
+                id="scope_id">
+
+            <label>Title</label>
+
+            <input
+                type="text"
+                name="title"
+                id="scope_title"
+                class="form-control"
+                required>
+
+            <label>Description</label>
+
+            <textarea
+                name="description"
+                id="scope_description"
+                rows="6"
+                class="form-control"
+                required></textarea>
+
+            <br>
+
+            <div class="btn-group">
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="INSERT"
+                    class="add-button">
+                    Add
+                </button>
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="UPDATE"
+                    class="update-btn">
+                    Update
+                </button>
+
+            </div>
+
+        </form>
+
+        <br>
+
+        <table border="1" width="100%">
+
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+
+            {% for scope in business_scopes %}
+
+            <tr>
+
+                <td>{{ scope[0] }}</td>
+                <td>{{ scope[1] }}</td>
+                <td>{{ scope[2][:100] }}...</td>
+
+                <td>
+
+                    <button
+    type="button"
+    class="update-btn"
+    onclick="fillScope(
+        '{{ scope[0]|tojson }}',
+        '{{ scope[1]|tojson }}',
+        '{{ scope[2]|tojson }}'
+    )">
+    Edit
+</button>
+
+                    <form
+                        method="POST"
+                        action="/save_business_scope"
+                        style="display:inline;">
+
+                        <input
+                            type="hidden"
+                            name="scope_id"
+                            value="{{ scope[0] }}">
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="DELETE"
+                            class="delete-btn">
+                            Delete
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="card" style="margin-top:30px;">
+
+    <div class="card-header">
+        <h2>Certificate Management</h2><br>
+         <a href="/export/home-certificates" class="add-button" style="text-decoration: none; padding: 10px 15px;">Export to Excel</a>
+<br><br>
+    </div>
+
+    <div class="card-body">
+
+        <form
+            method="POST"
+            action="/save_certificate_home"
+            enctype="multipart/form-data">
+
+            <input
+                type="hidden"
+                name="certificate_id"
+                id="certificate_id">
+
+            <label>Certificate Title</label>
+
+            <input
+                type="text"
+                name="title"
+                id="certificate_title"
+                class="form-control"
+                required>
+
+            <label>Description</label>
+
+            <textarea
+                name="description"
+                id="certificate_description"
+                rows="5"
+                class="form-control"
+                required></textarea>
+
+            <label>Certificate Image</label>
+
+            <input
+                type="file"
+                name="image"
+                class="form-control">
+
+            <label>Certificate PDF</label>
+
+            <input
+                type="file"
+                name="pdf"
+                class="form-control">
+
+            <br>
+
+            <div class="btn-group">
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="INSERT"
+                    class="add-button">
+                    Add
+                </button>
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="UPDATE"
+                    class="update-btn">
+                    Update
+                </button>
+
+            </div>
+
+        </form>
+
+        <br>
+
+        <table border="1" width="100%">
+
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>PDF</th>
+                <th>Action</th>
+            </tr>
+
+            {% for cert in certificates %}
+
+            <tr>
+
+                <td>{{ cert[5] }}</td>
+
+                <td>
+                    <img
+                        src="/{{ cert[2] }}"
+                        width="100">
+                </td>
+
+                <td>{{ cert[1] }}</td>
+
+                <td>{{ cert[3] }}</td>
+
+                <td>
+                    {% if cert[3] %}
+                    <a href="/{{ cert[3] }}" target="_blank">
+                        View PDF
+                    </a>
+                    {% endif %}
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="update-btn"
+                        onclick="fillCertificate(
+                            '{{ cert[5] }}',
+                            '{{ cert[0] }}',
+                            '{{ cert[1] }}'
+                        )">
+                        Edit
+                    </button>
+
+                    <form
+                        method="POST"
+                        action="/save_certificate_home"
+                        style="display:inline;">
+
+                        <input
+                            type="hidden"
+                            name="certificate_id"
+                            value="{{ cert[5] }}">
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="DELETE"
+                            class="delete-btn"
+                            onclick="return confirm('Delete certificate?')">
+                            Delete
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+</div>
+</section>
+   
+
+<section id="gallery" class="section">
+
+    <div class="card">
+
+        <div class="card-header">
+            <h2>Gallery Management</h2>
+        </div>
+
+        <div class="card-body">
+
+            <!-- UPLOAD FORM -->
+            <form method="POST" action="/save_gallery" enctype="multipart/form-data">
+
+                <input type="hidden" name="gallery_id" id="gallery_id">
+
+                <label>Title</label>
+                <input type="text" name="title" id="gallery_title" class="form-control" required>
+
+                <label>Category</label>
+                <select name="category" id="gallery_category" class="form-control" required>
+                    <option value="Events">Events</option>
+                    <option value="Site Visits">Site Visits</option>
+                    <option value="Office Activity">Office Activity</option>
+                    <option value="Others">Others</option>
+                </select>
+
+                <label>Image</label>
+                <input type="file" name="image" class="form-control">
+
+                <br>
+
+                <button type="submit" name="action" value="INSERT" class="add-button">
+                    Add
+                </button>
+
+                <button type="submit" name="action" value="UPDATE" class="update-btn">
+                    Update
+                </button>
+
+            </form>
+
+            <hr>
+
+            <!-- TABLE -->
+            <div style="overflow-x:auto;">
+
+                <table border="1" width="100%" style="text-align:center; font-size:14px;">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+
+                    {% for g in gallery_list %}
+
+                    <tr>
+
+                        <td>{{ g[0] }}</td>
+
+                        <td>
+                            <img src="/{{ g[3] }}" width="60" height="60" style="object-fit:cover;">
+                        </td>
+
+                        <td>{{ g[1] }}</td>
+
+                        <td>{{ g[2] }}</td>
+
+                        <td>
+
+                            <!-- EDIT -->
+                            <button type="button"
+                                class="update-btn"
+                                onclick="fillGallery(
+                                    '{{ g[0] }}',
+                                    '{{ g[1] }}',
+                                    '{{ g[2] }}'
+                                )">
+                                Edit
+                            </button>
+
+                            <!-- DELETE -->
+                            <form method="POST"
+                                  action="/save_gallery"
+                                  style="display:inline;">
+
+                                <input type="hidden" name="gallery_id" value="{{ g[0] }}">
+
+                                <button type="submit"
+                                        name="action"
+                                        value="DELETE"
+                                        class="delete-btn"
+                                        onclick="return confirm('Delete this image?')">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- SERVICES -->
+<section id="service" class="section">
+
+<h1 class="section-divider">Service Management</h1>
+
+<div class="card">
+<div class="card-body">
+
+<!-- ================= 1. SERVICE CONTENT ================= -->
+<h3>Explore Our Services Text</h3>
+
+<form method="POST" action="/update_service_content">
+
+    <textarea name="content" rows="5" class="form-control">{{ service_content }}</textarea>
+
+    <br>
+
+    <button class="add-button" type="submit">
+        Update Content
+    </button>
+
+</form>
+
+</div>
+</div>
+
+
+<!-- ================= 2. SERVICE CARDS ================= -->
+<div class="card" style="margin-top:30px;">
+<div class="card-body">
+
+<h3>Service Cards Management</h3>
+
+<form method="POST" action="/save_service" enctype="multipart/form-data">
+
+    <input type="hidden" id="service_id" name="service_id">
+
+<input
+    type="text"
+    id="service_title"
+    name="title"
+    placeholder="Title">
+
+<textarea
+    id="service_description"
+    name="description"
+    placeholder="Description"></textarea>
+
+
+    <input type="file" name="image" class="form-control">
+
+    <br>
+
+    <button type="submit" name="action" value="INSERT" class="add-button">
+        Add
+    </button>
+
+    <button type="submit" name="action" value="UPDATE" class="update-btn">
+        Update
+    </button>
+
+</form>
+
+<br>
+
+<table border="1" width="100%" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Image</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for s in services %}
+        <tr>
+            <td>{{ s[0] }}</td>
+            <td>{{ s[1] }}</td>
+            <td>{{ s[2] }}</td>
+
+            <td>
+                {% if s[3] %}
+                    <img src="/{{ s[3] }}" width="80">
+                {% else %}
+                    No Image
+                {% endif %}
+            </td>
+
+<td>
+    <div class="action-btns">
+
+        <!-- Edit -->
+        <button
+            type="button"
+            class="update-btn"
+            onclick="fillService(
+                '{{ s[0]|tojson }}',
+                '{{ s[1]|tojson }}',
+                '{{ s[2]|tojson }}'
+            )">
+            Edit
+        </button>
+
+        <!-- Delete -->
+        <a href="/delete_service/{{ s[0] }}"
+           class="delete-btn"
+           onclick="return confirm('Are you sure you want to delete this service?');">
+            Delete
+        </a>
+
+    </div>
+</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+</div>
+</div>
+
+<!-- ================= 3. SERVICE DETAILS ================= -->
+<div class="card" style="margin-top:30px;">
+<div class="card-body">
+
+<h3>Service Detail Management</h3>
+
+<form method="POST"
+      action="{{ url_for('service_bp.save_service_detail') }}"
+      enctype="multipart/form-data">
+
+    <!-- Hidden ID (used while editing) -->
+    <input type="hidden"
+           id="service_detail_id"
+           name="detail_id">
+
+    <label>Select Service</label>
+
+    <select
+        id="detail_service_id"
+        name="service_id"
+        class="form-control">
+
+        {% for s in services %}
+        <option value="{{ s[0] }}">
+            {{ s[1] }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <br>
+
+    <label>Long Description</label>
+
+    <textarea
+        id="detail_long_description"
+        name="long_description"
+        rows="8"
+        class="form-control"
+        placeholder="Enter complete service description"></textarea>
+
+    <br>
+
+    <label>Detail Image</label>
+
+    <input
+        type="file"
+        name="image"
+        class="form-control"
+        accept="image/*">
+
+    <br>
+
+    <button
+        type="submit"
+        class="add-button">
+        Save Service Detail
+    </button>
+
+</form>
+
+<br><br>
+
+<h3>Service Detail Records</h3>
+
+<table border="1" width="100%">
+    <tr>
+        <th>ID</th>
+        <th>Service</th>
+        <th>Description</th>
+        <th>Image</th>
+        <th>Action</th>
+    </tr>
+
+    {% for d in service_details %}
+    <tr>
+
+        <td>{{ d[0] }}</td>
+
+        <td>{{ d[1] }}</td>
+
+        <td style="max-width:400px;">
+            {{ d[2][:120] }}{% if d[2]|length > 120 %}...{% endif %}
+        </td>
+
+        <td>
+
+            {% if d[3] %}
+                <img src="/{{ d[3] }}"
+                     width="80">
+            {% else %}
+                No Image
+            {% endif %}
+
+        </td>
+
+        <td>
+
+            <button
+                type="button"
+                class="update-btn"
+                onclick="fillServiceDetail(
+    '{{ d[0]|tojson }}',
+    '{{ d[2]|tojson }}'
+)">
+                Edit
+            </button>
+
+            <a href="/delete_service_detail/{{ d[0] }}"
+               class="delete-btn"
+               onclick="return confirm('Delete this Service Detail?');">
+                Delete
+            </a>
+
+        </td>
+
+    </tr>
+    {% endfor %}
+
+</table>
+
+</div>
+</div>
+<!-- ================= 4. SERVICE FEATURES ================= -->
+
+<div class="card" style="margin-top:30px;">
+<div class="card-body">
+
+<h3>Service Features</h3>
+
+<form method="POST" action="{{ url_for('service_bp.save_features') }}">
+
+<label>Select Service</label>
+
+<select name="service_id" class="form-control">
+{% for s in services %}
+<option value="{{ s[0] }}">
+{{ s[1] }}
+</option>
+{% endfor %}
+</select>
+
+<br>
+
+<input
+type="text"
+name="feature"
+placeholder="Feature 1"
+class="form-control">
+
+<input
+type="text"
+name="feature"
+placeholder="Feature 2"
+class="form-control">
+
+<input
+type="text"
+name="feature"
+placeholder="Feature 3"
+class="form-control">
+
+<input
+type="text"
+name="feature"
+placeholder="Feature 4"
+class="form-control">
+
+<input
+type="text"
+name="feature"
+placeholder="Feature 5"
+class="form-control">
+
+<br>
+
+<button
+class="add-button"
+type="submit">
+Save Features
+</button>
+
+</form>
+
+</div>
+</div>
+
+
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Service ID</th>
+            <th>Feature</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for f in features %}
+        <tr>
+            <td>{{ f[0] }}</td>
+            <td>{{ f[1] }}</td>
+            <td>{{ f[2] }}</td>
+
+            <td>
+                <a href="/edit_feature/{{ f[0] }}" class="btn btn-primary btn-sm">Edit</a>
+                <a href="/delete_feature/{{ f[0] }}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- ================= 3. TESTIMONIALS ================= -->
+<div class="card" style="margin-top:30px;">
+<div class="card-body">
+
+<h3>Testimonials</h3>
+
+<form method="POST" action="/save_testimonial" enctype="multipart/form-data">
+
+    <input type="hidden" name="testimonial_id" id="testimonial_id">
+
+    <input type="text" name="name" placeholder="Name" class="form-control">
+    <textarea name="message" placeholder="Message" class="form-control"></textarea>
+
+    <input type="file" name="image" class="form-control">
+
+    <br>
+
+    <button type="submit" name="action" value="INSERT" class="add-button">
+        Add
+    </button>
+
+    <button type="submit" name="action" value="UPDATE" class="update-btn">
+        Update
+    </button>
+
+</form>
+
+<br>
+
+<table border="1" width="100%">
+{% for t in testimonials %}
+<tr>
+    <td>{{ t[1] }}</td>
+    <td>{{ t[2] }}</td>
+
+    <td>
+        <form method="POST" action="/save_testimonial">
+            <input type="hidden" name="testimonial_id" value="{{ t[0] }}">
+            <button type="submit" name="action" value="DELETE" class="delete-btn">
+                Delete
+            </button>
+        </form>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+</div>
+</div>
+
+
+<!-- ================= 4. TEAM ================= -->
+<div class="card" style="margin-top:30px;">
+<div class="card-body">
+
+<h3>Team Management</h3>
+
+<form method="POST" action="/save_team" enctype="multipart/form-data">
+
+    <input type="hidden" name="team_id" id="team_id">
+
+    <input type="text" name="name" placeholder="Name" class="form-control">
+    <input type="text" name="role" placeholder="Role" class="form-control">
+
+    <input type="file" name="image" class="form-control">
+
+    <br>
+
+    <button type="submit" name="action" value="INSERT" class="add-button">
+        Add
+    </button>
+
+    <button type="submit" name="action" value="UPDATE" class="update-btn">
+        Update
+    </button>
+
+</form>
+
+<br>
+
+<table border="1" width="100%">
+{% for m in team %}
+<tr>
+    <td>{{ m[1] }}</td>
+    <td>{{ m[2] }}</td>
+
+    <td>
+        <form method="POST" action="/save_team">
+            <input type="hidden" name="team_id" value="{{ m[0] }}">
+            <button type="submit" name="action" value="DELETE" class="delete-btn">
+                Delete
+            </button>
+        </form>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- client page -->
+<section id="website_clients" class="section">
+
+    <h1 class="section-divider">Website Client Management</h1>
+
+    <!-- ================= CLIENT CONTENT ================= -->
+
+    <div class="card">
+        <div class="card-body">
+
+            <h3>Client Page Content</h3>
+
+            <form method="POST" action="/website/update_client_content">
+
+                <input
+                    type="text"
+                    name="title"
+                    class="form-control"
+                    placeholder="Heading"
+                    value="{{ client_content[0] if client_content else '' }}">
+
+                <br>
+
+                <textarea
+                    name="description"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Description">{{ client_content[1] if client_content else '' }}</textarea>
+
+                <br>
+
+                <button type="submit" class="add-button">
+                    Update Content
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ================= CLIENT LOGOS ================= -->
+<!-- ================= CLIENT LOGOS ================= -->
+
+<div class="card" style="margin-top:30px;">
+
+<div class="card-body">
+
+
+<h3>Client Logos</h3>
+
+
+<form method="POST"
+      action="/website/save_client"
+      enctype="multipart/form-data">
+
+
+<input type="hidden"
+       name="client_id"
+       id="client_id">
+
+
+
+<input
+type="text"
+name="name"
+id="client_name"
+class="form-control"
+placeholder="Client Name">
+
+
+<br>
+
+
+<input
+type="text"
+name="website"
+id="client_website"
+class="form-control"
+placeholder="Website URL">
+
+
+<br>
+
+
+<input
+type="file"
+name="logo"
+class="form-control">
+
+
+<br>
+
+
+<button
+type="submit"
+name="action"
+value="INSERT"
+class="add-button">
+
+Add Client
+
+</button>
+
+
+<button
+type="submit"
+name="action"
+value="UPDATE"
+class="update-btn">
+
+Update Client
+
+</button>
+
+
+</form>
+
+
+<hr>
+
+
+
+<!-- CLIENT TABLE -->
+
+<div class="client-table-wrapper">
+
+
+<table class="table table-bordered client-table">
+
+
+<thead>
+
+<tr>
+
+<th>Logo</th>
+
+<th>Name</th>
+
+<th>Website</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+
+
+<tbody>
+
+
+{% if website_clients %}
+
+
+{% for client in website_clients %}
+
+
+<tr>
+
+
+<td>
+
+{% if client[2] %}
+
+<img
+src="/{{client[2]}}"
+class="client-logo-preview">
+
+{% else %}
+
+No Logo
+
+{% endif %}
+
+</td>
+
+
+
+<td>
+
+{{client[1]}}
+
+</td>
+
+
+
+<td>
+
+{% if client[3] %}
+
+<a href="{{client[3]}}"
+target="_blank">
+
+{{client[3]}}
+
+</a>
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+
+
+<td>
+
+
+<button
+type="button"
+class="update-btn"
+onclick='fillClient(
+"{{ client[0] }}",
+"{{ client[1] }}",
+"{{ client[3] }}"
+)'>
+Edit
+</button>
+
+
+
+
+<form method="POST"
+      action="/website/save_client"
+      style="display:inline;">
+
+
+<input
+type="hidden"
+name="client_id"
+value="{{client[0]}}">
+
+
+
+<button
+type="submit"
+name="action"
+value="DELETE"
+class="delete-btn">
+
+Delete
+
+</button>
+
+
+</form>
+
+
+</td>
+
+
+</tr>
+
+
+
+{% endfor %}
+
+
+
+{% else %}
+
+
+<tr>
+
+<td colspan="4"
+style="text-align:center;">
+
+No clients available.
+
+</td>
+
+</tr>
+
+
+{% endif %}
+
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</div>
+
+</div>
+    <!-- ================= TESTIMONIALS ================= -->
+
+    <div class="card" style="margin-top:30px;">
+
+        <div class="card-body">
+
+            <h3>Client Testimonials</h3>
+
+            <form
+                method="POST"
+                action="/website/save_client_testimonial">
+
+                <input
+                    type="text"
+                    name="title"
+                    class="form-control"
+                    placeholder="Title">
+
+                <br>
+
+                <input
+                    type="text"
+                    name="name"
+                    class="form-control"
+                    placeholder="Client Name">
+
+                <br>
+
+                <input
+                    type="text"
+                    name="role"
+                    class="form-control"
+                    placeholder="Role">
+
+                <br>
+
+                <textarea
+                    name="message"
+                    rows="5"
+                    class="form-control"
+                    placeholder="Testimonial"></textarea>
+
+                <br>
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="INSERT"
+                    class="add-button">
+
+                    Add Testimonial
+
+                </button>
+
+            </form>
+
+            <hr>
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                <tr>
+
+                    <th>Title</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Message</th>
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% if client_testimonials %}
+
+                    {% for t in client_testimonials %}
+
+                    <tr>
+
+                        <td>{{ t[1] }}</td>
+                        <td>{{ t[2] }}</td>
+                        <td>{{ t[3] }}</td>
+                        <td>{{ t[4] }}</td>
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="/website/save_client_testimonial">
+
+                                <input
+                                    type="hidden"
+                                    name="testimonial_id"
+                                    value="{{ t[0] }}">
+
+                                <button
+                                    type="submit"
+                                    name="action"
+                                    value="DELETE"
+                                    class="delete-btn">
+
+                                    Delete
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="5" style="text-align:center;">
+                            No testimonials available.
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- PROJECT PAGE LIST -->
+
+
+<section id="website-project-management" class="section">
+
+    <div class="card">
+
+    <div class="card-header">
+        <h2>Project Page Management</h2>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" action="/website/save_project_page">
+
+    <label>Heading</label>
+    <input type="text"
+           name="heading"
+           id="project_heading"
+           value="{{ website_project_pages[0][1] }}"
+           class="form-control">
+
+    <br>
+
+    <label>Description</label>
+
+    <textarea
+        name="description"
+        id="project_description"
+        rows="5"
+        class="form-control">{{ website_project_pages[0][2] }}</textarea>
+
+    <br>
+
+    <button
+        type="submit"
+        class="update-btn">
+        Update
+    </button>
+
+</form>
+
+    </div>
+
+</div>
+<!-- ================================================= -->
+<!-- PROJECT CARDS -->
+<!-- ================================================= -->
+
+<div class="card" style="margin-top:20px;">
+
+<div class="card-header">
+<h2>Project Cards</h2>
+</div>
+
+<div class="card-body">
+
+<form
+method="POST"
+action="/save_project_card"
+enctype="multipart/form-data">
+
+<input
+type="hidden"
+name="card_id"
+id="card_id">
+
+<label>Card Title</label>
+
+<input
+type="text"
+name="title"
+id="card_title"
+class="form-control"
+required>
+
+<label>Description</label>
+
+<textarea
+name="description"
+id="card_description"
+class="form-control"
+rows="4"></textarea>
+
+<label>Image</label>
+
+<input
+type="file"
+name="image"
+class="form-control">
+
+<label>Icon Class</label>
+
+<input
+type="text"
+name="icon_class"
+id="icon_class"
+placeholder="fas fa-gear"
+class="form-control">
+
+<label>Slug</label>
+
+<input
+type="text"
+name="slug"
+id="slug"
+placeholder="Engineering"
+class="form-control">
+
+<br>
+
+<button
+type="submit"
+name="action"
+value="INSERT"
+class="add-button">
+Add
+</button>
+
+<button
+type="submit"
+name="action"
+value="UPDATE"
+class="update-btn">
+Update
+</button>
+
+</form>
+
+<br>
+
+<table>
+
+<tr>
+<th>ID</th>
+<th>Image</th>
+<th>Title</th>
+<th>Action</th>
+</tr>
+
+{% for card in website_project_cards %}
+
+<tr>
+
+<td>{{ card[0] }}</td>
+
+<td>
+
+{% if card[3] %}
+<img src="/{{ card[3] }}" width="80">
+{% endif %}
+
+</td>
+
+<td>{{ card[1] }}</td>
+
+<td>
+
+<button
+type="button"
+class="update-btn"
+onclick="fillProjectCard(
+'{{ card[0] }}',
+'{{ card[1] }}',
+`{{ card[2] }}`,
+'{{ card[4] }}',
+'{{ card[5] }}'
+)">
+Edit
+</button>
+
+<form
+method="POST"
+action="/save_project_card"
+style="display:inline;">
+
+<input
+type="hidden"
+name="card_id"
+value="{{ card[0] }}">
+
+<button
+type="submit"
+name="action"
+value="DELETE"
+class="delete-btn">
+Delete
+</button>
+
+</form>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+</div>
+
+
+<!-- ================================================= -->
+<!-- PROJECTS -->
+<!-- ================================================= -->
+
+<div class="card" style="margin-top:20px;">
+
+    <div class="card-header">
+        <h2>Projects</h2>
+    </div>
+
+    <div class="card-body">
+
+        <form
+            method="POST"
+            action="/save_website_project"
+            enctype="multipart/form-data">
+
+            <input
+                type="hidden"
+                name="project_id"
+                id="website_project_id">
+
+            <label>Select Category</label>
+
+            <select
+                name="card_id"
+                id="project_card_id"
+                class="form-control"
+                required>
+
+                {% for card in website_project_cards %}
+
+                <option value="{{ card[0] }}">
+                    {{ card[1] }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+            <label>Project Title</label>
+
+            <input
+                type="text"
+                name="project_title"
+                id="project_title"
+                class="form-control"
+                required>
+
+            <label>Short Description</label>
+
+            <textarea
+                name="short_description"
+                id="short_description"
+                rows="3"
+                class="form-control"></textarea>
+
+            <label>Full Description</label>
+
+            <textarea
+                name="full_description"
+                id="full_description"
+                rows="6"
+                class="form-control"></textarea>
+
+            <label>Project Image (Optional)</label>
+
+            <input
+                type="file"
+                name="project_image"
+                class="form-control">
+
+            <label>Team Size</label>
+
+            <input
+                type="text"
+                name="team_size"
+                id="team_size"
+                class="form-control">
+
+            <label>Duration</label>
+
+            <input
+                type="text"
+                name="duration"
+                id="duration"
+                class="form-control">
+
+            <label>Technology Used</label>
+
+            <input
+                type="text"
+                name="technology_used"
+                id="technology_used"
+                class="form-control">
+
+            <label>Client Name</label>
+
+            <input
+                type="text"
+                name="client_name"
+                id="client_name_project"
+                class="form-control">
+
+            <label>Completion Date</label>
+
+            <input
+                type="date"
+                name="completion_date"
+                id="completion_date"
+                class="form-control">
+
+            <label>Other Details</label>
+
+            <textarea
+                name="other_details"
+                id="other_details"
+                rows="5"
+                class="form-control"></textarea>
+
+            <br>
+
+            <button
+                type="submit"
+                name="action"
+                value="INSERT"
+                class="add-button">
+                Add
+            </button>
+
+            <button
+                type="submit"
+                name="action"
+                value="UPDATE"
+                class="update-btn">
+                Update
+            </button>
+
+        </form>
+
+        <br>
+
+        <!-- ================= TABLE ================= -->
+
+<div class="table-scroll">
+
+<table class="project-table">
+
+<thead>
+
+<tr>
+    <th>ID</th>
+    <th>Project</th>
+    <th>Description</th>
+    <th>Client</th>
+    <th>Category</th>
+    <th>Duration</th>
+    <th>Technology</th>
+    <th>Action</th>
+</tr>
+
+</thead>
+
+
+<tbody>
+
+{% for project in website_projects %}
+
+<tr>
+
+<td>
+{{ project[0] }}
+</td>
+
+
+<td>
+{{ project[3] }}
+</td>
+
+
+<td>
+{{ project[4] }}
+</td>
+
+
+<td>
+{{ project[10] }}
+</td>
+
+
+<td>
+{{ project[2] }}
+</td>
+
+
+<td>
+{{ project[8] }}
+</td>
+
+
+<td>
+{{ project[9] }}
+</td>
+
+
+<td>
+
+
+<button
+type="button"
+class="update-btn"
+onclick="fillProject(
+'{{ project[0] }}',
+'{{ project[1] }}',
+`{{ project[3] }}`,
+`{{ project[4] }}`,
+`{{ project[5] }}`,
+'{{ project[7] }}',
+'{{ project[8] }}',
+`{{ project[9] }}`,
+'{{ project[10] }}',
+'{{ project[11] }}',
+`{{ project[12] }}`
+)">
+Edit
+</button>
+
+
+
+<form
+method="POST"
+action="/save_website_project"
+style="display:inline;">
+
+
+<input
+type="hidden"
+name="project_id"
+value="{{ project[0] }}">
+
+
+<button
+type="submit"
+name="action"
+value="DELETE"
+class="delete-btn">
+
+Delete
+
+</button>
+
+
+</form>
+
+
+</td>
+
+
+</tr>
+
+
+{% endfor %}
+
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ================= ABOUT PAGE =================-->
+<section id="aboutHero" class="section">
+
+    <h2>About Hero Management</h2>
+
+    <form
+        id="heroForm"
+        action="/save_about_hero"
+        method="POST"
+        enctype="multipart/form-data">
+
+        <input type="hidden" id="hero_id" name="hero_id">
+
+        <div class="form-group">
+            <label>Title</label>
+            <input
+                type="text"
+                id="title"
+                name="title"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea
+                id="description"
+                name="description"
+                rows="6"
+                required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Hero Image</label>
+            <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*">
+        </div>
+
+        <button type="submit">Save Hero</button>
+
+    </form>
+
+    <table class="table">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+{% if about_heroes %}
+
+<tr>
+    <td>{{ about_heroes.id }}</td>
+
+    <td>
+        <img src="/static/about/images_about/{{ about_heroes.image }}"
+             width="120">
+    </td>
+
+    <td>{{ about_heroes.title }}</td>
+
+    <td>{{ about_heroes.description }}</td>
+
+    <td>{{ about_heroes.status }}</td>
+
+    <td>
+    <button
+        type="button"
+        class="update-btn"
+        onclick="fillHero(
+            '{{ about_heroes.id }}',
+            `{{ about_heroes.title }}`,
+            `{{ about_heroes.description }}`
+        )">
+        Edit
+    </button>
+
+    <a href="/delete_about_hero/{{ about_heroes.id }}">
+        <button type="button" class="delete-btn">
+            Delete
+        </button>
+    </a>
+</td>
+
+</tr>
+
+{% endif %}
+
+</tbody>
+
+    </table>
+
+    <!-- Experience Section -->
+    <div class="card">
+
+        <h3>Experience Section</h3>
+
+        <form action="/update_experience" method="POST">
+
+            <label>Years</label>
+
+            <input
+                type="number"
+                name="years"
+                value="{{ experience.years if experience else '' }}"
+                required>
+
+            <label>Title</label>
+
+            <input
+                type="text"
+                name="title"
+                value="{{ experience.title if experience else '' }}"
+                required>
+
+            <button type="submit">Update</button>
+
+        </form>
+
+    </div>
+
+    <!-- Circle Points -->
+    <div class="card">
+
+        <h3>Add Circle Point</h3>
+
+        <form action="/add_circle_text" method="POST">
+
+            <label>Point</label>
+
+            <textarea
+                name="text"
+                required></textarea>
+
+            <label>Display Order</label>
+
+            <select name="display_order">
+
+                {% for i in range(1,11) %}
+                    <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+
+            </select>
+
+            <button type="submit">Add Point</button>
+
+        </form>
+
+    </div>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+                <th>#</th>
+                <th>Point</th>
+                <th>Order</th>
+                <th>Action</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for item in circle_texts %}
+
+            <tr>
+
+                <td>{{ loop.index }}</td>
+
+                <td>{{ item.text }}</td>
+
+                <td>{{ item.display_order }}</td>
+
+                <td>
+
+                    <a href="/edit_circle_text/{{ item.id }}"
+                       class="btn btn-warning">
+                        Edit
+                    </a>
+
+                    <a href="/delete_circle_text/{{ item.id }}"
+                       class="btn btn-danger"
+                       onclick="return confirm('Delete?')">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+<!-- about profile-->
+    <div id="aboutProfile" class="card">
+
+    <h3>About Profile Management</h3>
+
+    <form action="/save_about_profile"
+          method="POST"
+          enctype="multipart/form-data">
+
+        <input
+            type="hidden"
+            name="id"
+            value="{{ profile.id if profile else '' }}">
+
+        <div class="form-group">
+            <label>Description</label>
+
+            <textarea
+                name="description"
+                rows="8"
+                required>{{ profile.description if profile else '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Profile Image</label>
+
+            <input
+                type="file"
+                name="image"
+                accept="image/*">
+        </div>
+
+        <button type="submit">
+            Save / Update
+        </button>
+
+    </form>
+
+    <br>
+
+    <table class="table">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% if profile %}
+
+        <tr>
+
+            <td>{{ profile.id }}</td>
+
+            <td>
+                <img
+                    src="/static/about/images_about/{{ profile.image }}"
+                    width="120">
+            </td>
+
+            <td>{{ profile.description }}</td>
+
+            <td>{{ profile.status }}</td>
+
+            <td>
+                <a href="/delete_about_profile/{{ profile.id }}">
+                    Delete
+                </a>
+            </td>
+
+        </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div class="card" id="commitment">
+
+    <h3>Commitment Section</h3>
+
+    <form action="/save_commitment"
+          method="POST"
+          enctype="multipart/form-data">
+
+        <!-- Hidden ID -->
+        <input type="hidden"
+               name="id"
+               value="{{ edit_commitment.id if edit_commitment else '' }}">
+
+        <label>Title</label>
+
+        <input type="text"
+               name="heading"
+               value="{{ edit_commitment.heading if edit_commitment else '' }}"
+               required>
+
+        <label>Quote</label>
+
+        <textarea name="quote"
+                  rows="6"
+                  required>{{ edit_commitment.quote if edit_commitment else '' }}</textarea>
+
+        <label>Author</label>
+
+        <input type="text"
+               name="author"
+               value="{{ edit_commitment.author if edit_commitment else '' }}"
+               required>
+
+        <label>Image</label>
+
+        <input type="file" name="image">
+
+        {% if edit_commitment and edit_commitment.image %}
+
+        <br><br>
+
+        <img src="{{ url_for('static',
+        filename='about/images_about/' ~ edit_commitment.image) }}"
+             width="120">
+
+        {% endif %}
+
+        <br><br>
+
+        <button type="submit">
+
+            {% if edit_commitment %}
+                Update
+            {% else %}
+                Add
+            {% endif %}
+
+        </button>
+
+    </form>
+
+</div>
+
+
+<div class="card">
+
+    <h3>Commitment Details</h3>
+
+    <table>
+
+        <tr>
+            <th>Title</th>
+            <th>Quote</th>
+            <th>Author</th>
+            <th>Image</th>
+            <th>Action</th>
+        </tr>
+
+        {% for commitment in commitments %}
+
+        <tr>
+
+            <td>{{ commitment.heading }}</td>
+
+            <td>{{ commitment.quote }}</td>
+
+            <td>{{ commitment.author }}</td>
+
+            <td>
+
+                {% if commitment.image %}
+
+                <img src="{{ url_for('static',
+                filename='about/images_about/' ~ commitment.image) }}"
+                     width="80">
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                <a href="/edit_commitment/{{ commitment.id }}">
+                    Edit
+                </a>
+
+                |
+
+                <a href="/delete_commitment/{{ commitment.id }}"
+                   onclick="return confirm('Delete this record?')">
+                    Delete
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+<div class="card" id="teamManagement">
+
+    <h3>Team Member Management</h3>
+
+    <form action="/save_team_member"
+          method="POST"
+          enctype="multipart/form-data">
+
+       <input type="hidden" id="team_id" name="id" value="{{ edit_team.id if edit_team else '' }}">
+
+        <label>Name</label>
+
+        <input type="text" id="name" name="name" value="{{ edit_team.name if edit_team else '' }}">
+
+        <label>Designation</label>
+
+        <input type="text" id="designation" name="designation" value="{{ edit_team.designation if edit_team else '' }}">
+
+        <label>Description</label>
+
+        <textarea id="description" name="description">{{ edit_team.description if edit_team else '' }}</textarea>
+
+        <label>Experience</label>
+
+        <input type="text" id="experience" name="experience" value="{{ edit_team.experience if edit_team else '' }}">
+
+
+        <label>Email</label>
+
+        <input type="email" id="email" name="email" value="{{ edit_team.email if edit_team else '' }}">
+
+        <label>Display Order</label>
+
+        <input type="number" id="display_order" name="display_order" value="{{ edit_team.display_order if edit_team else 1 }}">
+
+<input
+    type="file"
+    id="image"
+    name="image"
+    accept="image/*">
+
+<br><br>
+
+<!-- Existing Image -->
+{% if edit_team and edit_team.image %}
+    <img
+        src="{{ url_for('static', filename='about/images_about/' ~ edit_team.image) }}"
+        width="120"
+        alt="Team Member">
+    <br><br>
+{% endif %}
+
+<!-- Preview for Newly Selected Image -->
+<img
+    id="previewImage"
+    src=""
+    style="display:none;"
+    width="120"
+    alt="Preview">
+
+<br><br>
+
+<button id="submitBtn" type="submit">
+    {% if edit_team %}
+        Update
+    {% else %}
+        Add
+    {% endif %}
+</button>
+
+    </form>
+
+</div>
+
+
+<div class="card">
+
+    <h3>Team Members List</h3>
+
+    <table>
+
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Designation</th>
+            <th>Experience</th>
+            <th>Email</th>
+            <th>Order</th>
+            <th>Action</th>
+        </tr>
+
+        {% for team in team_members %}
+
+        <tr>
+
+            <td>
+
+                {% if team.image %}
+
+                <img src="{{ url_for('static',
+                filename='about/images_about/' ~ team.image) }}"
+                     width="70">
+
+                {% endif %}
+
+            </td>
+
+            <td>{{ team.name }}</td>
+
+            <td>{{ team.designation }}</td>
+            
+            <td>{{ team.description }}</td>
+
+            <td>{{ team.experience }}</td>
+
+            <td>{{ team.email }}</td>
+
+            <td>{{ team.display_order }}</td>
+
+            <td>
+
+<a href="javascript:void(0);"
+onclick="editTeam(
+'{{ team.id }}',
+'{{ team.name|tojson }}',
+'{{ team.designation|tojson }}',
+'{{ team.description|tojson }}',
+'{{ team.experience|tojson }}',
+'{{ team.email|tojson }}',
+'{{ team.display_order }}',
+'{{ team.image|tojson }}'
+)">
+    Edit
+</a>
+
+                |
+
+                <a href="/delete_team_member/{{ team.id }}"
+                   onclick="return confirm('Delete this member?')">
+
+                    Delete
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+</section>
+
+
+
+
+ 
+ <!-- ================= CONTACT ================= -->
+<section id="contact" class="section">
+
+<h1>Contact Page Management</h1>
+
+<div class="card">
+
+    <div class="card-header">
+        <h2>Contact Information</h2>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" action="/save_contact_info">
+
+            <label>Description</label>
+            <textarea
+                name="description"
+                class="form-control"
+                rows="5">{{ contact_data[1] if contact_data else '' }}</textarea>
+
+            <label>Short Address</label>
+            <input
+                type="text"
+                name="short_address"
+                class="form-control"
+                value="{{ contact_data[2] if contact_data else '' }}">
+
+            <label>Email 1</label>
+            <input
+                type="email"
+                name="email1"
+                class="form-control"
+                value="{{ contact_data[3] if contact_data else '' }}">
+
+            <label>Email 2</label>
+            <input
+                type="email"
+                name="email2"
+                class="form-control"
+                value="{{ contact_data[4] if contact_data else '' }}">
+
+            <label>Phone 1</label>
+            <input
+                type="text"
+                name="phone1"
+                class="form-control"
+                value="{{ contact_data[5] if contact_data else '' }}">
+
+            <label>Phone 2</label>
+            <input
+                type="text"
+                name="phone2"
+                class="form-control"
+                value="{{ contact_data[6] if contact_data else '' }}">
+
+            <hr>
+
+            <h3>Office Hours</h3>
+
+            <label>Monday - Friday</label>
+            <input
+                type="text"
+                name="weekday_hours"
+                class="form-control"
+                value="{{ contact_data[7] if contact_data else '' }}">
+
+            <label>Saturday</label>
+            <input
+                type="text"
+                name="saturday_hours"
+                class="form-control"
+                value="{{ contact_data[8] if contact_data else '' }}">
+
+            <label>Google Map Link</label>
+            <textarea
+                name="map_link"
+                class="form-control"
+                rows="4">{{ contact_data[9] if contact_data else '' }}</textarea>
+
+            <br>
+
+            <button type="submit" class="update-btn">
+                Add
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Address</th>
+            <th>Email 1</th>
+            <th>Email 2</th>
+            <th>Phone 1</th>
+            <th>Phone 2</th>
+            <th>Weekday Hours</th>
+            <th>Saturday Hours</th>
+            <th>Map</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for row in contacts %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1][:50] }}...</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+            <td>{{ row[5] }}</td>
+            <td>{{ row[6] }}</td>
+            <td>{{ row[7] }}</td>
+            <td>{{ row[8] }}</td>
+            <td>
+                <a href="{{ row[9] }}" target="_blank">View Map</a>
+            </td>
+
+            <td>
+                <!-- EDIT -->
+                <a href="/edit_contact/{{ row[0] }}" class="btn btn-primary btn-sm">
+                    Edit
+                </a>
+
+                <!-- DELETE -->
+                <a href="/delete_contact/{{ row[0] }}"
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Are you sure you want to delete this record?')">
+                    Delete
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+<hr>
+<hr>
+
+<div class="card">
+
+    <div class="card-header">
+        <h2>Social Media Links</h2>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" action="/save_social_links">
+
+            <input type="hidden"
+                   name="id"
+                   value="{{ social_data[0] if social_data else '' }}">
+
+            <label>Facebook Link</label>
+            <input
+                type="url"
+                name="facebook_link"
+                class="form-control"
+                value="{{ social_data[1] if social_data else '' }}"
+                placeholder="https://facebook.com/yourpage">
+
+            <label>Twitter (X) Link</label>
+            <input
+                type="url"
+                name="twitter_link"
+                class="form-control"
+                value="{{ social_data[2] if social_data else '' }}"
+                placeholder="https://x.com/yourpage">
+
+            <label>WhatsApp Link</label>
+            <input
+                type="url"
+                name="whatsapp_link"
+                class="form-control"
+                value="{{ social_data[3] if social_data else '' }}"
+                placeholder="https://wa.me/919876543210">
+
+            <label>LinkedIn Link</label>
+            <input
+                type="url"
+                name="linkedin_link"
+                class="form-control"
+                value="{{ social_data[4] if social_data else '' }}"
+                placeholder="https://linkedin.com/company/yourcompany">
+
+            <br>
+
+            <button type="submit" class="update-btn">
+                Save Social Links
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<br>
+
+<table class="table table-bordered">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Facebook</th>
+            <th>Twitter</th>
+            <th>WhatsApp</th>
+            <th>LinkedIn</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% if social_links %}
+
+            {% for row in social_links %}
+
+            <tr>
+
+                <td>{{ row[0] }}</td>
+
+                <td>
+                    {% if row[1] %}
+                    <a href="{{ row[1] }}" target="_blank">Open</a>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if row[2] %}
+                    <a href="{{ row[2] }}" target="_blank">Open</a>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if row[3] %}
+                    <a href="{{ row[3] }}" target="_blank">Open</a>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if row[4] %}
+                    <a href="{{ row[4] }}" target="_blank">Open</a>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+
+                <td>
+
+                    <a href="/edit_social_links/{{ row[0] }}"
+                       class="btn btn-primary btn-sm">
+                        Edit
+                    </a>
+
+                    <a href="/delete_social_links/{{ row[0] }}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Delete these social links?')">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+                <td colspan="6" style="text-align:center;">
+                    No Social Links Available
+                </td>
+            </tr>
+
+        {% endif %}
+
+    </tbody>
+
+</table>
+</section>
+
+
+
+<!-- ================= FAQ PAGE ================= -->
+<section id="faq" class="section">
+
+<h1>FAQ Management</h1>
+
+<div class="card">
+
+<div class="card-header">
+<h2>Add FAQ</h2>
+</div>
+
+<div class="card-body">
+
+<form id="faqForm" action="/add_faq" method="POST">
+
+    <input type="hidden" id="faq_id" name="faq_id">
+
+    <label>Category</label>
+
+    <select
+        id="category_id"
+        name="category_id"
+        class="form-control"
+        required>
+
+        <option value="">Select Category</option>
+
+        {% for c in faq_categories %}
+        <option value="{{ c[0] }}">
+            {{ c[1] }}
+        </option>
+        {% endfor %}
+
+    </select>
+
+    <label>Question</label>
+
+    <input
+        id="question"
+        type="text"
+        name="question"
+        class="form-control"
+        required>
+
+    <label>Answer</label>
+
+    <textarea
+        id="answer"
+        name="answer"
+        rows="5"
+        class="form-control"
+        required></textarea>
+
+    <br>
+
+  <button
+        type="submit"
+        id="addBtn"
+        class="update-btn">
+        Add FAQ
+    </button>
+
+    <button
+    type="button"
+    id="updateBtn"
+    class="update-btn"
+    onclick="updateFAQ()">
+    Update FAQ
+</button>
+
+</form>
+</div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<div class="card-header">
+<h2>FAQ List</h2>
+</div>
+
+<div class="card-body">
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+<th>Category</th>
+<th>Question</th>
+<th>Answer</th>
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for faq in faqs %}
+
+<tr>
+
+<td>{{ faq[0] }}</td>
+
+<td>{{ faq[2] }}</td>
+
+<td>{{ faq[3] }}</td>
+
+<td>{{ faq[4] }}</td>
+
+<td>
+
+<!-- EDIT -->
+<button
+type="button"
+class="update-btn"
+onclick="editFAQ(
+'{{ faq[0] }}',
+'{{ faq[1] }}',
+'{{ faq[3] }}',
+'{{ faq[4] }}'
+)">
+Edit
+</button>
+
+<!-- DELETE -->
+<form
+method="POST"
+action="/save_faq"
+style="display:inline;">
+
+    <input
+        type="hidden"
+        name="faq_id"
+        value="{{ faq[0] }}">
+
+    <button
+        type="submit"
+        name="action"
+        value="DELETE"
+        class="delete-btn"
+        onclick="return confirm('Delete FAQ?')">
+        Delete
+    </button>
+
+</form>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+   <!-- ================================================= -->
+    <!-- PHOENIX CATEGORY MANAGEMENT -->
+    <!-- ================================================= -->
+
+    <section id="phoenix-admin" class="section">
+
+     
+    <!-- ================= PHOENIX CATEGORY ================= -->
+    <!-- <div class="card">
+
+        <div class="card-header">
+            <h2>Phoenix Categories</h2>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST" id="phoenixCategoryForm">
+
+                <input type="hidden"
+                      name="category_id"
+                      id="phoenix_category_id">
+
+                <label>Title</label>
+                <input type="text"
+                      name="title"
+                      id="phoenix_title"
+                      class="form-control">
+
+                <label>Description</label>
+                <textarea name="description"
+                          id="phoenix_description"
+                          class="form-control"
+                          rows="4"></textarea>
+
+                <label>Icon</label>
+                <input type="text"
+                      name="icon"
+                      id="phoenix_icon"
+                      class="form-control">
+
+                <label>Slug</label>
+                <input type="text"
+                      name="slug"
+                      id="phoenix_slug"
+                      class="form-control">
+
+                <label>Display Order</label>
+                <input type="number"
+                      name="display_order"
+                      id="phoenix_display_order"
+                      value="0"
+                      class="form-control">
+
+                <label>Active</label>
+                <select name="is_active"
+                        id="phoenix_is_active"
+                        class="form-control">
+
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+
+                </select>
+
+                <br>
+
+                <button type="submit"
+                        formaction="/add-phoenix-category"
+                        class="add-button">
+                    Add Category
+                </button>
+
+                <button type="submit"
+                        formaction="/update-phoenix-category"
+                        class="update-btn">
+                    Update Category
+                </button>
+
+            </form>
+
+            <br>
+
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Slug</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for c in phoenix_categories %}
+
+                <tr>
+
+                    <td>{{ c[0] }}</td>
+                    <td>{{ c[1] }}</td>
+                    <td>{{ c[4] }}</td>
+                    <td>{{ c[5] }}</td>
+
+                    <td>
+                        {% if c[6] %}
+                            Active
+                        {% else %}
+                            Inactive
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <button type="button"
+                                class="update-btn"
+                                onclick="fillPhoenixCategory(
+                                    '{{ c[0] }}',
+                                    '{{ c[1] }}',
+                                    '{{ c[2] }}',
+                                    '{{ c[3] }}',
+                                    '{{ c[4] }}',
+                                    '{{ c[5] }}',
+                                    '{{ c[6] }}'
+                                )">
+                            Edit
+                        </button>
+
+                        <form method="POST"
+                              action="/delete-phoenix-category/{{ c[0] }}"
+                              style="display:inline;">
+
+                            <button type="submit"
+                                    class="delete-btn">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+    </div> -->
+
+    <!-- ================= PHOENIX PRODUCTS ================= -->
+    <!-- <div class="card" style="margin-top:20px;">
+
+        <div class="card-header">
+            <h2>Phoenix Products</h2>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST"
+                  enctype="multipart/form-data"
+                  id="phoenixProductForm">
+
+                <input type="hidden"
+                      name="product_id"
+                      id="phoenix_product_id">
+
+                <label>Slug</label>
+                <input type="text"
+                      name="slug"
+                      id="phoenix_product_slug"
+                      class="form-control">
+
+                <label>Title</label>
+                <input type="text"
+                      name="title"
+                      id="phoenix_product_title"
+                      class="form-control">
+
+                <label>Description</label>
+                <textarea name="description"
+                          id="phoenix_product_description"
+                          class="form-control"
+                          rows="5"></textarea>
+
+                <label>Product Image</label>
+                <input type="file"
+                      name="product_image"
+                      class="form-control">
+
+                <label>Features</label>
+                <textarea name="features"
+                          id="phoenix_features"
+                          rows="5"
+                          class="form-control"></textarea>
+
+                <label>Advantages</label>
+                <textarea name="advantages"
+                          id="phoenix_advantages"
+                          rows="5"
+                          class="form-control"></textarea>
+
+                <label>Specifications</label>
+                <textarea name="specifications"
+                          id="phoenix_specifications"
+                          rows="5"
+                          class="form-control"></textarea>
+
+                <label>Display Order</label>
+                <input type="number"
+                      name="display_order"
+                      id="phoenix_product_order"
+                      value="0"
+                      class="form-control">
+
+                <label>Active</label>
+                <select name="is_active"
+                        id="phoenix_product_active"
+                        class="form-control">
+
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+
+                </select>
+
+                <br>
+
+                <button type="submit"
+                        formaction="/add-phoenix-product"
+                        class="add-button">
+                    Add Product
+                </button>
+
+                <button type="submit"
+                        formaction="/update-phoenix-product"
+                        class="update-btn">
+                    Update Product
+                </button>
+
+            </form>
+
+            <br>
+
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Slug</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for p in phoenix_products %}
+
+                <tr>
+
+                    <td>{{ p[0] }}</td>
+                    <td>{{ p[2] }}</td>
+                    <td>{{ p[1] }}</td>
+                    <td>{{ p[8] }}</td>
+
+                    <td>
+                        {% if p[9] %}
+                            Active
+                        {% else %}
+                            Inactive
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <button type="button"
+                                class="update-btn"
+                                onclick="fillPhoenixProduct(
+                                    '{{ p[0] }}',
+                                    '{{ p[1] }}',
+                                    '{{ p[2] }}',
+                                    '{{ p[3] }}',
+                                    '{{ p[5] }}',
+                                    '{{ p[6] }}',
+                                    '{{ p[7] }}',
+                                    '{{ p[8] }}',
+                                    '{{ p[9] }}'
+                                )">
+                            Edit
+                        </button>
+
+                        <form method="POST"
+                              action="/delete-phoenix-product/{{ p[0] }}"
+                              style="display:inline;">
+
+                            <button type="submit"
+                                    class="delete-btn">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+    </div> -->
+
+
+
+    <!-- ================= PHOENIX CATALOGS ================= -->
+    <div class="card" style="margin-top:20px;">
+
+        <div class="card-header">
+            <h2>Phoenix Catalogs</h2>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST" action="{{ url_for('phoenix_bp.add_phoenix_catalog') }}"
+                  enctype="multipart/form-data"
+                  id="phoenixCatalogForm">
+
+                <input type="hidden"
+                      name="catalog_id"
+                      id="phoenix_catalog_id">
+
+                <label>Catalog Title</label>
+                <input type="text"
+                      name="title"
+                      id="phoenix_catalog_title"
+                      class="form-control">
+
+                <label>PDF File</label>
+                <input type="file"
+                      name="pdf_file"
+                      accept=".pdf"
+                      class="form-control">
+
+                <label>Display Order</label>
+                <input type="number"
+                      name="display_order"
+                      id="phoenix_catalog_order"
+                      value="0"
+                      class="form-control">
+
+                <label>Active</label>
+                <select name="is_active"
+                        id="phoenix_catalog_active"
+                        class="form-control">
+
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+
+                </select>
+
+                <br>
+
+                <button type="submit"
+                        
+                        class="add-button">
+                    Add Catalog
+                </button>
+
+                <button type="submit"
+                        formaction="/update-phoenix-catalog"
+                        class="update-btn">
+                    Update Catalog
+                </button>
+
+            </form>
+
+            <br>
+
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>PDF</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for c in phoenix_catalogs %}
+
+                <tr>
+
+                    <td>{{ c[0] }}</td>
+                    <td>{{ c[1] }}</td>
+
+                    <td>
+                        {% if c[2] %}
+                        <a href="{{ url_for('static', filename=c[2]) }}" target="_blank">
+                          View PDF
+                        </a>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ c[3] }}</td>
+
+                    <td>
+                        {% if c[4] %}
+                            Active
+                        {% else %}
+                            Inactive
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <button type="button"
+                                class="update-btn"
+                                onclick="fillPhoenixCatalog(
+                                    '{{ c[0] }}',
+                                    '{{ c[1] }}',
+                                    '{{ c[3] }}',
+                                    '{{ c[4] }}'
+                                )">
+                            Edit
+                        </button>
+
+                        <form method="POST"
+                              action="/delete-phoenix-catalog/{{ c[0] }}"
+                              style="display:inline;">
+
+                            <button type="submit"
+                                    class="delete-btn">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- ================= PHOENIX CERTIFICATES ================= -->
+    <div class="card" style="margin-top:20px;">
+
+        <div class="card-header">
+            <h2>Phoenix Certificates</h2>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST"
+                  enctype="multipart/form-data"
+                  id="phoenixCertificateForm">
+
+                <input type="hidden"
+                      name="certificate_id"
+                      id="phoenix_certificate_id">
+
+                <label>Certificate Title</label>
+                <input type="text"
+                      name="title"
+                      id="phoenix_certificate_title"
+                      class="form-control">
+
+                <label>Certificate Image</label>
+                <input type="file"
+                      name="certificate_image"
+                      class="form-control">
+
+                <label>Display Order</label>
+                <input type="number"
+                      name="display_order"
+                      id="phoenix_certificate_order"
+                      value="0"
+                      class="form-control">
+
+                <label>Status</label>
+                <select name="is_active"
+                        id="phoenix_certificate_active"
+                        class="form-control">
+
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+
+                </select>
+
+                <br>
+
+                <button type="submit"
+                        formaction="/add-phoenix-certificate"
+                        class="add-button">
+                    Add Certificate
+                </button>
+
+                <button type="submit"
+                        formaction="/update-phoenix-certificate"
+                        class="update-btn">
+                    Update Certificate
+                </button>
+
+            </form>
+
+            <br>
+
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Image</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for c in phoenix_certificates %}
+
+                <tr>
+
+                    <td>{{ c[0] }}</td>
+                    <td>{{ c[1] }}</td>
+
+                    <td>
+                        {% if c[2] %}
+                        <img src="{{ url_for('static', filename=c[2]) }}"
+     width="80"
+     height="80"
+     style="object-fit:cover;">
+                        {% endif %}
+                    </td>
+
+                    <td>{{ c[3] }}</td>
+
+                    <td>
+                        {% if c[4] %}
+                            Active
+                        {% else %}
+                            Inactive
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <button type="button"
+                                class="update-btn"
+                                onclick="fillPhoenixCertificate(
+                                    '{{ c[0] }}',
+                                    '{{ c[1] }}',
+                                    '{{ c[3] }}',
+                                    '{{ c[4] }}'
+                                )">
+                            Edit
+                        </button>
+
+                        <form method="POST"
+                              action="/delete-phoenix-certificate/{{ c[0] }}"
+                              style="display:inline;">
+
+                            <button type="submit"
+                                    class="delete-btn">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+    </div>
+  </section>
+
+ 
+ <!-- ================= SALARY SECTION ================= -->
+
+<section id="salary" class="section">
+
+    <div class="salary-top-header">
+        <div>
+            <h1>Salary Management</h1>
+            <br>
+            <p class="salary-subtitle">
+                Upload, Manage and Generate Employee Salary Slips
+            </p>
+        </div>
+    </div>
+
+    <div class="salary-main-layout">
+
+        <!-- ================================================= -->
+        <!-- LEFT SIDE : UPLOAD / DELETE SHEET -->
+        <!-- ================================================= -->
+
+        <div class="salary-box upload-box">
+
+            <div class="salary-box-header">
+                <h2>Upload Salary Sheet</h2>
+            </div>
+
+            <form
+                action="/upload_salary_sheet"
+                method="POST"
+                enctype="multipart/form-data"
+                class="salary-form">
+
+                <div class="salary-field">
+
+                    <label>Select Month</label>
+
+                    <select name="salary_month" required>
+                        <option value="">Select Month</option>
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+
+                </div>
+
+                <div class="salary-field">
+
+                    <label>Select Year</label>
+
+                    <select name="salary_year" required>
+
+                        <option value="">Select Year</option>
+
+                        {% for y in range(2014,2051) %}
+                        <option value="{{ y }}">{{ y }}</option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="salary-field">
+
+                    <label>Salary Excel Sheet</label>
+
+                    <input
+                        type="file"
+                        name="salary_file"
+                        accept=".xlsx,.xls"
+                        required>
+
+                </div>
+
+                <div class="salary-btn-wrap">
+
+                    <button
+                        type="submit"
+                        class="salary-upload-btn">
+
+                        Upload Sheet
+
+                    </button>
+
+                </div>
+
+            </form>
+
+            <hr style="margin:30px 0;">
+
+            <!-- DELETE SHEET -->
+
+            <div class="salary-box-header">
+            <h2> Delete Salary Sheet </h2>
+            </div>
+
+            <form
+                action="/delete_salary_sheet"
+                method="POST"
+                class="salary-form">
+
+                <div class="salary-field">
+
+                    <label>Month</label>
+
+                    <select name="delete_month" required>
+
+                        <option value="">Select Month</option>
+
+                        <option>January</option>
+                        <option>February</option>
+                        <option>March</option>
+                        <option>April</option>
+                        <option>May</option>
+                        <option>June</option>
+                        <option>July</option>
+                        <option>August</option>
+                        <option>September</option>
+                        <option>October</option>
+                        <option>November</option>
+                        <option>December</option>
+
+                    </select>
+
+                </div>
+
+                <div class="salary-field">
+
+                    <label>Year</label>
+
+                    <select name="delete_year" required>
+
+                        <option value="">Select Year</option>
+
+                        {% for y in range(2014,2051) %}
+                        <option value="{{ y }}">{{ y }}</option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="salary-btn-wrap">
+
+                    <button
+                        type="submit"
+                        class="salary-delete-btn"
+                        onclick="return confirm('Delete salary sheet permanently?')">
+
+                        Delete Sheet
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- ================================================= -->
+        <!-- RIGHT SIDE : GENERATE SALARY SLIP -->
+        <!-- ================================================= -->
+
+        <div class="salary-box view-box">
+
+            <div class="salary-box-header">
+                <h2>Generate Salary Slip</h2>
+            </div>
+
+            <form
+                action="/generate_salary_slip"
+                method="POST"
+                class="salary-form">
+
+                <div class="salary-field">
+
+                    <label>Employee</label>
+
+                    <select name="employee_id" required>
+                        <option value="">Select Employee</option>
+                        {% for emp in employees %}
+                        <option value="{{ emp[1] }}">{{ emp[1] }} — {{ emp[2] }} {{ emp[3] }}</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+
+                <div class="salary-field">
+
+                    <label>Month</label>
+
+                    <select name="month" required>
+
+                        <option value="">Select Month</option>
+
+                        <option>January</option>
+                        <option>February</option>
+                        <option>March</option>
+                        <option>April</option>
+                        <option>May</option>
+                        <option>June</option>
+                        <option>July</option>
+                        <option>August</option>
+                        <option>September</option>
+                        <option>October</option>
+                        <option>November</option>
+                        <option>December</option>
+
+                    </select>
+
+                </div>
+
+                <div class="salary-field">
+
+                    <label>Year</label>
+
+                    <select name="year" required>
+
+                        <option value="">Select Year</option>
+
+                        {% for y in range(2014,2051) %}
+                        <option value="{{ y }}">{{ y }}</option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="salary-btn-wrap">
+
+                    <button
+                        type="submit"
+                        class="salary-view-btn">
+
+                        Generate Slip
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- UPLOADED SALARY HISTORY -->
+    <div class="salary-box" style="margin-top: 30px; width: 100%;">
+        <div class="salary-box-header">
+            <h2>Uploaded Salary Sheets History</h2>
+        </div>
+        <div class="salary-history" style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Year</th>
+                        <th>Original File Name</th>
+                        <th>Uploaded Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if salary_history %}
+                        {% for hist in salary_history %}
+                        <tr>
+                            <td style="font-weight: 500;">{{ hist[0] }}</td>
+                            <td>{{ hist[1] }}</td>
+                            <td style="color: #555;">{{ hist[2] if hist[2] else 'N/A' }}</td>
+                            <td style="font-size: 0.9em; color: #888;">{{ hist[3].strftime('%d %b %Y, %I:%M %p') if hist[3] else '' }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4">No salary sheets uploaded yet.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+
+
+  </main>
+
+  
+
+</div>
+
+
+
+
+
+<script>
+
+function editFAQ(id, category, question, answer){
+
+    document.getElementById("faq_id").value = id;
+    document.getElementById("category_id").value = category;
+    document.getElementById("question").value = question;
+    document.getElementById("answer").value = answer;
+
+    document.getElementById("saveBtn").innerHTML = "Update FAQ";
+
+    document.querySelector("form[action='/save_faq']").action =
+        "/update_faq/" + id;
+
+}
+function editCategory(id, name){
+
+    document.getElementById("category_id").value = id;
+    document.getElementById("category_name").value = name;
+    document.getElementById("category_action").value = "UPDATE";
+
+}
+
+function fillPhoenixCatalog(id, title, order, active) {
+
+    document.getElementById("phoenix_catalog_id").value = id;
+    document.getElementById("phoenix_catalog_title").value = title;
+    document.getElementById("phoenix_catalog_order").value = order;
+    document.getElementById("phoenix_catalog_active").value = active;
+
+    document.getElementById("phoenixCatalogForm").action = "/update-phoenix-catalog";
+}
+
+function fillPhoenixCertificate(id, title, order, active) {
+
+    document.getElementById("phoenix_certificate_id").value = id;
+    document.getElementById("phoenix_certificate_title").value = title;
+    document.getElementById("phoenix_certificate_order").value = order;
+    document.getElementById("phoenix_certificate_active").value = active;
+
+    // Optional: scroll to the form
+    document.getElementById("phoenixCertificateForm")
+            .scrollIntoView({ behavior: "smooth" });
+}
+
+function fillClientForm(
+    id,
+    name,
+    code,
+    email,
+    phone,
+    gst_number,
+    pan_number,
+    city,
+    state,
+    country
+){
+
+    document.getElementById("client_id").value = id;
+    document.getElementById("client_name").value = name;
+    document.getElementById("client_code").value = code;
+    document.getElementById("email").value = email;
+    document.getElementById("phone").value = phone;
+    document.getElementById("gst_number").value = gst_number;
+    document.getElementById("client_pan_number").value = pan_number;
+    document.getElementById("city").value = city;
+    document.getElementById("state").value = state;
+    document.getElementById("country").value = country;
+
+    document.getElementById("add-button").style.display = "none";
+    document.getElementById("update-btn").style.display = "inline";
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function fillProjectForm(id, name, clientId, startDate, endDate, status) {
+
+    document.getElementById("project_id").value = id;
+
+    document.getElementById("project_name").value = name;
+    document.getElementById("project_client_id").value = clientId;
+    document.getElementById("start_date").value = startDate;
+    document.getElementById("end_date").value = endDate;
+    document.getElementById("project_status").value = status;
+
+    showSection('projects');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function fillEmployeeForm(
+id,
+code,
+first,
+last,
+dob,
+doj,
+
+phone,
+aadhar,
+pan,
+email, 
+comp_mail,
+gender,
+reporting_manager,
+location_id,
+grade_id,
+project_id
+) {
+
+document.getElementById("employee_id").value = id;
+document.getElementById("employee_code").value = code;
+document.getElementById("first_name").value = first;
+document.getElementById("last_name").value = last;
+
+document.getElementById("dob").value = dob;
+document.getElementById("doj").value = doj;
+
+
+document.getElementById("phone_emp").value = phone;
+document.getElementById("aadhar_number").value = aadhar;
+document.getElementById("pan_number").value = pan;
+
+document.getElementById("email_emp").value = email;
+document.getElementById("comp_mail").value = comp_mail;
+
+document.querySelector(
+    `input[name="gender"][value="${gender}"]`
+).checked = true;
+
+document.getElementById("reporting_manager_id").value=reporting_manager;
+document.getElementById("location_id").value=location_id;
+document.getElementById("grade_id").value=grade_id;
+
+
+document.getElementById("project_id_emp").value = project_id;
+
+// ✅ SET GENDER RADIO
+// document.querySelectorAll('input[name="gender"]').forEach(r => r.checked = false);
+
+// if (gender) {
+//     const radio = document.querySelector('input[name="gender"][value="${gender}"]`);
+//     if(radio) radio.checked = true;
+// }
+
+// showSection('employees');
+// window.scrollTo({top:0,behavior:'smooth'});
+// }
+
+document.getElementById("reporting_manager_id").value = reporting_manager;
+
+document.getElementById("location_id").value = location_id;
+document.getElementById("grade_id").value = grade_id;
+}
+
+
+
+
+function openLocationGradeTab(evt, tabName)
+{
+    document.querySelectorAll("#location-grade .tab-content").forEach(tab=>{
+        tab.classList.remove("active");
+    });
+
+    document.querySelectorAll("#location-grade .tab-btn").forEach(btn=>{
+        btn.classList.remove("active");
+    });
+
+    document.getElementById(tabName).classList.add("active");
+
+    if(evt){
+        evt.currentTarget.classList.add("active");
+    }else{
+        document.querySelector("#location-grade .tab-btn").classList.add("active");
+    }
+}
+
+
+/* ================= LOGIN TABS (scoped) ================= */
+function openLoginTab(evt, tabName)
+{
+    // Only hide/show elements inside the emplogin section
+    let contents = document.querySelectorAll(".login-tab-content");
+    for(let i = 0; i < contents.length; i++) {
+        contents[i].style.display = "none";
+        contents[i].classList.remove("active");
+    }
+
+    let buttons = document.querySelectorAll(".login-tab-btn");
+    for(let i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove("active");
+    }
+
+    document.getElementById(tabName).style.display = "block";
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
+}
+
+
+
+/* ================= LOCATION ================= */
+
+function fillLocationForm(
+id,
+name,
+country,
+state,
+city,
+latitude,
+longitude,
+radius
+)
+{
+    document.getElementById("location_id").value = id;
+
+    document.getElementById("location_name").value = name;
+
+    document.getElementById("location_country").value = country;
+
+    document.getElementById("location_state").value = state;
+
+    document.getElementById("location_city").value = city;
+
+    document.getElementById("latitude").value = latitude;
+
+    document.getElementById("longitude").value = longitude;
+
+    document.getElementById("radius").value = radius;
+}
+
+
+/* ================= GRADE ================= */
+
+function fillGradeForm(
+id,
+name,
+level
+)
+{
+    document.getElementById("grade_id").value = id;
+
+    document.getElementById("grade_name").value = name;
+
+    document.getElementById("grade_level").value = level;
+}
+
+</script>
+<script>
+  function validateRepeated(input)
+  {
+    let value=input.value.trim();
+    if (/^(.)\1+$/.test(value))
+  {
+    alert("Invalid Input");
+    input.value=" ";
+  }
+  }
+</script>
+<script src="/static/admin/admin.js"></script>
+<script src="/static/admin/website.js"></script>
+<script src="/static/admin/salary.js"></script>
+<script src="/static/script.js"></script>
+
+</body>
+</html>  

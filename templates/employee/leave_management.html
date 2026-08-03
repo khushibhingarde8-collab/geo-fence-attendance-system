@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Leave Management</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:#f4f7fb;
+    color:#1e293b;
+}
+
+/* HEADER */
+.header{
+    background:linear-gradient(135deg,#2563eb,#1e40af);
+    padding:22px 35px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:white;
+    box-shadow:0 4px 20px rgba(0,0,0,0.1);
+}
+
+.header-left h1{
+    font-size:26px;
+    font-weight:700;
+}
+
+.user{
+    margin-top:6px;
+    font-size:14px;
+    opacity:0.95;
+}
+
+/* BUTTON */
+.btn{
+    border:none;
+    padding:12px 18px;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+    font-family:'Poppins',sans-serif;
+}
+
+.apply-btn{
+    background:white;
+    color:#2563eb;
+}
+
+.apply-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* CARDS */
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+    padding:30px;
+}
+
+.card{
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card small{
+    color:#64748b;
+    font-size:14px;
+}
+
+.card h2{
+    margin-top:10px;
+    font-size:34px;
+    color:#0f172a;
+}
+
+/* TABS */
+.tabs{
+    display:flex;
+    gap:15px;
+    padding:0 30px;
+    margin-bottom:20px;
+}
+
+.tab{
+    padding:12px 20px;
+    border-radius:10px;
+    background:white;
+    cursor:pointer;
+    font-weight:500;
+    transition:0.3s;
+    box-shadow:0 3px 10px rgba(0,0,0,0.04);
+}
+
+.tab:hover{
+    background:#eff6ff;
+}
+
+.tab.active{
+    background:#2563eb;
+    color:white;
+}
+
+/* TABLE */
+.table-container{
+    padding:0 30px 30px;
+}
+
+.filters{
+    padding:20px 30px;
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+.filters select,
+.filters input{
+    padding:10px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    font-family:'Poppins',sans-serif;
+    min-width:180px;
+}
+
+.table-box{
+    background:white;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#1e293b;
+    color:white;
+    padding:16px;
+    font-size:14px;
+    font-weight:600;
+}
+
+td{
+    padding:16px;
+    text-align:center;
+    border-bottom:1px solid #e2e8f0;
+    font-size:14px;
+}
+
+tr:hover{
+    background:#f8fafc;
+}
+
+/* STATUS */
+.status{
+    padding:7px 14px;
+    border-radius:30px;
+    font-size:12px;
+    font-weight:600;
+    display:inline-block;
+}
+
+.pending{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.approved{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.rejected{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.cancelled{
+    background:#e2e8f0;
+    color:#334155;
+}
+
+/* ACTION BUTTONS */
+.action-btn{
+    border:none;
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    margin:2px;
+}
+
+.approve-btn{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.reject-btn{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.cancel-btn{
+    background:#e2e8f0;
+    color:#334155;
+}
+
+/* MODAL */
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(15,23,42,0.55);
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-content{
+    background:white;
+    width:460px;
+    border-radius:24px;
+    padding:32px;
+    animation:popup 0.25s ease;
+    box-shadow:0 20px 50px rgba(0,0,0,0.15);
+}
+
+@keyframes popup{
+    from{
+        transform:scale(0.9);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+/* HEADER */
+.modal-header{
+    margin-bottom:22px;
+}
+
+.modal-header h3{
+    font-size:28px;
+    font-weight:700;
+    color:#0f172a;
+    margin-bottom:6px;
+}
+
+.modal-header p{
+    color:#64748b;
+    font-size:14px;
+}
+
+/* FORM */
+.form-group{
+    margin-bottom:18px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    font-size:14px;
+    font-weight:600;
+    color:#334155;
+}
+
+.form-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.leave-select{
+    width:100%;
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select{
+    width:100%;
+    padding:13px;
+    border:1px solid #cbd5e1;
+    border-radius:12px;
+    font-family:'Poppins',sans-serif;
+    font-size:14px;
+    transition:0.25s;
+    background:#f8fafc;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus{
+    outline:none;
+    border-color:#2563eb;
+    background:white;
+    box-shadow:0 0 0 4px rgba(37,99,235,0.12);
+}
+
+.modal-content textarea{
+    height:120px;
+    resize:none;
+}
+
+/* BUTTONS */
+.modal-buttons{
+    margin-top:28px;
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+}
+
+.submit-btn{
+    background:#2563eb;
+    color:white;
+    padding:12px 22px;
+}
+
+.submit-btn:hover{
+    background:#1d4ed8;
+}
+
+.close-btn{
+    background:#e2e8f0;
+    color:#334155;
+    padding:12px 22px;
+}
+
+.close-btn:hover{
+    background:#cbd5e1;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+.modal-content{
+    width:92%;
+    padding:24px;
+}
+
+.form-row{
+    grid-template-columns:1fr;
+}
+
+}
+/* MOBILE */
+@media(max-width:768px){
+
+.header{
+    flex-direction:column;
+    gap:15px;
+    align-items:flex-start;
+}
+
+.tabs{
+    overflow:auto;
+}
+
+table{
+    font-size:12px;
+}
+
+th,td{
+    padding:10px;
+}
+
+.modal-content{
+    width:92%;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+
+<div class="header-left">
+<h1>Leave Management</h1>
+
+<div class="user" id="userInfo">
+👤 Employee Portal
+</div>
+</div>
+
+<button class="btn apply-btn" onclick="openModal()">
++ Apply Leave
+</button>
+
+</div>
+
+<!-- CARDS -->
+<div class="cards">
+
+<div class="card">
+<small>Available Leaves</small>
+<h2 id="available">0</h2>
+</div>
+
+<div class="card">
+<small>Pending Requests</small>
+<h2 id="pending">0</h2>
+</div>
+
+<div class="card">
+<small>Approved This Year</small>
+<h2 id="approved">0</h2>
+</div>
+
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+
+<div class="tab active" onclick="loadRequests(this)">
+My Requests
+</div>
+
+<div class="tab" onclick="loadHistory(this)">
+History
+</div>
+
+<div class="tab" id="teamTab" style="display:none;" onclick="loadTeam(this)">
+Team Approval
+</div>
+
+<div class="tab"
+id="teamHistoryTab"
+style="display:none;"
+onclick="loadTeamHistory(this)">
+Team Approval History
+</div>
+
+</div>
+
+<!-- TABLE -->
+<div class="table-container">
+
+<div class="filters">
+
+<select id="monthFilter">
+
+<option value="">All Months</option>
+
+<option value="1">January</option>
+<option value="2">February</option>
+<option value="3">March</option>
+<option value="4">April</option>
+<option value="5">May</option>
+<option value="6">June</option>
+<option value="7">July</option>
+<option value="8">August</option>
+<option value="9">September</option>
+<option value="10">October</option>
+<option value="11">November</option>
+<option value="12">December</option>
+
+</select>
+
+<select id="yearFilter">
+<option value="">All Years</option>
+</select>
+
+<select id="statusFilter">
+
+<option value="">All Status</option>
+
+<option value="Pending">Pending</option>
+<option value="Approved">Approved</option>
+<option value="Rejected">Rejected</option>
+<option value="Cancelled">Cancelled</option>
+
+</select>
+
+<div id="employeeFilterBox" style="display:none;">
+
+<input
+type="text"
+id="employeeFilter"
+placeholder="Employee Name"
+/>
+
+</div>
+
+<button class="btn submit-btn"
+onclick="applyFilters()">
+Apply Filter
+</button>
+
+</div>    
+
+<div class="table-box">
+
+<table>
+
+<thead id="thead"></thead>
+
+<tbody id="tbody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+    <h3>Apply Leave</h3>
+    <p>Submit your leave request professionally</p>
+</div>
+
+<div class="form-group">
+    <label>From Date</label>
+    <input type="date" id="from">
+</div>
+
+<div class="form-group">
+    <label>To Date</label>
+    <input type="date" id="to">
+</div>
+
+<div class="form-row">
+
+    <div class="form-group">
+        <label>Total Days</label>
+        <input
+            type="number"
+            id="days"
+            placeholder="0"
+            readonly
+        >
+    </div>
+
+    <div class="form-group">
+        <label>Leave Type</label>
+
+        <select id="leaveType" class="leave-select">
+
+            <option value="Full Day">
+                Full Day
+            </option>
+
+            <option value="Half Day">
+                Half Day
+            </option>
+
+        </select>
+    </div>
+
+</div>
+
+<div class="form-group">
+    <label>Reason</label>
+
+    <textarea
+        id="reason"
+        placeholder="Enter leave reason..."
+    ></textarea>
+</div>
+
+<div class="modal-buttons">
+
+    <button
+        class="btn close-btn"
+        onclick="closeModal()"
+    >
+        Cancel
+    </button>
+
+    <button
+        type="button"
+        class="btn submit-btn"
+        onclick="applyLeave()"
+    >
+        Submit Request
+    </button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+let currentTab = "requests";
+
+// AUTO DAYS CALCULATION
+document.getElementById("from").addEventListener("change", calculateDays);
+document.getElementById("to").addEventListener("change", calculateDays);
+document.getElementById("leaveType")
+.addEventListener("change", calculateDays);
+
+function calculateDays(){
+
+let from = document.getElementById("from").value;
+let to = document.getElementById("to").value;
+let leaveType = document.getElementById("leaveType").value;
+
+// HALF DAY
+if(leaveType == "Half Day" && from){
+
+    document.getElementById("to").value = from;
+
+    document.getElementById("days").value = 0.5;
+
+    return;
+}
+
+if(from && to){
+
+    let start = new Date(from);
+    let end = new Date(to);
+
+    let diff = end - start;
+
+    let days = diff / (1000 * 60 * 60 * 24) + 1;
+
+    if(days > 0){
+
+        document.getElementById("days").value =
+        leaveType == "Half Day" ? 0.5 : days;
+    }
+}
+
+}
+
+// DASHBOARD
+function loadDashboard(){
+
+fetch('/api/leave/dashboard')
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("available").innerText = data.available;
+document.getElementById("pending").innerText = data.pending;
+document.getElementById("approved").innerText = data.approved;
+
+document.getElementById("userInfo").innerText =
+`👤 ${data.emp_name} | Employee ID : ${data.emp_id}`;
+
+if(data.is_manager == 1){
+
+document.getElementById("teamTab").style.display = "block";
+
+document.getElementById("teamHistoryTab").style.display = "block";
+
+document.getElementById("employeeFilterBox").style.display = "block";
+
+}else{
+
+document.getElementById("teamTab").style.display = "none";
+
+document.getElementById("teamHistoryTab").style.display = "none";
+
+document.getElementById("employeeFilterBox").style.display = "none";
+}
+
+})
+.catch(err=>{
+console.log(err);
+});
+
+}
+
+// APPLY LEAVE
+async function applyLeave(){
+
+let from = document.getElementById("from").value;
+let to = document.getElementById("to").value;
+let days = document.getElementById("days").value;
+let reason = document.getElementById("reason").value;
+let leaveType =
+document.getElementById("leaveType").value;
+
+if(!from || !to || !days || !reason){
+
+alert("Please fill all fields");
+return;
+
+}
+
+try{
+
+const response = await fetch('/api/leave/apply',{
+
+method:'POST',
+
+headers:{
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+from_date:from,
+to_date:to,
+days:days,
+reason:reason,
+leave_type:leaveType
+})
+
+});
+
+const data = await response.json();
+
+console.log(data);
+
+alert(data.message || data.error);
+
+if(data.message){
+
+closeModal();
+
+
+loadDashboard();
+
+loadRequests(document.querySelector(".tab.active"));
+
+}
+
+}catch(error){
+
+console.log(error);
+
+alert("Server Error");
+
+}
+
+}
+
+// LOAD REQUESTS
+function loadRequests(el){
+
+setActive(el);
+
+fetch('/api/leave/my_requests')
+.then(res=>res.json())
+.then(data=>{
+currentTab = "requests";
+renderTable(data,"requests");});
+
+}
+
+// HISTORY
+function loadHistory(el){
+
+setActive(el);
+
+fetch('/api/leave/history')
+.then(res=>res.json())
+.then(data=>{
+
+currentTab = "history";
+
+data = data.filter(x => x.status !== "Pending");
+
+renderTable(data,"history");
+
+});
+
+}
+
+// TEAM
+function loadTeam(el){
+
+setActive(el);
+
+fetch('/api/leave/team')
+.then(res=>res.json())
+.then(data=>{
+currentTab = "team";    
+renderTable(data,"team");
+});
+
+}
+// team history
+function loadTeamHistory(el){
+
+setActive(el);
+
+fetch('/api/leave/team_history')
+.then(res => res.json())
+.then(data => {
+currentTab = "team_history";    
+
+renderTable(data, "team_history");
+
+});
+
+}
+
+function applyFilters(){
+
+let month = document.getElementById("monthFilter").value;
+let year = document.getElementById("yearFilter").value;
+let status = document.getElementById("statusFilter").value;
+let employee = document.getElementById("employeeFilter").value;
+
+let url = "";
+
+if(currentTab == "requests"){
+url = "/api/leave/my_requests";
+}
+
+else if(currentTab == "history"){
+url = "/api/leave/history";
+}
+
+else if(currentTab == "team"){
+url = "/api/leave/team";
+}
+
+else if(currentTab == "team_history"){
+url = "/api/leave/team_history";
+}
+
+url += `?month=${month}&year=${year}&status=${status}&employee=${employee}`;
+
+fetch(url)
+.then(res => res.json())
+.then(data => {
+
+if(currentTab == "history"){
+data = data.filter(x => x.status !== "Pending");
+}
+
+renderTable(data,currentTab);
+
+});
+
+}
+
+// TABLE
+function renderTable(data,type){
+
+let head = document.getElementById("thead");
+let body = document.getElementById("tbody");
+
+head.innerHTML = "";
+body.innerHTML = "";
+
+if(type=="team" || type=="team_history"){
+
+head.innerHTML = `
+<tr>
+<th>Employee</th>
+<th>From</th>
+<th>To</th>
+<th>Days</th>
+<th>Applied On</th>
+<th>Approved On</th>
+<th>Type</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+`;
+
+}else{
+
+head.innerHTML = `
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Days</th>
+<th>Applied On</th>
+<th>Approved On</th>
+<th>Type</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+`;
+
+}
+
+if(!data || data.length === 0){
+
+body.innerHTML = `
+<tr>
+<td colspan="9">No records found</td>
+</tr>
+`;
+
+return;
+
+}
+
+data.forEach(r=>{
+
+let fromDate = "-";
+let toDate = "-";
+let appliedOn = r.applied_time || "-";
+let approvedOn = r.approved_time || "-";
+
+if(r.from_date){
+fromDate = new Date(r.from_date).toLocaleDateString('en-IN');
+}
+
+if(r.to_date){
+toDate = new Date(r.to_date).toLocaleDateString('en-IN');
+}
+
+let row = "<tr>";
+
+if(type=="team" || type=="team_history"){
+
+row += `<td>${r.full_name || "-"}</td>`;
+
+}
+
+row += `
+<td>${fromDate}</td>
+<td>${toDate}</td>
+<td>${r.days || "-"}</td>
+<td>${appliedOn}</td>
+<td>${approvedOn}</td>
+<td>${r.leave_type || "-"}</td>
+`;
+
+row += `
+<td>
+<span class="status ${(r.status || 'pending').toLowerCase()}">
+${r.status || "Pending"}
+</span>
+</td>
+`;
+
+if(type=="team"){
+
+row += `
+<td>
+
+<button class="action-btn approve-btn"
+onclick="approve(${r.id})">
+Approve
+</button>
+
+<button class="action-btn reject-btn"
+onclick="reject(${r.id})">
+Reject
+</button>
+
+</td>
+`;
+
+}
+
+else if(type=="team_history"){
+
+row += `
+<td>-</td>
+`;
+
+}else if(type=="requests" && r.status=="Pending"){
+
+row += `
+<td>
+
+<button class="action-btn cancel-btn"
+onclick="cancelLeave(${r.id})">
+Cancel
+</button>
+
+</td>
+`;
+
+}else{
+
+row += "<td>-</td>";
+
+}
+
+row += "</tr>";
+
+body.innerHTML += row;
+
+});
+
+}
+
+// ACTIONS
+function cancelLeave(id){
+
+fetch(`/api/leave/cancel/${id}`,{
+method:'POST'
+})
+.then(()=>loadRequests(document.querySelector(".tab.active")));
+
+}
+
+function approve(id){
+
+fetch(`/api/leave/approve/${id}`,{
+method:'POST'
+})
+.then(()=>loadTeam(document.querySelector(".tab.active")));
+
+}
+
+function reject(id){
+
+fetch(`/api/leave/reject/${id}`,{
+method:'POST'
+})
+.then(()=>loadTeam(document.querySelector(".tab.active")));
+
+}
+
+// ACTIVE TAB
+function setActive(el){
+
+document.querySelectorAll(".tab").forEach(t=>{
+t.classList.remove("active");
+});
+
+el.classList.add("active");
+
+}
+
+// MODAL
+function openModal(){
+document.getElementById("modal").classList.add("show");
+}
+
+function closeModal(){
+
+document.getElementById("modal").classList.remove("show");
+
+document.getElementById("from").value = "";
+document.getElementById("to").value = "";
+document.getElementById("days").value = "";
+document.getElementById("reason").value = "";
+
+document.getElementById("leaveType").value = "Full Day";
+
+}
+
+// AUTO YEAR GENERATION
+let yearSelect = document.getElementById("yearFilter");
+
+let currentYear = new Date().getFullYear();
+
+for(let year = currentYear; year <= currentYear + 10; year++){
+
+    let option = document.createElement("option");
+
+    option.value = year;
+
+    option.text = year;
+
+    yearSelect.appendChild(option);
+
+}
+
+
+// INIT
+loadDashboard();
+loadRequests(document.querySelector(".tab"));
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCE</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='home/style.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='headerfooter.css') }}"
+    />
+
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <script
+      src="{{ url_for('static', filename='home/home.js') }}"
+      defer
+    ></script>
+
+    <script
+      src="{{ url_for('static', filename='security.js') }}"
+      defer
+    ></script>
+  </head>
+
+  <body>
+    <div class="top-bar">
+      <div class="top-left">
+        <span>⏰ Mon - Sat 10:00AM to 6:00PM</span>
+        <span>📍 Mumbai, India</span>
+        <div class="email-section">
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=info@pceengineering.com"
+            >✉ info@pceengineering.com</a
+          >
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=mk@pceengineering.com"
+            >✉ mk@pceengineering.com</a
+          >
+        </div>
+      </div>
+      <div class="top-right">
+        <a
+          href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all"
+          class="social">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+
+        <a
+          href="https://youtube.com/@instpce3554?si=uPzl4tJ4LCkCrSov"
+          class="social">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <img src="static/home/logos/PCE_2.png" alt="PCE Logo" />
+        </div>
+
+        <!-- HAMBURGER ICON -->
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+
+        <!-- NAV LINKS -->
+        <div class="nav-links" id="nav-links">
+          <!-- CLOSE BUTTON -->
+          <button class="close-menu-btn" id="close-menu">Close Menu</button>
+
+          <a href="/" class="nav-item active">Home</a>
+
+          <!-- ABOUT DROPDOWN -->
+          <div class="about-menu nav-item">
+            <div class="mobile-dropdown-toggle">About</div>
+
+            <div class="about-dropdown">
+              <a href="/about">About Us</a>
+              <a href="/service">Services</a>
+              <a href="/project">Projects</a>
+            </div>
+          </div>
+
+          <a href="/client" class="nav-item">Clients</a>
+
+          <a href="/phoenix" class="nav-item"> Phoenix Contact </a>
+
+          <a href="/contact" class="nav-item"> Contact </a>
+
+          <!-- ACCOUNT -->
+          <div class="account nav-item">
+            <div class="mobile-dropdown-toggle">Account</div>
+
+            <div class="dropdown">
+              <a href="/login">Login</a>
+              <a href="/signup">Sign Up</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- News Belt -->
+    <!-- News Belt -->
+    <div class="news-bar">
+      <marquee>
+        {% for news in news_list %} 🚨 {{ news[1] }} {% if news[4] %} |
+        <a href="{{ news[4] }}" target="_blank">Read More</a>
+        {% endif %} &nbsp;&nbsp;&nbsp;&nbsp; {% endfor %}
+      </marquee>
+    </div>
+
+    <!-- HERO SECTION -->
+
+    <section class="hero">
+      <div class="hero-container">
+        <!-- LEFT CONTENT -->
+
+        <div class="hero-content">
+          <div class="hero-tag">ENGINEERING • AUTOMATION • CONSULTING</div>
+
+          <h1>Engineering <span>the Future</span></h1>
+
+          <p>
+            Delivering innovative engineering consultancy solutions that help
+            businesses grow with advanced technology and expert guidance.<br />
+            <br />
+            The success of our projects is not only measurable through our clean
+            indicators on safety, Quality & delivery timing, but also consists
+            in reaching environmental sustainability & Carrying Social
+            Responsibilities.
+          </p>
+
+          <div class="hero-buttons">
+            <a href="/service">
+              <button class="primary-btn">Explore Services</button>
+            </a>
+
+            <a href="/contact">
+              <button class="secondary-btn">Contact Us</button>
+            </a>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE -->
+
+        <div class="hero-video">
+          <div class="video-box">
+            <video
+              autoplay
+              muted
+              loop
+              playsinline
+              disablepictureinpicture
+              controlslist="nodownload noplaybackrate"
+              preload="auto"
+              poster="static/home/images/preview.png"
+            >
+              <source
+                src="static/home/logos/10407687-hd_3840_2160_30fps.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mvv-section">
+      <h2>Our Purpose</h2>
+
+      <div class="mvv-container">
+        {% for purpose in purposes %}
+
+        <div class="mvv-box">
+          <div class="mvv-icon">
+            {% if loop.index == 1 %} 🎯 {% elif loop.index == 2 %} 🚀 {% else %}
+            🤝 {% endif %}
+          </div>
+          <h3>{{ purpose[2] }}</h3>
+          <p>{{ purpose[3] }}</p>
+        </div>
+
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="achievements">
+      <h2>Our Achievements</h2>
+
+      <div class="achievement-container">
+        <div class="achievement-box">
+          <h3 class="counter" data-target="50">0</h3>
+          <p>Projects Completed</p>
+        </div>
+
+        <div class="achievement-box">
+          <h3 class="counter" data-target="25">0</h3>
+          <p>Industry Clients</p>
+        </div>
+
+        <div class="achievement-box">
+          <h3 class="counter" data-target="{{ years_experience }}">0</h3>
+          <p>Years Experience</p>
+        </div>
+
+        <div class="achievement-box">
+          <h3 class="counter" data-target="{{ engineers_trained }}">0</h3>
+          <p>Engineers Trained</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="journey-section">
+      <h2 class="journey-title">Our Journey</h2>
+
+      <div class="timeline">
+        {% for j in journeys %}
+
+        <div
+          class="timeline-item {% if loop.index is odd %}left{% else %}right{% endif %}"
+        >
+          <div class="timeline-content">
+            <h3>{{ j[1] }}</h3>
+
+            <p>
+              <b>{{ j[2] }}</b><br />
+              {{ j[3] }}
+            </p>
+          </div>
+        </div>
+
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="services">
+      <div class="container">
+        <div class="section-header">
+          <h2>Scope Of Our Business</h2>
+        </div>
+
+        <div class="cards">
+          {% for scope in business_scopes %}
+
+          <div class="card">
+            <div class="card-content">
+              <h3>{{ scope[1] }}</h3>
+
+              <p>{{ scope[2] }}</p>
+            </div>
+          </div>
+
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery-section">
+      <div class="gallery-header">
+        <h2>Our Presence & Performance</h2>
+
+        <a href="/gallery" class="view-all-btn"> View All → </a>
+      </div>
+
+      <div class="gallery-container">
+        {% for image in home_gallery %}
+
+        <div class="gallery-card">
+          <img src="/{{ image[3] }}" alt="{{ image[1] }}" />
+        </div>
+
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- FULL GALLERY MODAL -->
+
+    <div id="galleryModal" class="gallery-modal">
+      <span class="close" onclick="closeGallery()">×</span>
+
+      <div class="gallery-grid">
+        {% for image in all_gallery %}
+
+        <div class="gallery-card">
+          <img src="/{{ image[3] }}" alt="{{ image[1] }}" />
+        </div>
+
+        {% endfor %}
+      </div>
+    </div>
+
+    <section class="clients-section">
+
+    <h2>Our Esteemed Clients</h2>
+
+    <p>
+        PCE Consulting and Engineers LLP has worked with most reputed clients
+        from industries. Find our happy clients below:
+    </p>
+
+    <!-- Row 1 -->
+    <div class="logo-slider">
+    <div class="logo-track scroll-left">
+
+            {% for client in row1_clients %}
+            <a href="{{ client[3] if client[3] else '#' }}" target="_blank">
+                <img src="/{{ client[2] }}" alt="{{ client[1] }}">
+            </a>
+            {% endfor %}
+
+            {% for client in row1_clients %}
+            <a href="{{ client[3] if client[3] else '#' }}" target="_blank">
+                <img src="/{{ client[2] }}" alt="{{ client[1] }}">
+            </a>
+            {% endfor %}
+
+        </div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="logo-slider">
+    <div class="logo-track scroll-right">
+
+        {% for client in row2_clients %}
+        <a href="{{ client[3] if client[3] else '#' }}" target="_blank">
+            <img src="/{{ client[2] }}" alt="{{ client[1] }}">
+        </a>
+        {% endfor %}
+
+        {% for client in row2_clients %}
+        <a href="{{ client[3] if client[3] else '#' }}" target="_blank">
+            <img src="/{{ client[2] }}" alt="{{ client[1] }}">
+        </a>
+        {% endfor %}
+
+    </div>
+</div>
+
+    <!-- Row 3 -->
+    <div class="logo-slider">
+    <div class="logo-track scroll-left">
+
+        {% for client in row3_clients %}
+        <a href="{{ client[3] if client[3] else '#' }}" target="_blank">
+            <img src="/{{ client[2] }}" alt="{{ client[1] }}">
+        </a>
+        {% endfor %}
+
+        {% for client in row3_clients %}
+        <a href="{{ client[3] if client[3] else '#' }}" target="_blank">
+            <img src="/{{ client[2] }}" alt="{{ client[1] }}">
+        </a>
+        {% endfor %}
+
+    </div>
+</div>
+
+</section>
+
+    <section class="certificate-section">
+      <h2 class="cert-title">Our Certifications</h2>
+
+      <p class="cert-subtitle">
+        Recognized certifications that reflect our commitment to quality and
+        engineering excellence.
+      </p>
+
+      {% for cert in certificates %}
+
+      <div class="cert-row {% if loop.index % 2 == 0 %}reverse{% endif %}">
+        <div class="cert-img">
+          <img
+            src="/{{ cert[2] }}"
+            alt="{{ cert[0] }}"
+            onclick="openModal('/{{ cert[2] }}')"
+          />
+        </div>
+
+        <div
+          class="cert-info {% if loop.index % 2 == 0 %}right-card{% else %}left-card{% endif %}"
+        >
+          <div class="cert-icon">🏆</div>
+
+          <h3>{{ cert[0] }}</h3>
+
+          <p>{{ cert[1] }}</p>
+
+          {% if cert[4] %}
+          <a href="/{{ cert[4] }}" target="_blank">
+            <button type="button">View Certificate</button>
+          </a>
+          {% else %}
+          <button type="button" onclick="openModal('/{{ cert[3] }}')">
+            View Certificate
+          </button>
+          {% endif %}
+        </div>
+      </div>
+
+      {% endfor %}
+    </section>
+
+    <!-- Certificate Modal -->
+    <div id="certModal" class="cert-modal">
+      <span class="close" onclick="closeModal()">×</span>
+      <img class="modal-content" id="modalImg" />
+    </div>
+
+
+
+    <footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Company -->
+        <div class="footer-box company-box">
+
+            <img src="static/home/logos/PCE_2.png" alt="PCE Logo" class="footer-logo">
+
+            <p>
+                PCE Consulting & Engineers LLP provides innovative engineering,
+                automation and industrial solutions with a commitment to quality,
+                safety and customer satisfaction.
+            </p>
+
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-box">
+
+            <h3>Quick Links</h3>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/service">Services</a></li>
+                <li><a href="/project">Projects</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-box">
+
+            <h3>Contact Us</h3>
+
+            <p>
+                <i class="fa-solid fa-location-dot"></i>
+                Unit No.2140,Oberoi Garden Estate, D wing, Second Floor,
+            Chandivali Farm Road, Adjacent to Chandivali Studio, Chandivali-
+            Andheri (E),Mumbai 400 072
+            </p>
+
+            <p>
+                <i class="fa-solid fa-phone"></i>
+                +91-8693835656
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:info@pceengineering.com">
+                    info@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    projects@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-envelope"></i>
+
+                <a href="mailto:projects@pceengineering.com">
+                    mk@pceengineering.com
+                </a>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-clock"></i>
+                Mon - Sat | 9:00 AM - 6:00 PM
+            </p>
+
+        </div>
+
+        <!-- Social -->
+        <div class="footer-box">
+
+            <h3>Follow Us</h3>
+
+            <div class="footer-social">
+
+                <a href="https://www.linkedin.com/company/pce-consulting-engineers-llp/posts/?feedView=all" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+
+                <a href="https://www.youtube.com/@instpce3554" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 PCE Consulting & Engineers LLP. All Rights Reserved.
+        </p>
+
+    </div>
+
+</footer>
+  </body>
+</html>
