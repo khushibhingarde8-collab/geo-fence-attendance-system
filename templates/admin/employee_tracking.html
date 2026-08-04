@@ -1,0 +1,550 @@
+<div class="tracking-wrapper">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI, Arial, sans-serif;
+}
+
+.tracking-wrapper{
+    background:#f1f5f9;
+    min-height:100vh;
+    padding:25px;
+}
+
+/* HEADER */
+.top-section{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.page-title h1{
+    font-size:30px;
+    color:#0f172a;
+    margin-bottom:5px;
+}
+
+.page-title p{
+    color:#64748b;
+    font-size:14px;
+}
+
+.live-badge{
+    background:#dcfce7;
+    color:#166534;
+    padding:10px 16px;
+    border-radius:30px;
+    font-weight:600;
+    font-size:14px;
+}
+
+/* CARDS */
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:white;
+    border-radius:16px;
+    padding:22px;
+    box-shadow:0 8px 18px rgba(0,0,0,0.05);
+}
+
+.card small{
+    color:#64748b;
+    font-size:13px;
+}
+
+.card h2{
+    font-size:30px;
+    margin-top:10px;
+    color:#0f172a;
+}
+
+/* PANEL */
+.panel{
+    background:white;
+    border-radius:16px;
+    box-shadow:0 8px 18px rgba(0,0,0,0.05);
+    padding:22px;
+}
+
+/* TOOLBAR */
+.toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.toolbar h3{
+    color:#0f172a;
+}
+
+.search-box input{
+    width:280px;
+    padding:10px 12px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    outline:none;
+}
+
+/* TABLE */
+.table-responsive{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#0f172a;
+    color:white;
+    padding:14px;
+    text-align:center;
+}
+
+td{
+    padding:14px;
+    text-align:center;
+    border-bottom:1px solid #e2e8f0;
+}
+
+tr:hover{
+    background:#f8fafc;
+}
+
+/* STATUS */
+.status{
+    padding:6px 12px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:700;
+    display:inline-block;
+}
+
+.inside{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.outside{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.absent{
+    background:#7f1d1d;
+    color:white;
+}
+
+.warning{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.safe{
+    background:#dcfce7;
+    color:#166534;
+}
+
+/* BUTTON */
+.btn{
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.btn:hover{
+    background:#1d4ed8;
+}
+
+/* NOTE */
+.note{
+    margin-top:15px;
+    color:#64748b;
+    font-size:13px;
+}
+
+/* POPUP */
+.popup{
+    display:none;
+    position:fixed;
+    top:20px;
+    right:20px;
+    min-width:320px;
+    max-width:420px;
+    background:#2563eb;
+    color:white;
+    padding:16px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.18);
+    z-index:9999;
+    font-size:14px;
+    font-weight:600;
+}
+</style>
+
+<div id="popupBox" class="popup"></div>
+
+<!-- TOP -->
+<div class="top-section">
+
+    <div class="page-title">
+        <h1>Employee Tracking Dashboard</h1>
+        <p>Live geofence attendance monitoring and movement status</p>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:20px;">
+
+        <div class="live-badge">
+            ● Live Auto Refresh (5s)
+        </div>
+
+        <div class="notification-container" style="position:relative;">
+
+            <button id="notificationBell" class="btn">
+                🔔 <span id="notificationCount">0</span>
+            </button>
+
+            <div id="notificationDropdown"
+                 style="display:none;position:absolute;right:20px;top:80px;width:350px;background:white;border-radius:12px;padding:15px;box-shadow:0 10px 20px rgba(0,0,0,0.15);z-index:9999;">
+
+                <h4>Recent Events</h4>
+                <div id="recentNotifications"></div>
+
+                <hr style="margin:10px 0;">
+
+                <h4>Past Events</h4>
+                <div id="pastNotifications"></div>
+
+                <button id="clearNotifications" class="btn" style="margin-top:10px;">
+                    Clear All
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CARDS -->
+<div class="cards">
+
+<div class="card">
+<small>Total Employees</small>
+<h2 id="totalEmployees">0</h2>
+</div>
+
+<div class="card">
+<small>Inside Office</small>
+<h2 id="insideOffice">0</h2>
+</div>
+
+<div class="card">
+<small>Outside Office</small>
+<h2 id="outsideOffice">0</h2>
+</div>
+
+<div class="card">
+<small>Force Checkout</small>
+<h2 id="forceCheckout">0</h2>
+</div>
+
+</div>
+
+<!-- TABLE -->
+<div class="panel">
+
+<div class="toolbar">
+<h3>Today's Employee Status</h3>
+
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="Search by ID or Name">
+</div>
+</div>
+
+<div class="table-responsive">
+
+<table id="empTable">
+
+<thead>
+<tr>
+<th>Employee ID</th>
+<th>Name</th>
+<th>Check In</th>
+<th>Check Out</th>
+<th>Current Status</th>
+<th>Outside Count</th>
+<th>Warning</th>
+<th>Final Status</th>
+<th>Checkout Type</th>
+</tr>
+</thead>
+
+<tbody id="trackingBody">
+
+{% for row in data %}
+<tr>
+
+<td>{{ row.employee_id }}</td>
+<td>{{ row.full_name }}</td>
+<td>{{ row.check_in or '--' }}</td>
+<td>{{ row.check_out or '--' }}</td>
+
+<!-- CURRENT STATUS -->
+<td>
+{% if row.location_status == 'Checked Out' %}
+    <span class="status absent">Checked Out</span>
+
+{% elif row.location_status == 'Inside' %}
+    <span class="status inside">Inside</span>
+
+{% else %}
+    <span class="status outside">Outside</span>
+{% endif %}
+</td>
+
+<td>{{ row.outside_count or 0 }}</td>
+
+<td>
+{% if row.warning_sent == 1 %}
+<span class="status warning">Warning Sent</span>
+{% else %}
+<span class="status safe">No Warning</span>
+{% endif %}
+</td>
+
+<!-- FINAL STATUS -->
+<td>
+{% if row.attendance_status == 'Present' %}
+    <span class="status inside">Present</span>
+
+{% elif row.attendance_status == 'Half Day' %}
+    <span class="status warning">Half Day</span>
+
+{% elif row.attendance_status == 'Absent' %}
+    <span class="status absent">Absent</span>
+
+{% else %}
+    --
+{% endif %}
+</td>
+
+<!-- CHECKOUT TYPE -->
+<td>{{ row.checkout_type or '--' }}</td>
+
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="note">
+Live geofence tracking with FORCE CHECKOUT system.
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* SEARCH */
+document.getElementById("searchInput").addEventListener("keyup", function(){
+let value = this.value.toLowerCase();
+document.querySelectorAll("#empTable tbody tr").forEach(row=>{
+row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+});
+});
+
+/* LIVE TABLE */
+function loadTrackingData(){
+
+fetch('/api/tracking_data')
+.then(res=>res.json())
+.then(data=>{
+
+// Update Dashboard Cards
+let total = data.length;
+
+let inside = data.filter(
+    row => row.location_status === 'Inside'
+).length;
+
+let outside = data.filter(
+    row => row.location_status === 'Outside'
+).length;
+
+let forceCheckout = data.filter(
+    row => row.checkout_type === 'Force Checkout'
+).length;
+
+document.getElementById("totalEmployees").innerText = total;
+document.getElementById("insideOffice").innerText = inside;
+document.getElementById("outsideOffice").innerText = outside;
+document.getElementById("forceCheckout").innerText = forceCheckout;
+
+let html='';
+
+
+data.forEach(row=>{
+
+let currentStatus = '';
+
+if(row.location_status === 'Checked Out'){
+    currentStatus =
+    `<span class="status absent">Checked Out</span>`;
+}
+else if(row.location_status === 'Inside'){
+    currentStatus =
+    `<span class="status inside">Inside</span>`;
+}
+else{
+    currentStatus =
+    `<span class="status outside">Outside</span>`;
+}
+
+let finalStatus = '--';
+
+if(row.attendance_status === 'Present'){
+    finalStatus =
+    `<span class="status inside">Present</span>`;
+}
+else if(row.attendance_status === 'Half Day'){
+    finalStatus =
+    `<span class="status warning">Half Day</span>`;
+}
+else if(row.attendance_status === 'Absent'){
+    finalStatus =
+    `<span class="status absent">Absent</span>`;
+}
+
+html += `
+<tr>
+<td>${row.employee_id}</td>
+<td>${row.full_name}</td>
+<td>${row.check_in || '--'}</td>
+<td>${row.check_out || '--'}</td>
+<td>${currentStatus}</td>
+<td>${row.outside_count || 0}</td>
+<td>${
+row.warning_sent==1
+? '<span class="status warning">Warning Sent</span>'
+: '<span class="status safe">No Warning</span>'
+}</td>
+<td>${finalStatus}</td>
+<td>${row.checkout_type || '--'}</td>
+</tr>
+`;
+});
+
+document.getElementById("trackingBody").innerHTML = html;
+
+});
+}
+
+/* NOTIFICATIONS */
+function loadNotifications(){
+fetch('/api/all_notifications')
+.then(res=>res.json())
+.then(data=>{
+let recent='', past='';
+
+data.forEach((n,i)=>{
+let html=`<div>${n.full_name} - ${n.message}</div>`;
+if(i<5) recent+=html;
+else past+=html;
+});
+
+document.getElementById("recentNotifications").innerHTML=recent;
+document.getElementById("pastNotifications").innerHTML=past;
+document.getElementById("notificationCount").innerText=data.length;
+});
+}
+
+setInterval(loadTrackingData,5000);
+setInterval(loadNotifications,3000);
+
+loadTrackingData();
+loadNotifications();
+
+Notification.requestPermission();
+
+/* CLEAR */
+document.getElementById("clearNotifications").addEventListener("click", function(){
+fetch('/api/clear_notifications', {method:'POST'})
+.then(()=>loadNotifications());
+});
+
+/* POPUP */
+let lastNotificationId = 0;
+
+function checkNotification(){
+fetch('/api/notifications')
+.then(res=>res.json())
+.then(data=>{
+if(data.notification_id && data.notification_id > lastNotificationId){
+    lastNotificationId = data.notification_id;
+
+    showPopup(data.full_name + " - " + data.message);
+}
+});
+}
+
+function showPopup(msg){
+let box=document.getElementById("popupBox");
+box.innerHTML="🔔 "+msg;
+box.style.display="block";
+
+new Audio('/static/notification.mp3').play();
+
+if(Notification.permission==="granted"){
+new Notification("Employee Tracking Alert",{body:msg});
+}
+
+setTimeout(()=>box.style.display="none",4000);
+}
+
+setInterval(checkNotification,3000);
+checkNotification();
+
+
+/* BELL CLICK */
+document.getElementById("notificationBell")
+.addEventListener("click", function(){
+
+    console.log("Bell clicked");
+
+    let dropdown =
+    document.getElementById("notificationDropdown");
+
+    console.log(dropdown);
+
+    if(dropdown.style.display === "block"){
+        dropdown.style.display = "none";
+    }
+    else{
+        dropdown.style.display = "block";
+    }
+
+});
+</script>

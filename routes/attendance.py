@@ -1,13 +1,11 @@
 from flask import Blueprint, request, jsonify, render_template, session
-
+from config import mysql
 from database import (
     get_employee_location,
     get_deputed_location,
-    mark_attendance,
-    get_connection
+    mark_attendance
 )
 from utils import calculate_distance
-from utils import calculate_attendance_status
 import calendar
 
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -16,11 +14,15 @@ from reportlab.lib.styles import getSampleStyleSheet
 from flask import send_file
 import io
 
-
+from datetime import datetime, timedelta
 import pdfkit
 from flask import make_response
+from MySQLdb.cursors import DictCursor
+import os
 
-attendance_bp = Blueprint("attendance_bp", __name__)
+path_wkhtmltopdf = os.getenv("WKHTMLTOPDF_PATH")
+
+attendance_bp = Blueprint("attendance", __name__)
 
 
 # =========================================================
@@ -28,9 +30,11 @@ attendance_bp = Blueprint("attendance_bp", __name__)
 # =========================================================
 @attendance_bp.route("/api/me", methods=["GET"])
 def me():
-    emp_id = session.get("emp_id")
-    return jsonify({"emp_id": emp_id})
+    employee_id = session.get("employee_id")
 
+    return jsonify({
+        "employee_id": employee_id
+    })
 
 # =========================================================
 # MARK ATTENDANCE
@@ -40,36 +44,106 @@ def mark():
 
     data = request.get_json()
 
-    emp_id = data["emp_id"]
+    employee_id = data["employee_id"]
     lat = float(data["latitude"])
     lon = float(data["longitude"])
     action = data["action"]
 
-    deputed = get_deputed_location(emp_id)
+    # CHECK APPROVED LEAVE
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
+
+    cursor.execute("""
+        SELECT *
+        FROM tbl_leaves
+        WHERE employee_id = %s
+        AND status = 'Approved'
+        AND CURDATE() BETWEEN start_date AND end_date
+    """, (employee_id,))
+
+    leave = cursor.fetchone()
+
+    if leave and action.lower() == "checkin":
+        
+
+        return jsonify({
+            "status": "leave",
+            "message": "Today is Leave. Check-In Not Allowed."
+        }), 400
+
+    
+
+    deputed = get_deputed_location(employee_id)
 
     if deputed:
         office_lat = float(deputed["latitude"])
         office_lon = float(deputed["longitude"])
         radius = float(deputed["radius"])
     else:
-        office = get_employee_location(emp_id)
+        office = get_employee_location(employee_id)
+
+        if not office:
+            return jsonify({
+                "status": "error",
+                "message": "Office location not assigned"
+            }), 400
+
         office_lat = float(office["latitude"])
         office_lon = float(office["longitude"])
         radius = float(office["radius"])
 
-    distance = calculate_distance(lat, lon, office_lat, office_lon)
+    print("Employee Lat:", lat)
+    print("Employee Lon:", lon)
+
+    print("Office Lat:", office_lat)
+    print("Office Lon:", office_lon)
+
+    distance = calculate_distance(
+        lat,
+        lon,
+        office_lat,
+        office_lon
+    )
+
+    from MySQLdb.cursors import DictCursor
+    cursor = conn.cursor(DictCursor)
+
+    cursor.execute("""
+        INSERT INTO tracking
+        (employee_id, latitude, longitude, last_updated)
+        VALUES (%s,%s,%s,NOW())
+        ON DUPLICATE KEY UPDATE
+            latitude = VALUES(latitude),
+            longitude = VALUES(longitude),
+            last_updated = NOW()
+    """, (
+        employee_id,
+        lat,
+        lon
+    ))
+
+    conn.commit()
+    cursor.close()
+
+    print("Distance:", distance)
     inside = distance <= radius
 
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     cursor.execute("""
         SELECT check_in, check_out
         FROM attendance_master
-        WHERE emp_id = %s AND attendance_date = CURDATE()
-    """, (emp_id,))
+        WHERE employee_id = %s AND attendance_date = CURDATE()
+    """, (employee_id,))
 
     today = cursor.fetchone()
+
+    
 
     already_checked_in = False
     already_checked_out = False
@@ -78,29 +152,161 @@ def mark():
         already_checked_in = today["check_in"] is not None
         already_checked_out = today["check_out"] is not None
 
-    msg = mark_attendance(emp_id, lat, lon, inside, action)
-
-    final_status = calculate_attendance_status(emp_id)
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
+    cursor = conn.cursor(DictCursor)
 
     cursor.execute("""
         UPDATE attendance_master
-        SET status = %s
-        WHERE emp_id = %s AND attendance_date = CURDATE()
-    """, (final_status, emp_id))
+        SET arrival_status = NULL
+        WHERE employee_id = %s
+        AND attendance_date = CURDATE()
+        AND check_in IS NULL
+    """, (employee_id,))
 
     conn.commit()
-    conn.close()
+    cursor.close()
+
+    msg = mark_attendance(
+        employee_id,
+        lat,
+        lon,
+        inside,
+        action
+    )
+    print(msg)
+
+    if msg.get("status") != "success":
+        return jsonify(msg)
+
 
     return jsonify({
-        "status": "success",
-        "message": msg,
+        "status": msg["status"],
+        "message": msg["message"],
         "distance": round(distance, 2),
         "inside_geofence": inside,
         "already_checked_in": already_checked_in,
         "already_checked_out": already_checked_out,
-        "final_status": final_status
     })
 
+# 📊 MONTHLY REPORT (EMPLOYEE WISE)
+@attendance_bp.route("/api/attendance_report", methods=["POST"])
+def report():
+
+    data = request.get_json()
+
+    print("===== REPORT API CALLED =====")
+    print(data)
+
+    employee_id = data["employee_id"]
+    month = int(data["month"])   # ✅ FIX
+    year = int(data["year"])     # ✅ FIX
+
+    conn = mysql.connection
+    cursor = conn.cursor(DictCursor)
+
+    cursor.execute("""
+        SELECT CONCAT(first_name,' ',last_name) AS full_name
+        FROM employees
+        WHERE employee_id=%s
+    """, (employee_id,))
+
+    employee = cursor.fetchone()
+
+    employee_name = (
+        employee["full_name"]
+        if employee else ""
+    )
+
+    cursor.execute("""
+        SELECT COUNT(*) as present
+        FROM attendance_master
+        WHERE employee_id = %s
+        AND MONTH(attendance_date) = %s
+        AND YEAR(attendance_date) = %s
+        AND status IN ('Present','Late','Full Day')
+    """, (employee_id, month, year))
+    present = cursor.fetchone()["present"]
+
+    cursor.execute("""
+        SELECT COUNT(*) as absent
+        FROM attendance_master
+        WHERE employee_id = %s
+        AND MONTH(attendance_date) = %s
+        AND YEAR(attendance_date) = %s
+        AND status = 'Absent'
+    """, (employee_id, month, year))
+    absent = cursor.fetchone()["absent"]
+
+    cursor.execute("""
+        SELECT COUNT(*) as half_day
+        FROM attendance_master
+        WHERE employee_id = %s
+        AND MONTH(attendance_date) = %s
+        AND YEAR(attendance_date) = %s
+        AND status = 'Half Day'
+    """, (employee_id, month, year))
+    half_day = cursor.fetchone()["half_day"]
+
+    cursor.execute("""
+        SELECT COALESCE(SUM(total_days),0) AS leave_count
+        FROM tbl_leaves
+        WHERE employee_id = %s
+        AND status = 'Approved'
+        AND MONTH(start_date) = %s
+        AND YEAR(start_date) = %s
+    """, (employee_id, month, year))
+
+    leave_count = cursor.fetchone()["leave_count"]
+
+    cursor.execute("""
+        SELECT COALESCE(SUM(work_hours),0) as total_hours
+        FROM attendance_master
+        WHERE employee_id = %s
+        AND MONTH(attendance_date) = %s
+        AND YEAR(attendance_date) = %s
+    """, (employee_id, month, year))
+
+    row = cursor.fetchone()
+    total_hours = float(row["total_hours"] or 0)
+
+
+    total_days = present + absent + half_day
+
+    attendance_score = present + (half_day * 0.5)
+
+    percent = (
+        attendance_score / total_days * 100
+    ) if total_days > 0 else 0
+
+    # ==========================
+    # DEBUG PRINTS
+    # ==========================
+    print("\n========== MONTHLY REPORT ==========")
+    print("Employee ID :", employee_id)
+    print("Employee Name :", employee_name)
+    print("Month :", month)
+    print("Year :", year)
+    print("Present :", present)
+    print("Absent :", absent)
+    print("Half Day :", half_day)
+    print("Leave :", leave_count)
+    print("Total Hours :", total_hours)
+    print("Attendance % :", percent)
+    print("===================================\n")
+
+    return jsonify({
+    "employee_id": employee_id,
+    "employee_name": employee_name,
+    "month": month,
+    "year": year,
+    "present": present,
+    "absent": absent,
+    "half_day": half_day,
+    "leave": leave_count,
+    "total_work_hours": round(total_hours, 2),
+    "attendance_percent": round(percent, 2)
+})
 
 # =========================================================
 # ADMIN MONTHLY MATRIX REPORT (ATTENDANCE + LEAVE)
@@ -108,13 +314,27 @@ def mark():
 @attendance_bp.route("/api/monthly_matrix_report", methods=["GET"])
 def monthly_matrix_report():
 
-    month = int(request.args.get("month"))
-    year = int(request.args.get("year"))
+    from datetime import datetime
 
-    emp_id = request.args.get("emp_id")
+    today = datetime.today()
 
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    month = request.args.get("month", type=int) or today.month
+    year = request.args.get("year", type=int) or today.year
+
+    employee_id = request.args.get("employee_id", type=int)
+
+    print("FILTER EMPLOYEE ID =", employee_id)
+    print("ALL REQUEST ARGS =", request.args)
+
+    department = request.args.get("department")
+
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
+
+    print("RAW ARGS:", request.args)
+    print("EMPLOYEE ID RAW:", request.args.get("employee_id"))
 
     # =====================================================
     # EMPLOYEES
@@ -122,28 +342,36 @@ def monthly_matrix_report():
     department = request.args.get("department")
 
     query = """
-        SELECT emp_id,
-            emp_code,
-            full_name,
-            role,
-            department
-        FROM employees
-        WHERE status='Active'
+        SELECT
+            e.employee_id,
+            e.employee_code,
+            CONCAT(e.first_name,' ',e.last_name) AS full_name,
+            d.department_name AS department,
+            ds.designation_name AS role
+
+        FROM employees e
+
+        LEFT JOIN tbl_department d
+            ON e.department_id=d.department_id
+
+        LEFT JOIN tbl_designation ds
+            ON e.designation_id=ds.designation_id
+
+        WHERE e.is_active=1
     """
 
     params = []
 
-    # Employee filter
-    if emp_id:
-        query += " AND emp_id=%s"
-        params.append(emp_id)
+    if employee_id:
+        query += " AND e.employee_id=%s"
+        params.append(employee_id)
 
     # Department filter
     if department:
-        query += " AND department=%s"
+        query += " AND d.department_name=%s"
         params.append(department)
 
-    query += " ORDER BY emp_id"
+    query += " ORDER BY employee_id"
 
     cursor.execute(query, tuple(params))
 
@@ -152,19 +380,19 @@ def monthly_matrix_report():
     # =====================================================
     # ATTENDANCE
     # =====================================================
-    if emp_id:
+    if employee_id:
         cursor.execute("""
-            SELECT emp_id,
+            SELECT employee_id,
                    DAY(attendance_date) as day,
                    status
             FROM attendance_master
             WHERE MONTH(attendance_date)=%s
             AND YEAR(attendance_date)=%s
-            AND emp_id=%s
-        """, (month, year, emp_id))
+            AND employee_id=%s
+        """, (month, year, employee_id))
     else:
         cursor.execute("""
-            SELECT emp_id,
+            SELECT employee_id,
                    DAY(attendance_date) as day,
                    status
             FROM attendance_master
@@ -189,32 +417,32 @@ def monthly_matrix_report():
     # =====================================================
     # LEAVES
     # =====================================================
-    if emp_id:
+    if employee_id:
         cursor.execute("""
-            SELECT emp_id,
-                   from_date,
-                   to_date
-            FROM leave_requests
+            SELECT employee_id,
+                   start_date,
+                   end_date
+            FROM tbl_leaves
             WHERE status='Approved'
             AND (
-                MONTH(from_date)=%s
-                OR MONTH(to_date)=%s
+                MONTH(start_date)=%s
+                OR MONTH(end_date)=%s
             )
-            AND YEAR(from_date)=%s
-            AND emp_id=%s
-        """, (month, month, year, emp_id))
+            AND YEAR(start_date)=%s
+            AND employee_id=%s
+        """, (month, month, year, employee_id))
     else:
         cursor.execute("""
-            SELECT emp_id,
-                   from_date,
-                   to_date
-            FROM leave_requests
+            SELECT employee_id,
+                   start_date,
+                   end_date
+            FROM tbl_leaves
             WHERE status='Approved'
             AND (
-                MONTH(from_date)=%s
-                OR MONTH(to_date)=%s
+                MONTH(start_date)=%s
+                OR MONTH(end_date)=%s
             )
-            AND YEAR(from_date)=%s
+            AND YEAR(start_date)=%s
         """, (month, month, year))
 
     leave_data = cursor.fetchall()
@@ -265,46 +493,49 @@ def monthly_matrix_report():
         # DEFAULT STATUS
         # =================================================
         for day in range(1, total_days + 1):
-
             key = str(day).zfill(2)
+            attendance_map[key] = "-"
 
-            if day in holiday_days:
-                attendance_map[key] = "H"
+         # Apply Holidays
+        for d in holiday_days:
+            key = str(d).zfill(2)
+            attendance_map[key] = "H"
 
-            elif day in weekly_off_days:
+        # Apply Weekly Off
+        for d in weekly_off_days:
+            key = str(d).zfill(2)
+
+            if attendance_map[key] == "-":
                 attendance_map[key] = "WO"
-
-            else:
-                attendance_map[key] = "A"
 
         # =================================================
         # APPLY LEAVE
         # =================================================
+        from datetime import timedelta
+
         for lv in leave_data:
 
-            if lv["emp_id"] == emp["emp_id"]:
+            if lv["employee_id"] != emp["employee_id"]:
+                continue
 
-                from_day = lv["from_date"].day
-                to_day = lv["to_date"].day
+            current = lv["start_date"]
 
-                for d in range(from_day, to_day + 1):
+            while current <= lv["end_date"]:
 
-                    if d > total_days:
-                        continue
+                if current.month == month and current.year == year:
 
-                    key = str(d).zfill(2)
+                    key = str(current.day).zfill(2)
 
-                    if attendance_map[key] in ["H", "WO"]:
-                        continue
+                    if attendance_map[key] not in ["H", "WO"]:
+                        attendance_map[key] = "L"
 
-                    attendance_map[key] = "L"
-
+                current += timedelta(days=1)
         # =================================================
         # APPLY ATTENDANCE
         # =================================================
         for att in attendance_data:
 
-            if att["emp_id"] == emp["emp_id"]:
+            if att["employee_id"] == emp["employee_id"]:
 
                 key = str(att["day"]).zfill(2)
 
@@ -313,7 +544,7 @@ def monthly_matrix_report():
 
                 status = att["status"]
 
-                if status in ["Present", "Full Day"]:
+                if status in ["Present", "Late", "Full Day"]:
                     attendance_map[key] = "P"
 
                 elif status == "Half Day":
@@ -321,6 +552,15 @@ def monthly_matrix_report():
 
                 elif status == "Absent":
                     attendance_map[key] = "A"
+
+                elif status == "Leave":
+                    attendance_map[key] = "L"
+
+                elif status == "Holiday":
+                    attendance_map[key] = "H"
+
+                elif status == "Weekly Off":
+                    attendance_map[key] = "WO"
 
         # =================================================
         # COUNTS
@@ -346,8 +586,8 @@ def monthly_matrix_report():
                 weekly_off += 1
 
         report.append({
-            "emp_id": emp["emp_id"],
-            "emp_code": emp["emp_code"],
+            "employee_id": emp["employee_id"],
+            "employee_code": emp["employee_code"],
             "employee_name": emp["full_name"],
             "role": emp["role"],
             "department": emp["department"],
@@ -362,7 +602,7 @@ def monthly_matrix_report():
             }
         })
 
-    conn.close()
+  
 
     return jsonify({
         "success": True,
@@ -374,87 +614,366 @@ def monthly_matrix_report():
 
 @attendance_bp.route("/api/get_departments", methods=["GET"])
 def get_departments():
+    """
+    Returns all departments for the Department dropdown.
+    """
 
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
 
+    cursor = conn.cursor(DictCursor)
+
+    try:
+        cursor.execute("""
+            SELECT
+                department_id,
+                department_name
+            FROM tbl_department
+            ORDER BY department_name ASC
+        """)
+
+        departments = cursor.fetchall()
+
+        return jsonify(departments)
+
+    except Exception as e:
+        print("GET DEPARTMENTS ERROR:", e)
+        return jsonify([]), 500
+
+    finally:
+        cursor.close()
+
+
+from flask import jsonify, request
+from datetime import date
+import calendar
+
+@attendance_bp.route("/api/monthly_detailed_report", methods=["GET"])
+def monthly_detailed_report():
+
+    # =====================================================
+    # SAFE PARAM PARSING (IMPORTANT FIX)
+    # =====================================================
+    month = request.args.get("month", type=int)
+    year = request.args.get("year", type=int)
+    employee_id = request.args.get("employee_id", type=int)
+    department = request.args.get("department")
+
+    from datetime import datetime
+    today = datetime.today()
+
+    if not month:
+        month = today.month
+    if not year:
+        year = today.year
+
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
+    cursor = conn.cursor(DictCursor)
+
+    # =====================================================
+    # EMPLOYEE QUERY
+    # =====================================================
+    emp_query = """
+        SELECT
+            e.employee_id,
+            CONCAT(e.first_name,' ',e.last_name) AS full_name,
+            d.department_name AS department,
+            ds.designation_name AS role
+        FROM employees e
+        LEFT JOIN tbl_department d
+            ON e.department_id=d.department_id
+        LEFT JOIN tbl_designation ds
+            ON e.designation_id=ds.designation_id
+        WHERE e.is_active=1
+    """
+
+    emp_params = []
+
+    # FIX: proper employee filter
+    if employee_id:
+        emp_query += " AND e.employee_id=%s"
+        emp_params.append(employee_id)
+
+    # FIX: department filter safe
+    if department:
+        emp_query += " AND d.department_name=%s"
+        emp_params.append(department)
+
+    cursor.execute(emp_query, tuple(emp_params))
+    employees = cursor.fetchall()
+
+    if not employees:
+        return jsonify({
+            "success": True,
+            "month": month,
+            "year": year,
+            "data": []
+        })
+
+    employee_ids = [e["employee_id"] for e in employees]
+
+    # =====================================================
+    # FIX: avoid IN () crash
+    # =====================================================
+    attendance_rows = []
+
+    if employee_ids:
+
+        attendance_query = f"""
+            SELECT
+                employee_id,
+                DATE(attendance_date) AS attendance_date,
+                check_in,
+                check_out,
+                work_hours,
+                status,
+                arrival_status,
+                checkout_type
+            FROM attendance_master
+            WHERE MONTH(attendance_date)=%s
+            AND YEAR(attendance_date)=%s
+            AND employee_id IN ({','.join(['%s'] * len(employee_ids))})
+            ORDER BY attendance_date ASC
+        """
+
+        cursor.execute(attendance_query, tuple([month, year] + employee_ids))
+        attendance_rows = cursor.fetchall()
+
+    # =====================================================
+    # HOLIDAYS
+    # =====================================================
     cursor.execute("""
-        SELECT DISTINCT department
-        FROM employees
-        WHERE department IS NOT NULL
-        AND department != ''
-        ORDER BY department
+        SELECT holiday_date
+        FROM holiday_master
+        WHERE MONTH(holiday_date)=%s
+        AND YEAR(holiday_date)=%s
+    """, (month, year))
+
+    holiday_dates = {row["holiday_date"] for row in cursor.fetchall()}
+
+    # =====================================================
+    # LEAVES
+    # =====================================================
+    cursor.execute("""
+        SELECT employee_id, start_date, end_date
+        FROM tbl_leaves
+        WHERE status='Approved'
     """)
 
-    data = cursor.fetchall()
+    leave_rows = cursor.fetchall()
 
-    conn.close()
+    # =====================================================
+    # MAP ATTENDANCE
+    # =====================================================
+    attendance_map = {}
 
-    return jsonify(data)
+    for row in attendance_rows:
+        key = (row["employee_id"], row["attendance_date"])
+        attendance_map[key] = row
 
+    # =====================================================
+    # MONTH LIMIT
+    # =====================================================
+    total_days = calendar.monthrange(year, month)[1]
+    today = date.today()
+
+    max_day = total_days
+    if month == today.month and year == today.year:
+        max_day = today.day
+
+    # =====================================================
+    # BUILD RESULT
+    # =====================================================
+    result = []
+
+    for emp in employees:
+
+        records = []
+        saturday_count = 0
+
+        for day in range(1, max_day + 1):
+
+            current_date = date(year, month, day)
+            weekday = current_date.weekday()
+
+            is_weekly_off = False
+
+            if weekday == 6:
+                is_weekly_off = True
+
+            elif weekday == 5:
+                saturday_count += 1
+                if saturday_count in [2, 4]:
+                    is_weekly_off = True
+
+            key = (emp["employee_id"], current_date)
+            attendance = attendance_map.get(key)
+
+            status = "-"
+            check_in = "-"
+            check_out = "-"
+            hours = "-"
+            arrival = "-"
+            checkout_type = "-"
+
+            # =============================
+            # ATTENDANCE
+            # =============================
+            if attendance:
+
+                status = attendance["status"] or "Present"
+
+                check_in = attendance["check_in"].strftime("%I:%M %p") if attendance["check_in"] else "-"
+                check_out = attendance["check_out"].strftime("%I:%M %p") if attendance["check_out"] else "-"
+                hours = attendance["work_hours"] or "-"
+                arrival = attendance["arrival_status"] or "-"
+                checkout_type = attendance["checkout_type"] or "-"
+
+            # =============================
+            # HOLIDAY
+            # =============================
+            elif current_date in holiday_dates:
+                status = "Holiday"
+
+            # =============================
+            # LEAVE / WEEKOFF
+            # =============================
+            else:
+
+                for lv in leave_rows:
+                    if lv["employee_id"] != emp["employee_id"]:
+                        continue
+
+                    if lv["start_date"] <= current_date <= lv["end_date"]:
+                        status = "Leave"
+                        break
+
+                if status == "-" and is_weekly_off:
+                    status = "Weekly Off"
+
+            records.append({
+                "date": current_date.strftime("%d-%m-%Y"),
+                "check_in": check_in,
+                "check_out": check_out,
+                "hours": str(hours),
+                "status": status,
+                "arrival": arrival,
+                "checkout_type": checkout_type
+            })
+
+        result.append({
+            "employee_id": emp["employee_id"],
+            "employee_name": emp["full_name"],
+            "role": emp["role"],
+            "department": emp["department"],
+            "records": records
+        })
+
+    return jsonify({
+        "success": True,
+        "month": month,
+        "year": year,
+        "data": result
+    })
 # =========================================================
 # DOWNLOAD MONTHLY REPORT PDF
 # =========================================================
-from datetime import datetime
-import calendar
 import pdfkit
 
 @attendance_bp.route("/api/download_monthly_report_pdf", methods=["GET"])
 def download_pdf():
 
-    month = int(request.args.get("month"))
-    year = int(request.args.get("year"))
-    emp_id = request.args.get("emp_id")
+    month = request.args.get("month", type=int)
+    year = request.args.get("year", type=int)
+
+    # ===============================
+    # VALIDATION (VERY IMPORTANT)
+    # ===============================
+    if not month or not year:
+        return jsonify({
+            "success": False,
+            "message": "Month and Year are required"
+        }), 400
+
+    employee_id = request.args.get("employee_id")
     department = request.args.get("department")
 
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     # =====================================================
     # EMPLOYEES
     # =====================================================
     query = """
-        SELECT emp_id,
-            emp_code,
-            full_name,
-            role,
-            department
-        FROM employees
-        WHERE status='Active'
+        SELECT
+            e.employee_id,
+            e.employee_code,
+            CONCAT(e.first_name,' ',e.last_name) AS full_name,
+            d.department_name AS department,
+            ds.designation_name AS role
+
+        FROM employees e
+
+        LEFT JOIN tbl_department d
+            ON e.department_id=d.department_id
+
+        LEFT JOIN tbl_designation ds
+            ON e.designation_id=ds.designation_id
+
+        WHERE e.is_active=1
     """
 
     params = []
 
-    if emp_id:
-        query += " AND emp_id=%s"
-        params.append(emp_id)
+    if employee_id:
+        query += " AND e.employee_id=%s"
+        params.append(employee_id)
 
     if department:
-        query += " AND department=%s"
+        query += " AND d.department_name=%s"
         params.append(department)
 
-    query += " ORDER BY emp_id"
+    query += " ORDER BY employee_id"
 
     cursor.execute(query, tuple(params))
 
     employees = cursor.fetchall()
 
     # =====================================================
+    # LEAVE DATA (MOVE HERE - BEFORE EMPLOYEE LOOP)
+    # =====================================================
+    cursor.execute("""
+        SELECT employee_id, start_date, end_date
+        FROM tbl_leaves
+        WHERE status='Approved'
+        AND (
+            MONTH(start_date)=%s
+            OR MONTH(end_date)=%s
+        )
+        AND YEAR(start_date)=%s
+    """, (month, month, year))
+
+    leave_data_all = cursor.fetchall()   
+
+    # =====================================================
     # ATTENDANCE
     # =====================================================
-    if emp_id:
+    if employee_id:
         cursor.execute("""
-            SELECT emp_id,
+            SELECT employee_id,
                    DAY(attendance_date) as day,
                    status
             FROM attendance_master
             WHERE MONTH(attendance_date)=%s
             AND YEAR(attendance_date)=%s
-            AND emp_id=%s
-        """, (month, year, emp_id))
+            AND employee_id=%s
+        """, (month, year, employee_id))
     else:
         cursor.execute("""
-            SELECT emp_id,
+            SELECT employee_id,
                    DAY(attendance_date) as day,
                    status
             FROM attendance_master
@@ -739,9 +1258,10 @@ def download_pdf():
 
     html += "</tr>"
 
-    # =====================================================
+
+    # =================================================
     # EMPLOYEE LOOP
-    # =====================================================
+    # =================================================
     for emp in employees:
 
         attendance_map = {}
@@ -754,81 +1274,74 @@ def download_pdf():
         weekly_off = 0
 
         # =================================================
-        # DEFAULT STATUS
+        # 1. DEFAULT
         # =================================================
         for d in range(1, total_days + 1):
-
             key = str(d).zfill(2)
+            attendance_map[key] = "-"
 
-            if d in holiday_days:
+        # =================================================
+        # 2. HOLIDAY (H)
+        # =================================================
+        for d in holiday_days:
+            key = str(d).zfill(2)
+            attendance_map[key] = "H"
 
-                attendance_map[key] = "H"
-
-            elif d in weekly_off_days:
-
+        # =================================================
+        # 3. WEEKLY OFF (WO)
+        # =================================================
+        for d in weekly_off_days:
+            key = str(d).zfill(2)
+            if attendance_map[key] == "-":
                 attendance_map[key] = "WO"
 
-            else:
+        # =================================================
+        # 4. LEAVE (L)  [HIGHEST PRIORITY AFTER H & WO]
+        # =================================================
+        for lv in leave_data_all:
 
-                attendance_map[key] = "A"
+            if lv["employee_id"] != emp["employee_id"]:
+                continue
+
+            current = lv["start_date"]
+
+            while current <= lv["end_date"]:
+
+                if current.month == month and current.year == year:
+
+                    key = str(current.day).zfill(2)
+
+                    if attendance_map[key] not in ["H", "WO"]:
+                        attendance_map[key] = "L"
+
+                current += timedelta(days=1)
 
         # =================================================
-        # LEAVES
-        # =================================================
-        cursor.execute("""
-            SELECT from_date, to_date
-            FROM leave_requests
-            WHERE emp_id=%s
-            AND status='Approved'
-            AND (
-                MONTH(from_date)=%s
-                OR MONTH(to_date)=%s
-            )
-            AND YEAR(from_date)=%s
-        """, (emp["emp_id"], month, month, year))
-
-        leave_data = cursor.fetchall()
-
-        for lv in leave_data:
-
-            start_day = lv["from_date"].day
-            end_day = lv["to_date"].day
-
-            for d in range(start_day, end_day + 1):
-
-                if d > total_days:
-                    continue
-
-                key = str(d).zfill(2)
-
-                if attendance_map[key] not in ["H", "WO"]:
-
-                    attendance_map[key] = "L"
-
-        # =================================================
-        # ATTENDANCE
+        # 5. ATTENDANCE (P / A / HD)
         # =================================================
         for att in attendance_data:
 
-            if att["emp_id"] == emp["emp_id"]:
+            if att["employee_id"] == emp["employee_id"]:
 
                 key = str(att["day"]).zfill(2)
 
-                if attendance_map[key] in ["H", "WO"]:
+                # DO NOT override priority days
+                if attendance_map[key] in ["H", "WO", "L"]:
                     continue
 
-                if att["status"] in ["Present", "Full Day"]:
+                status = att["status"]
 
+                if status in ["Present", "Late", "Full Day"]:
                     attendance_map[key] = "P"
 
-                elif att["status"] == "Half Day":
-
+                elif status == "Half Day":
                     attendance_map[key] = "HD"
 
-                elif att["status"] == "Absent":
-
+                elif status == "Absent":
                     attendance_map[key] = "A"
 
+                elif status == "Leave":
+                    attendance_map[key] = "L"
         # =================================================
         # COUNTS
         # =================================================
@@ -870,7 +1383,7 @@ def download_pdf():
         <tr>
 
             <td class="code">
-                {emp['emp_id']}
+                {emp['employee_id']}
             </td>
 
             <td class="name">
@@ -938,7 +1451,7 @@ def download_pdf():
                 # Today's attendance before 6 PM
                 elif i == today.day:
 
-                    if today.hour < 18:
+                    if today.hour < 19:
 
                         final_val = "-"
 
@@ -1051,10 +1564,717 @@ def download_pdf():
         f"attachment; filename=attendance_matrix_{month}_{year}.pdf"
     )
 
-    conn.close()
+
+    return response
+
+@attendance_bp.route("/api/download_detailed_report_pdf", methods=["GET"])
+def download_detailed_pdf():
+
+    from flask import make_response
+    from datetime import date, datetime
+    import calendar
+    import pdfkit
+
+    # ==========================================
+    # FILTERS
+    # ==========================================
+    month = request.args.get("month", type=int)
+    year = request.args.get("year", type=int)
+    employee_id = request.args.get("employee_id", type=int)
+    department = request.args.get("department", default="", type=str)
+
+    today = datetime.today()
+
+    if not month:
+        month = today.month
+
+    if not year:
+        year = today.year
+
+    conn = mysql.connection
+
+    from MySQLdb.cursors import DictCursor
+    cursor = conn.cursor(DictCursor)
+
+    # ==========================================
+    # EMPLOYEE QUERY
+    # ==========================================
+
+    query = """
+        SELECT
+
+            e.employee_id,
+
+            CONCAT(e.first_name,' ',e.last_name) AS full_name,
+
+            d.department_name AS department,
+
+            ds.designation_name AS role
+
+        FROM employees e
+
+        LEFT JOIN tbl_department d
+            ON e.department_id=d.department_id
+
+        LEFT JOIN tbl_designation ds
+            ON e.designation_id=ds.designation_id
+
+        WHERE e.is_active=1
+    """
+
+    params = []
+
+    if employee_id is not None:
+        query += " AND e.employee_id=%s"
+        params.append(employee_id)
+
+    if department:
+        query += " AND d.department_name=%s"
+        params.append(department)
+
+    query += " ORDER BY e.employee_id"
+
+    cursor.execute(query, tuple(params))
+
+    employees = cursor.fetchall()
+
+    if not employees:
+        return "No Data Found"
+
+    # ==========================================
+    # EMPLOYEE IDS
+    # ==========================================
+
+    employee_ids = [emp["employee_id"] for emp in employees]
+
+    # ==========================================
+    # ATTENDANCE
+    # ==========================================
+
+    attendance_query = f"""
+        SELECT
+
+            employee_id,
+
+            DATE(attendance_date) AS attendance_date,
+
+            check_in,
+
+            check_out,
+
+            work_hours,
+
+            status,
+
+            arrival_status,
+
+            checkout_type
+
+        FROM attendance_master
+
+        WHERE MONTH(attendance_date)=%s
+        AND YEAR(attendance_date)=%s
+        AND employee_id IN ({','.join(['%s'] * len(employee_ids))})
+
+        ORDER BY attendance_date
+    """
+
+    cursor.execute(
+        attendance_query,
+        tuple([month, year] + employee_ids)
+    )
+
+    attendance_rows = cursor.fetchall()
+
+    # ==========================================
+    # HOLIDAYS
+    # ==========================================
+
+    cursor.execute("""
+        SELECT holiday_date
+
+        FROM holiday_master
+
+        WHERE MONTH(holiday_date)=%s
+        AND YEAR(holiday_date)=%s
+    """, (month, year))
+
+    holiday_dates = {
+        row["holiday_date"]
+        for row in cursor.fetchall()
+    }
+
+    # ==========================================
+    # APPROVED LEAVES
+    # ==========================================
+
+    cursor.execute("""
+        SELECT
+
+            employee_id,
+
+            start_date,
+
+            end_date
+
+        FROM tbl_leaves
+
+        WHERE status='Approved'
+    """)
+
+    leave_rows = cursor.fetchall()
+
+    # ==========================================
+    # ATTENDANCE MAP
+    # ==========================================
+
+    attendance_map = {}
+
+    for row in attendance_rows:
+
+        attendance_map[
+            (
+                row["employee_id"],
+                row["attendance_date"]
+            )
+        ] = row
+
+    # ==========================================
+    # BUILD HTML
+    # ==========================================
+
+    html = f"""
+
+    <html>
+
+    <head>
+
+    <style>
+
+    body{{
+
+        font-family:Arial;
+
+        padding:20px;
+
+        font-size:12px;
+
+    }}
+
+    h1{{
+
+        text-align:center;
+
+        color:#1e3a8a;
+
+        margin-bottom:25px;
+
+    }}
+
+    h2{{
+
+        background:#eef4ff;
+
+        padding:10px;
+
+        border-left:5px solid #1e3a8a;
+
+    }}
+
+    table{{
+
+        width:100%;
+
+        border-collapse:collapse;
+
+        margin-bottom:35px;
+
+    }}
+
+    th{{
+
+        background:#1e3a8a;
+
+        color:white;
+
+        padding:8px;
+
+        border:1px solid #ccc;
+
+    }}
+
+    td{{
+
+        border:1px solid #ddd;
+
+        padding:7px;
+
+        text-align:center;
+
+    }}
+
+    .Present{{
+
+        color:#16a34a;
+
+        font-weight:bold;
+
+    }}
+
+    .Absent{{
+
+        color:#dc2626;
+
+        font-weight:bold;
+
+    }}
+
+    .HalfDay{{
+
+        color:#2563eb;
+
+        font-weight:bold;
+
+    }}
+
+    .Leave{{
+
+        color:#9333ea;
+
+        font-weight:bold;
+
+    }}
+
+    .Holiday{{
+
+        color:#d97706;
+
+        font-weight:bold;
+
+    }}
+
+    .WeeklyOff{{
+
+        color:#374151;
+
+        font-weight:bold;
+
+    }}
+
+    .summary{{
+
+        background:#f8fafc;
+
+        font-weight:bold;
+
+    }}
+
+    </style>
+
+    </head>
+
+    <body>
+
+    <h1>DETAILED ATTENDANCE REPORT</h1>
+
+    <h3 style="
+    text-align:center;
+    color:#374151;
+    margin-bottom:25px;
+    ">
+    REPORT FOR: {calendar.month_name[month].upper()} {year}
+    </h3>
+
+    
+
+    """
+
+    # ==========================================
+    # EMPLOYEE LOOP
+    # ==========================================
+
+    total_days = calendar.monthrange(year, month)[1]
+
+    for emp in employees:
+
+        html += f"""
+
+        <h2>
+
+            Employee : {emp['full_name']}
+
+            &nbsp;&nbsp;&nbsp;
+
+            ID : {emp['employee_id']}
+
+            &nbsp;&nbsp;&nbsp;
+
+            Department : {emp['department']}
+
+            &nbsp;&nbsp;&nbsp;
+
+            Designation : {emp['role']}
+
+        </h2>
+
+        <table>
+
+        <tr>
+
+            <th>Date</th>
+
+            <th>Check In</th>
+
+            <th>Check Out</th>
+
+            <th>Work Hours</th>
+
+            <th>Arrival</th>
+
+            <th>Checkout Type</th>
+
+            <th>Status</th>
+
+        </tr>
+
+        """
+
+        present = 0
+        absent = 0
+        half_day = 0
+        leave = 0
+        holiday = 0
+        weekly_off = 0
+
+        saturday_count = 0
+
+        for day in range(1, total_days + 1):
+
+            current_date = date(year, month, day)
+
+            weekday = current_date.weekday()
+
+            is_weekly_off = False
+
+            if weekday == 6:
+
+                is_weekly_off = True
+
+            elif weekday == 5:
+
+                saturday_count += 1
+
+                if saturday_count in [2, 4]:
+
+                    is_weekly_off = True
+
+            attendance = attendance_map.get(
+                (emp["employee_id"], current_date)
+            )
+
+            status = "-"
+            check_in = "-"
+            check_out = "-"
+            work_hours = "-"
+            arrival = "-"
+            checkout_type = "-"
+
+            # ==================================
+            # ATTENDANCE FOUND
+            # ==================================
+
+            if attendance:
+
+                status = attendance["status"] or "Present"
+
+                if attendance["check_in"]:
+                    check_in = attendance["check_in"].strftime("%I:%M %p")
+
+                if attendance["check_out"]:
+                    check_out = attendance["check_out"].strftime("%I:%M %p")
+
+                work_hours = attendance["work_hours"] or "-"
+
+                arrival = attendance["arrival_status"] or "-"
+
+                checkout_type = attendance["checkout_type"] or "-"
+
+            # ==================================
+            # HOLIDAY
+            # ==================================
+
+            elif current_date in holiday_dates:
+
+                status = "Holiday"
+
+            # ==================================
+            # LEAVE
+            # ==================================
+
+            else:
+
+                for lv in leave_rows:
+
+                    if lv["employee_id"] != emp["employee_id"]:
+                        continue
+
+                    if lv["start_date"] <= current_date <= lv["end_date"]:
+
+                        status = "Leave"
+
+                        break
+
+                if status == "-" and is_weekly_off:
+
+                    status = "Weekly Off"
+
+            # ==================================
+            # SUMMARY COUNTS
+            # ==================================
+
+            if status == "Present":
+                present += 1
+
+            elif status == "Absent":
+                absent += 1
+
+            elif status == "Half Day":
+                half_day += 1
+
+            elif status == "Leave":
+                leave += 1
+
+            elif status == "Holiday":
+                holiday += 1
+
+            elif status == "Weekly Off":
+                weekly_off += 1
+
+            css = status.replace(" ", "")
+
+            # ==================================
+            # SPECIAL ROWS
+            # ==================================
+
+            if status in ["Holiday", "Leave", "Weekly Off"]:
+
+                html += f"""
+
+                <tr>
+
+                    <td>
+
+                        {current_date.strftime('%d-%m-%Y')}
+
+                    </td>
+
+                    <td colspan="6"
+
+                        class="{css}"
+
+                        style="font-weight:bold;">
+
+                        {status}
+
+                    </td>
+
+                </tr>
+
+                """
+
+            else:
+
+                html += f"""
+
+                <tr>
+
+                    <td>{current_date.strftime('%d-%m-%Y')}</td>
+
+                    <td>{check_in}</td>
+
+                    <td>{check_out}</td>
+
+                    <td>{work_hours}</td>
+
+                    <td>{arrival}</td>
+
+                    <td>{checkout_type}</td>
+
+                    <td class="{css}">
+
+                        {status}
+
+                    </td>
+
+                </tr>
+
+                """
+
+        # ==================================
+        # SUMMARY
+        # ==================================
+
+        html += f"""
+
+        <tr class="summary">
+
+            <td colspan="7">
+
+                Present : {present}
+
+                &nbsp;&nbsp;&nbsp;&nbsp;
+
+                Absent : {absent}
+
+                &nbsp;&nbsp;&nbsp;&nbsp;
+
+                Half Day : {half_day}
+
+                &nbsp;&nbsp;&nbsp;&nbsp;
+
+                Leave : {leave}
+
+                &nbsp;&nbsp;&nbsp;&nbsp;
+
+                Holiday : {holiday}
+
+                &nbsp;&nbsp;&nbsp;&nbsp;
+
+                Weekly Off : {weekly_off}
+
+            </td>
+
+        </tr>
+
+        </table>
+
+        <br><br>
+
+        """
+            # ==========================================
+    # CLOSE HTML
+    # ==========================================
+
+    html += """
+
+    </body>
+
+    </html>
+
+    """
+
+    cursor.close()
+
+    # ==========================================
+    # PDF CONFIG
+    # ==========================================
+
+    path_wkhtmltopdf = (
+        r"C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    )
+
+    config = pdfkit.configuration(
+        wkhtmltopdf=path_wkhtmltopdf
+    )
+
+    options = {
+
+        "page-size": "A3",
+
+        "orientation": "Landscape",
+
+        "encoding": "UTF-8",
+
+        "margin-top": "10mm",
+
+        "margin-bottom": "10mm",
+
+        "margin-left": "8mm",
+
+        "margin-right": "8mm",
+
+        "enable-local-file-access": None,
+
+        "footer-right": "[page] / [topage]",
+
+        "footer-font-size": "8",
+
+        "footer-spacing": "5",
+
+        "quiet": ""
+
+    }
+
+    # ==========================================
+    # GENERATE PDF
+    # ==========================================
+
+    pdf = pdfkit.from_string(
+
+        html,
+
+        False,
+
+        configuration=config,
+
+        options=options
+
+    )
+
+    # ==========================================
+    # RESPONSE
+    # ==========================================
+
+    filename = (
+        f"detailed_attendance_report_{month}_{year}.pdf"
+    )
+
+    response = make_response(pdf)
+
+    response.headers["Content-Type"] = "application/pdf"
+
+    response.headers["Content-Disposition"] = (
+        f"attachment; filename={filename}"
+    )
 
     return response
 
 @attendance_bp.route('/monthly-report')
 def monthly_report():
     return render_template('monthly_report.html')
+
+
+@attendance_bp.route("/api/attendance_history", methods=["GET"])
+def attendance_history():
+
+    employee_id = request.args.get("employee_id")
+
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
+
+    cursor.execute("""
+        SELECT
+            attendance_date,
+            check_in,
+            check_out,
+            work_hours,
+            overtime_minutes,
+            status,
+            arrival_status,
+            checkout_type
+        FROM attendance_master
+        WHERE employee_id = %s
+        AND attendance_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+        ORDER BY attendance_date DESC
+    """, (employee_id,))
+
+    data = cursor.fetchall()
+
+
+
+    return jsonify({
+        "status": "success",
+        "data": data
+    })  
