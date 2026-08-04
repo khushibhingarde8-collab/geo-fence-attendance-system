@@ -51,7 +51,17 @@ from routes.phoenix_routes import phoenix_bp
 from routes.about_routes import about_bp
 from routes.contact_routes import contact_bp
 from routes.excel_routes import excel_bp
+from routes.dashboard_summary import dashboard_bp
+from routes.employee_tracking import employee_tracking_bp
+from routes.mobile_location import mobile_location_bp
+from routes.monthly_leave_credit import monthly_leave_credit_bp
+from routes.report import report_bp
+from routes.admin_mobile import admin_mobile_bp
+from routes.monthly_report import monthly_report_bp
 
+import routes.mobile_auth
+
+mobile_auth_bp = routes.mobile_auth.mobile_auth_bp
 
 
 app = Flask(__name__)
@@ -185,6 +195,14 @@ app.register_blueprint(phoenix_bp)
 app.register_blueprint(about_bp)
 app.register_blueprint(contact_bp)
 app.register_blueprint(excel_bp)
+app.register_blueprint(dashboard_bp)
+app.register_blueprint(employee_tracking_bp)
+app.register_blueprint(mobile_auth_bp)
+app.register_blueprint(mobile_location_bp)
+app.register_blueprint(monthly_leave_credit_bp)
+app.register_blueprint(report_bp)
+app.register_blueprint(admin_mobile_bp)
+app.register_blueprint(monthly_report_bp)
 
 
 # ================= ABOUT IMAGE FOLDER =================
@@ -2519,8 +2537,7 @@ def delete_salary_sheet():
 
 from scheduler import start_scheduler
 
-start_scheduler()
-
+start_scheduler(app)
 print(app.url_map)
 if __name__ == "__main__":
     app.run(debug=True) 

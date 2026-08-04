@@ -17,15 +17,135 @@ function showSection(sectionId) {
 
 
 window.onload = function () {
-    let hash = window.location.hash;
 
-    if (hash) {
-        let sectionId = hash.replace("#", "");
-        showSection(sectionId);
-    } else {
-        showSection('dashboard');
+    console.log("onload fired");
+
+    try {
+
+        let hash = window.location.hash;
+
+        if (hash) {
+            let sectionId = hash.replace("#", "");
+            showSection(sectionId);
+        } else {
+            showSection('dashboard');
+        }
+
+        // ============================
+        // Year Dropdown
+        // ============================
+        const yearSelect = document.getElementById("year");
+
+        console.log("Year Select:", yearSelect);
+
+        if (yearSelect) {
+
+            const currentYear = new Date().getFullYear();
+
+            yearSelect.innerHTML = "";
+
+            for (let y = currentYear; y >= currentYear - 100; y--) {
+
+                yearSelect.innerHTML +=
+                    `<option value="${y}" ${y === currentYear ? "selected" : ""}>${y}</option>`;
+            }
+
+            console.log("Year Dropdown Loaded");
+        } else {
+            console.log("Year dropdown not found.");
+        }
+
+        // ============================
+        // Current Month
+        // ============================
+        const monthSelect = document.getElementById("month");
+
+        if (monthSelect) {
+            monthSelect.value = (new Date().getMonth() + 1).toString();
+        }
+
+        // ============================
+        // Load Departments
+        // ============================
+        if (document.getElementById("department")) {
+            loadDepartments();
+        }
+
+        console.log("Month and Department Loaded");
+
+        // Default report tab
+        if(document.getElementById("monthlyReportCard")){
+            switchReportTab("monthly");
+        }
+
+    } catch (err) {
+        console.error("Window onload error:", err);
     }
 };
+
+function switchReportTab(type){
+
+
+    const monthly =
+    document.getElementById("monthlyReportCard");
+
+
+    const detail =
+    document.getElementById("detailedReportCard");
+
+
+    const monthlyBtn =
+    document.getElementById("monthlyTab");
+
+
+    const detailBtn =
+    document.getElementById("detailTab");
+
+
+
+    if(type==="monthly"){
+
+
+        if(monthly)
+            monthly.style.display="block";
+
+
+        if(detail)
+            detail.style.display="none";
+
+
+        if(monthlyBtn)
+            monthlyBtn.classList.add("active");
+
+
+        if(detailBtn)
+            detailBtn.classList.remove("active");
+
+
+    }
+
+    else{
+
+
+        if(monthly)
+            monthly.style.display="none";
+
+
+        if(detail)
+            detail.style.display="block";
+
+
+        if(detailBtn)
+            detailBtn.classList.add("active");
+
+
+        if(monthlyBtn)
+            monthlyBtn.classList.remove("active");
+
+
+    }
+
+}
 
 
 function toggleSidebar(){
@@ -562,4 +682,700 @@ function editHero(id) {
 }
 if (document.getElementById("heroTable")) {
   loadHero();
+}
+
+async function loadReport(){
+
+
+    // Open Monthly Matrix Tab
+    if(typeof switchReportTab === "function"){
+        switchReportTab("monthly");
+    }
+
+
+    const monthlyCard = document.getElementById("monthlyReportCard");
+    const legend = document.getElementById("statusLegend");
+    const detailedCard = document.getElementById("detailedReportCard");
+
+
+    if(monthlyCard)
+        monthlyCard.style.display="block";
+
+
+    if(legend)
+        legend.style.display="block";
+
+
+    if(detailedCard)
+        detailedCard.style.display="none";
+
+    // Hide placeholder after clicking Generate Report
+    const placeholder = document.getElementById("reportPlaceholder");
+    if (placeholder) {
+        placeholder.style.display = "none";
+    }
+
+    let month = document.getElementById("month").value;
+    let year = document.getElementById("year").value;
+    let employeeInput = document.getElementById("report_employee_id");
+
+    let employee_id = "";
+
+    if(employeeInput){
+        employee_id = employeeInput.value.trim();
+    }
+
+    console.log("EMPLOYEE INPUT VALUE:", employee_id);
+
+    if(employee_id !== ""){
+        employee_id = Number(employee_id);
+    }
+    else{
+        employee_id = null;
+    }
+    let department = document.getElementById("department").value;
+
+    let url = `/api/monthly_matrix_report?month=${month}&year=${year}`;
+
+    if (employee_id !== null && !isNaN(employee_id)) {
+        url += `&employee_id=${employee_id}`;
+    }
+    if(department){
+        url += `&department=${department}`;
+    }
+    console.log("FINAL URL:", url);
+    const res = await fetch(url);
+
+    const result = await res.json();
+    console.log("API RESULT:", result);
+
+
+    let table = document.getElementById("reportTable");
+
+    table.innerHTML = "";
+
+    const monthName =
+        document.getElementById("month")
+        .options[document.getElementById("month").selectedIndex].text;
+
+    // =========================================
+    // CURRENT DATE/TIME
+    // =========================================
+
+    const now = new Date();
+
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    const currentDay = now.getDate();
+    const currentHour = now.getHours();
+
+    // =========================================
+    // REPORT TITLE
+    // =========================================
+
+    let html = `
+
+    <tr>
+        <th colspan="${result.total_days + 2}" class="main-header">
+            REPORT FOR : ${monthName.toUpperCase()} ${year}
+        </th>
+    </tr>
+
+    `;
+
+    // =========================================
+    // DAY NAME HEADER ROW
+    // =========================================
+
+    html += `
+
+    <tr>
+
+        <th rowspan="2" class="code-cell" style="width:70px">
+            EMP ID
+        </th>
+
+        <th rowspan="2" class="name-section" style="width:180px">
+            EMPLOYEE DETAILS
+        </th>
+    `;
+
+    for(let i = 1; i <= result.total_days; i++){
+
+        const date = new Date(year, month - 1, i);
+
+        const dayName = date.toLocaleDateString(
+            'en-US',
+            {
+                weekday:'short'
+            }
+        );
+
+        let cls = "";
+
+        if(dayName === "Sun"){
+            cls = "sunday";
+        }
+        else if(dayName === "Sat"){
+            cls = "saturday";
+        }
+
+        html += `
+            <th class="${cls}">
+                ${dayName}
+            </th>
+        `;
+    }
+
+    html += `</tr>`;
+
+    // =========================================
+    // DATE HEADER ROW
+    // =========================================
+
+    html += `<tr>`;
+
+    for(let i = 1; i <= result.total_days; i++){
+
+        html += `
+            <th>
+                ${i}
+            </th>
+        `;
+    }
+
+    html += `</tr>`;
+
+    // =========================================
+    // EMPLOYEE LOOP
+    // =========================================
+
+    result.data.forEach(emp => {
+
+        html += `
+
+        <tr>
+
+            <td class="code-cell">
+                ${emp.employee_id} 
+            </td>
+
+            <td class="name-section">
+
+                <div class="emp-name">
+                    ${emp.employee_name}
+                </div>
+
+                <div class="emp-role">
+                    ${emp.role || "-"}
+                </div>
+
+                <div class="emp-dept">
+                    ${emp.department || "-"}
+                </div>
+
+            </td>
+        `;
+
+        // =====================================
+        // DAILY STATUS CELLS
+        // =====================================
+
+        for(let i = 1; i <= result.total_days; i++){
+
+            const key = String(i).padStart(2,'0');
+
+            let finalVal = emp.attendance[key];
+
+            // =================================
+            // FUTURE YEAR/MONTH
+            // =================================
+
+            if(
+                result.year > currentYear ||
+                (
+                    result.year == currentYear &&
+                    result.month > currentMonth
+                )
+            ){
+
+                finalVal = "-";
+            }
+
+            // =================================
+            // CURRENT MONTH CONDITIONS
+            // =================================
+
+            else if(
+                result.year == currentYear &&
+                result.month == currentMonth
+            ){
+
+                // Only hide future dates
+                if(i > currentDay){
+
+                    finalVal = "-";
+                }
+            }
+
+            // =================================
+            // EMPTY SAFETY
+            // =================================
+
+            // default handling
+            if(finalVal == null || finalVal == undefined || finalVal == ""){
+                finalVal = "-";
+            }
+
+            let statusClass = "";
+            if (finalVal === "P") statusClass = "P";
+            else if (finalVal === "A") statusClass = "A";
+            else if (finalVal === "HD") statusClass = "HD";
+            else if (finalVal === "H") statusClass = "H";
+            else if (finalVal === "L") statusClass = "L";
+            else if (finalVal === "WO") statusClass = "WO";
+
+            // then build HTML
+            html += `
+            <td class="status-cell ${statusClass}">
+                ${finalVal}
+            </td>
+            `;
+        }
+
+        html += `
+        </tr>
+        `;
+
+        // =====================================
+        // REPORT TOTALS ROW
+        // =====================================
+
+        html += `
+
+        <tr class="totals-row">
+
+            <td colspan="2" class="report-total-title">
+                REPORT TOTALS
+            </td>
+
+            <td colspan="${result.total_days}" class="totals-data">
+
+                <span>
+                    Present: <b>${emp.summary.present}</b>
+                </span>
+
+                <span>
+                    Absent: <b>${emp.summary.absent}</b>
+                </span>
+
+                <span>
+                    Half Day: <b>${emp.summary.half_day}</b>
+                </span>
+
+                <span>
+                    Leave: <b>${emp.summary.leave}</b>
+                </span>
+
+                <span>
+                    Holiday: <b>${emp.summary.holiday}</b>
+                </span>
+
+                <span>
+                    WO: <b>${emp.summary.weekly_off}</b>
+                </span>
+
+            </td>
+
+        </tr>
+        `;
+    });
+
+    table.innerHTML = html;
+}
+// FORCE GLOBAL ACCESS HERE:
+window.loadReport = loadReport;
+
+async function loadDetailedReport(){
+
+
+    // Open Detailed Tab
+    if(typeof switchReportTab === "function"){
+        switchReportTab("detail");
+    }
+
+
+    let empField = document.getElementById("report_employee_id");
+    let deptField = document.getElementById("department");
+
+    // Reset borders
+    empField.style.border = "";
+    deptField.style.border = "";
+
+    if(!empField.value){
+        empField.style.border = "2px solid red";
+        alert("Employee ID is mandatory for Detailed Report");
+        return;
+    }
+
+    if(!deptField.value){
+        deptField.style.border = "2px solid red";
+        alert("Department is mandatory for Detailed Report");
+        return;
+    }
+
+
+    const monthlyCard = document.getElementById("monthlyReportCard");
+    const legend = document.getElementById("statusLegend");
+    const detailedCard = document.getElementById("detailedReportCard");
+
+    if (monthlyCard) monthlyCard.style.display = "none";
+    if (legend) legend.style.display = "none";
+    if (detailedCard) detailedCard.style.display = "block";
+
+
+    let month = document.getElementById("month").value;
+    let year = document.getElementById("year").value;
+    let employee_id = empField.value;
+    let department = deptField.value;
+
+
+    let url =
+    `/api/monthly_detailed_report?month=${month}&year=${year}&employee_id=${employee_id}`;
+
+
+    if(department){
+        url += `&department=${department}`;
+    }
+
+    const res = await fetch(url);
+
+    const result = await res.json();
+
+    if(result.data.length > 0){
+
+        let emp = result.data[0];
+
+        document.getElementById("employeeInfoBar").innerHTML = `
+            <div style="
+                padding:12px 20px;
+                background:#f8fafc;
+                border-bottom:1px solid #ddd;
+                font-size:15px;
+                font-weight:bold;
+            ">
+                Employee :
+                ${emp.employee_name}
+
+                &nbsp;&nbsp;&nbsp; |
+
+                Employee ID :
+                ${emp.employee_id}
+
+                &nbsp;&nbsp;&nbsp; |
+
+                Department :
+                ${emp.department}
+            </div>
+        `;
+    }
+
+    document.getElementById("detailedReportCard").style.display =
+    "block";
+
+    let html = `
+    <tr>
+        <th>Date</th>
+        <th>Check In</th>
+        <th>Check Out</th>
+        <th>Work Hours</th>
+        <th>Arrival</th>
+        <th>Checkout Type</th>
+        <th>Final Status</th>
+    </tr>
+    `;
+
+    let rowsFound = false;
+    let present = 0;
+    let absent = 0;
+    let halfDay = 0;
+    let holiday = 0;
+    let leave = 0;
+    let weeklyOff = 0;
+
+    result.data.forEach(emp => {
+
+        emp.records.forEach(row => {
+
+            rowsFound = true;
+
+            if(row.status === "Present"){
+                present++;
+            }
+            else if(row.status === "Absent"){
+                absent++;
+            }
+            else if(row.status === "Half Day"){
+                halfDay++;
+            }
+            else if(row.status === "Holiday"){
+                holiday++;
+            }
+            else if(row.status === "Leave"){
+                leave++;
+            }
+            else if(row.status === "Weekly Off"){
+                weeklyOff++;
+            }
+
+            let arrivalClass =
+                row.arrival === "Late"
+                ? "arrival-late"
+                : "arrival-ontime";
+
+            let checkoutClass =
+                row.checkout_type === "Auto"
+                ? "checkout-auto"
+                : "checkout-manual";
+
+            let statusClass = "";
+
+            if(row.status === "Present"){
+                statusClass = "status-present";
+            }
+            else if(row.status === "Half Day"){
+                statusClass = "status-halfday";
+            }
+            else if(row.status === "Absent"){
+                statusClass = "status-absent";
+            }
+            else if(row.status === "Leave"){
+                statusClass = "status-leave";
+            }
+            else if(row.status === "Holiday"){
+                statusClass = "status-holiday";
+            }
+            else if(row.status === "Weekly Off"){
+                statusClass = "status-weekoff";
+            }
+
+            let remarks = "-";
+
+            if(row.status === "Absent"){
+                remarks = "No Attendance";
+            }
+
+            if(row.status === "Leave"){
+                remarks = "Approved Leave";
+            }
+
+            if(row.status === "Holiday"){
+                remarks = "Company Holiday";
+            }
+
+            if(row.status === "Weekly Off"){
+                remarks = "Weekly Off";
+            }
+
+            // ==========================================
+            // HOLIDAY / LEAVE / WEEKLY OFF FULL ROW
+            // ==========================================
+
+            if(
+                row.status === "Holiday" ||
+                row.status === "Leave" ||
+                row.status === "Weekly Off"
+            ){
+
+                let rowClass = "";
+
+                if(row.status === "Holiday"){
+                    rowClass = "holiday-row";
+                }
+                else if(row.status === "Leave"){
+                    rowClass = "leave-row";
+                }
+                else{
+                    rowClass = "weeklyoff-row";
+                }
+
+                html += `
+                <tr class="${rowClass}">
+
+                    <td>${row.date}</td>
+
+                    <td colspan="6" class="special-day">
+                        ${row.status}
+                    </td>
+
+                </tr>
+                `;
+            }
+            else{
+
+                html += `
+                <tr>
+
+                    <td>${row.date}</td>
+
+                    <td>${row.check_in || "-"}</td>
+
+                    <td>${row.check_out || "-"}</td>
+
+                    <td>${row.hours || "-"}</td>
+
+                    <td class="${arrivalClass}">
+                        ${row.arrival || "-"}
+                    </td>
+
+                    <td class="${checkoutClass}">
+                        ${row.checkout_type || "-"}
+                    </td>
+
+                    <td class="${statusClass}">
+                        ${row.status}
+                    </td>
+
+                </tr>
+                `;
+            }
+        });
+
+    });
+
+    if(!rowsFound){
+
+        html += `
+        <tr>
+            <td colspan="9">
+                No attendance records found for selected filters
+            </td>
+        </tr>
+        `;
+    }
+
+        html += `
+        <tr class="totals-footer">
+            <td colspan="9">
+
+                Present : ${present}
+                &nbsp;&nbsp;&nbsp;|
+
+                Absent : ${absent}
+                &nbsp;&nbsp;&nbsp;|
+
+                Half Day : ${halfDay}
+                &nbsp;&nbsp;&nbsp;|
+
+                Leave : ${leave}
+                &nbsp;&nbsp;&nbsp;|
+
+                Holiday : ${holiday}
+                &nbsp;&nbsp;&nbsp;|
+
+                Weekly Off : ${weeklyOff}
+
+            </td>
+        </tr>
+        `;
+
+    document.getElementById("detailedReportTable").innerHTML =
+    html;
+}
+// FORCE GLOBAL ACCESS HERE:
+window.loadDetailedReport = loadDetailedReport;
+
+function downloadPDF() {
+
+    let monthEl = document.getElementById("month");
+    let yearEl = document.getElementById("year");
+    let empEl = document.getElementById("report_employee_id");
+    let deptEl = document.getElementById("department");
+
+    if (!monthEl || !yearEl) {
+        console.error("Month/Year elements missing");
+        return;
+    }
+
+    let month = monthEl.value;
+    let year = yearEl.value;
+
+    let employee_id = empEl ? empEl.value : "";
+    if (employee_id) {
+        employee_id = parseInt(employee_id);
+    }
+
+    let department = deptEl ? deptEl.value : "";
+
+    // ===============================
+    // SAFE ELEMENT CHECKS
+    // ===============================
+    let detailedCard = document.getElementById("detailedReportCard");
+    let monthlyCard = document.getElementById("monthlyReportCard");
+
+    let isDetailedVisible =
+        detailedCard && getComputedStyle(detailedCard).display !== "none";
+
+    let isMonthlyVisible =
+        monthlyCard && getComputedStyle(monthlyCard).display !== "none";
+
+    // ===============================
+    // DECIDE API
+    // ===============================
+    let url = "";
+
+    if (isDetailedVisible) {
+
+        url =
+        `/api/download_detailed_report_pdf?month=${month}&year=${year}`;
+
+    }
+    else {
+
+        url =
+        `/api/download_monthly_report_pdf?month=${month}&year=${year}`;
+
+    }
+
+    // ===============================
+    // ADD FILTERS
+    // ===============================
+    if (employee_id) {
+        url += `&employee_id=${employee_id}`;
+    }
+
+    if (department) {
+        url += `&department=${department}`;
+    }
+
+    console.log("PDF URL:", url);
+    console.log("Detailed Visible:", isDetailedVisible);
+    console.log("Monthly Visible:", isMonthlyVisible);
+    
+
+    // ===============================
+    // DOWNLOAD
+    // ===============================
+    window.open(url, "_blank");
+}
+
+async function loadDepartments(){
+
+    const res = await fetch("/api/get_departments");
+
+    const data = await res.json();
+
+    let deptSelect = document.getElementById("department");
+
+    deptSelect.innerHTML =
+        `<option value="">All Departments</option>`;
+
+    data.forEach(d => {
+
+        deptSelect.innerHTML += `
+            <option value="${d.department_name}">
+                ${d.department_name}
+            </option>
+        `;
+    });
 }

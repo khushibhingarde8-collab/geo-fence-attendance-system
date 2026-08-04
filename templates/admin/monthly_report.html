@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Monthly Attendance Report</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+
+body{
+
+    font-family:"Segoe UI",Arial,sans-serif;
+
+    background:#f4f7fb;
+
+    padding:20px;
+
+    color:#1f2937;
+
+}
+
+
+/* =========================
+   MAIN FILTER CARD
+========================= */
+
+
+.top-card{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:16px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+
+    margin-bottom:20px;
+
+}
+
+
+.title{
+
+    font-size:24px;
+
+    font-weight:700;
+
+    color:#1e3a8a;
+
+    margin-bottom:20px;
+
+}
+
+
+/* FILTER AREA */
+
+
+.controls{
+
+    display:flex;
+
+    gap:18px;
+
+    flex-wrap:wrap;
+
+    align-items:flex-end;
+
+}
+
+
+.field{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:7px;
+
+}
+
+
+.field label{
+
+    font-size:13px;
+
+    font-weight:700;
+
+    color:#374151;
+
+}
+
+
+input,
+select{
+
+    height:42px;
+
+    min-width:160px;
+
+    padding:0 12px;
+
+    border-radius:8px;
+
+    border:1px solid #d1d5db;
+
+    background:white;
+
+    font-size:14px;
+
+}
+
+
+input:focus,
+select:focus{
+
+    outline:none;
+
+    border-color:#2563eb;
+
+}
+
+
+
+/* BUTTONS */
+
+
+.btn{
+
+    height:42px;
+
+    padding:0 20px;
+
+    border:none;
+
+    border-radius:8px;
+
+    color:white;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+
+.btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+.generate{
+
+    background:#2563eb;
+
+}
+
+
+.pdf{
+
+    background:#16a34a;
+
+}
+
+
+
+/* =========================
+   REPORT TABS
+========================= */
+
+
+.report-tabs{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:15px;
+
+}
+
+
+.tab-btn{
+
+    padding:12px 25px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#e5e7eb;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+
+.tab-btn.active{
+
+    background:#1e3a8a;
+
+    color:white;
+
+}
+
+
+
+/* =========================
+   LEGEND
+========================= */
+
+
+.legend{
+
+    margin-top:20px;
+
+    background:#eff6ff;
+
+    padding:15px;
+
+    border-left:5px solid #2563eb;
+
+    border-radius:10px;
+
+    line-height:28px;
+
+    font-size:14px;
+
+}
+
+
+
+/* =========================
+   REPORT CARD
+========================= */
+
+
+.report-card{
+
+    background:white;
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+
+}
+
+
+
+.table-container{
+
+    width:100%;
+
+    overflow:auto;
+
+    max-height:650px;
+
+}
+
+
+
+/* =========================
+   MONTHLY MATRIX TABLE
+========================= */
+
+
+table{
+
+    border-collapse:collapse;
+
+    width:max-content;
+
+    min-width:100%;
+
+}
+
+
+
+th{
+
+    padding:10px;
+
+    border:1px solid #cbd5e1;
+
+    background:#dbeafe;
+
+    font-size:13px;
+
+    text-align:center;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:5;
+
+}
+
+
+td{
+
+    border:1px solid #e5e7eb;
+
+    padding:10px;
+
+    text-align:center;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+
+/* HEADER */
+
+
+.main-header{
+
+    background:#1e3a8a;
+
+    color:white;
+
+}
+
+
+
+/* =========================
+   FREEZE COLUMNS
+========================= */
+
+
+.code-cell{
+
+    position:sticky;
+
+    left:0;
+
+    z-index:8;
+
+    background:#eef4ff;
+
+    min-width:75px;
+
+}
+
+
+.name-section{
+
+    position:sticky;
+
+    left:75px;
+
+    z-index:7;
+
+    background:#eef4ff;
+
+    min-width:250px;
+
+    max-width:250px;
+
+}
+
+
+
+/* Frozen header */
+
+th.code-cell,
+th.name-section{
+
+    background:#1e3a8a;
+
+    color:white;
+
+    z-index:20;
+
+}
+
+
+
+
+.emp-name{
+
+    font-size:15px;
+
+    font-weight:700;
+
+}
+
+
+
+.emp-role{
+
+    font-size:12px;
+
+    color:#6b7280;
+
+}
+
+
+.emp-dept{
+
+    font-size:12px;
+
+    color:#2563eb;
+
+}
+
+
+
+/* =========================
+ STATUS COLORS
+========================= */
+
+
+.P{
+
+    background:#14b8a6;
+
+    color:white;
+
+}
+
+
+.A{
+
+    background:#ef4444;
+
+    color:white;
+
+}
+
+
+.HD{
+
+    background:#2563eb;
+
+    color:white;
+
+}
+
+
+.H{
+
+    background:#f59e0b;
+
+    color:white;
+
+}
+
+
+.L{
+
+    background:#a855f7;
+
+    color:white;
+
+}
+
+
+.WO{
+
+    background:#374151;
+
+    color:white;
+
+}
+
+
+
+.sunday{
+
+    background:#dc2626!important;
+
+    color:white;
+
+}
+
+
+.saturday{
+
+    background:#d97706!important;
+
+    color:white;
+
+}
+/* =========================
+   SUMMARY
+========================= */
+
+
+.summary{
+
+    background:#f8fafc;
+
+    font-weight:700;
+
+}
+
+
+.totals-row td{
+
+    padding:12px;
+
+}
+
+
+
+/* =========================
+   DETAILED REPORT
+========================= */
+
+
+#detailedReportCard{
+
+    display:none;
+
+}
+
+
+.report-title{
+
+    background:#1e3a8a;
+
+    color:white;
+
+    padding:15px;
+
+    font-size:17px;
+
+    font-weight:700;
+
+}
+
+
+.report-table th{
+
+    background:#1e3a8a;
+
+    color:white;
+
+}
+
+
+.report-table td{
+
+    padding:10px;
+
+}
+
+
+
+/* STATUS TEXT */
+
+
+.status-present{
+
+    color:#16a34a;
+
+    font-weight:700;
+
+}
+
+
+.status-halfday{
+
+    color:#2563eb;
+
+    font-weight:700;
+
+}
+
+
+.status-absent{
+
+    color:#dc2626;
+
+    font-weight:700;
+
+}
+
+
+.status-leave{
+
+    color:#9333ea;
+
+    font-weight:700;
+
+}
+
+
+.status-holiday{
+
+    color:#d97706;
+
+    font-weight:700;
+
+}
+
+
+.status-weekoff{
+
+    color:#374151;
+
+    font-weight:700;
+
+}
+
+
+
+/* EMPLOYEE INFO CARD */
+
+
+#employeeInfoBar{
+
+    padding:15px;
+
+    background:#eff6ff;
+
+    font-weight:600;
+
+    border-bottom:1px solid #dbeafe;
+
+}
+
+
+
+/* RESPONSIVE */
+
+
+@media(max-width:768px){
+
+
+    body{
+
+        padding:10px;
+
+    }
+
+
+    .controls{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+
+    input,
+    select,
+    .btn{
+
+        width:100%;
+
+    }
+
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+
+<div class="top-card">
+
+
+<div class="title">
+
+    Monthly Attendance Report
+
+</div>
+
+
+
+<div class="controls">
+
+
+<div class="field">
+
+<label>Month</label>
+
+<select id="month">
+
+<option value="1">January</option>
+<option value="2">February</option>
+<option value="3">March</option>
+<option value="4">April</option>
+<option value="5">May</option>
+<option value="6">June</option>
+<option value="7">July</option>
+<option value="8">August</option>
+<option value="9">September</option>
+<option value="10">October</option>
+<option value="11">November</option>
+<option value="12">December</option>
+
+</select>
+
+</div>
+
+
+
+<div class="field">
+
+<label>Year</label>
+
+<select id="year">
+
+<option value="">Select Year</option>
+
+</select>
+
+</div>
+
+
+
+
+<div class="field">
+
+<label>Employee ID (Optional)</label>
+
+<input
+type="number"
+id="report_employee_id"
+placeholder="All Employees">
+
+</div>
+
+
+
+
+<div class="field">
+
+<label>Department</label>
+
+<select id="department">
+
+<option value="">
+All Departments
+</option>
+
+</select>
+
+</div>
+
+
+
+
+<button 
+class="btn generate"
+onclick="loadReport()">
+
+Generate Report
+
+</button>
+
+
+
+<button
+class="btn pdf"
+onclick="downloadPDF()">
+
+Download PDF
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+<div class="legend">
+
+
+<b>Status Legend:</b>
+
+<br>
+
+
+<span class="P">
+P
+</span>
+= Present |
+
+<span class="A">
+A
+</span>
+= Absent |
+
+<span class="HD">
+HD
+</span>
+= Half Day |
+
+<span class="H">
+H
+</span>
+= Holiday |
+
+<span class="L">
+L
+</span>
+= Approved Leave |
+
+<span class="WO">
+WO
+</span>
+= Weekly Off
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<!-- ==========================
+REPORT TABS
+========================== -->
+
+
+<div class="report-tabs">
+
+
+<button
+
+class="tab-btn active"
+
+id="monthlyTab"
+
+onclick="switchReportTab('monthly')">
+
+Monthly Matrix
+
+</button>
+
+
+
+
+<button
+class="tab-btn"
+id="detailTab"
+onclick="loadDetailedReport()">
+
+Detailed Report
+
+</button>
+
+
+</div>
+
+
+
+
+
+<!-- ==========================
+MONTHLY MATRIX
+========================== -->
+
+
+<div 
+class="report-card"
+id="monthlyReportCard">
+
+
+<div class="table-container">
+
+
+<div id="reportPlaceholder"
+
+style="
+padding:40px;
+text-align:center;
+font-size:18px;
+color:#6b7280;
+">
+
+Select filters and click 
+<b>Generate Report</b>
+
+</div>
+
+
+
+<table id="reportTable"></table>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- ==========================
+DETAILED REPORT
+========================== -->
+
+
+<div
+
+class="report-card"
+
+id="detailedReportCard">
+
+
+
+<div class="report-title">
+
+DETAILED ATTENDANCE REPORT
+
+</div>
+
+
+
+<div id="employeeInfoBar"></div>
+
+
+
+<div class="table-container">
+
+
+<table
+
+id="detailedReportTable"
+
+class="report-table">
+
+</table>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<script>
+
+
+function switchReportTab(type){
+
+
+let monthly =
+document.getElementById(
+"monthlyReportCard"
+);
+
+
+let detail =
+document.getElementById(
+"detailedReportCard"
+);
+
+
+
+let mTab =
+document.getElementById(
+"monthlyTab"
+);
+
+
+let dTab =
+document.getElementById(
+"detailTab"
+);
+
+
+
+if(type==="monthly"){
+
+
+monthly.style.display="block";
+
+detail.style.display="none";
+
+
+mTab.classList.add("active");
+
+dTab.classList.remove("active");
+
+
+}
+
+else{
+
+
+monthly.style.display="none";
+
+detail.style.display="block";
+
+
+dTab.classList.add("active");
+
+mTab.classList.remove("active");
+
+
+
+}
+
+
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+</html>

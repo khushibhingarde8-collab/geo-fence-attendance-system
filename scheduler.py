@@ -4,7 +4,9 @@ from flask_mail import Message
 
 from config import mysql
 from extensions import mail
-
+from database import attendance_engine, auto_force_checkout
+from pytz import timezone
+ist = timezone("Asia/Kolkata")
 
 def send_wishes():
 
@@ -195,15 +197,55 @@ def send_wishes():
     cursor.close()
 
 
-def start_scheduler():
+def start_scheduler(app):
 
-    scheduler = BackgroundScheduler()
+    scheduler = BackgroundScheduler(timezone=ist)
 
+    # Wrapper for Birthday Wishes
+    def run_send_wishes():
+        with app.app_context():
+            send_wishes()
+
+    # Wrapper for Attendance Engine
+    def run_attendance_engine():
+        with app.app_context():
+            attendance_engine()
+
+    # Wrapper for Auto Force Checkout
+    def run_auto_force_checkout():
+        with app.app_context():
+            auto_force_checkout()
+
+    # Birthday & Work Anniversary (9:00 AM)
     scheduler.add_job(
-        send_wishes,
+        run_send_wishes,
         trigger="cron",
         hour=9,
-        minute=0
+        minute=0,
+        id="wish_scheduler",
+        replace_existing=True
+    )
+
+    # Attendance Engine (7:00 PM)
+    scheduler.add_job(
+        run_attendance_engine,
+        trigger="cron",
+        hour=19,
+        minute=0,
+        id="attendance_engine",
+        replace_existing=True
+    )
+
+    # Auto Force Checkout (11:00 PM)
+    scheduler.add_job(
+        run_auto_force_checkout,
+        trigger="cron",
+        hour=23,
+        minute=0,
+        id="auto_force_checkout",
+        replace_existing=True
     )
 
     scheduler.start()
+
+    return scheduler

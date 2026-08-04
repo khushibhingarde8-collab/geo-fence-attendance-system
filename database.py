@@ -1,44 +1,33 @@
-import mysql.connector
-from config import mysql
 from datetime import datetime, time, timedelta
 import calendar
-from MySQLdb.cursors import DictCursor
+from config import mysql   # or wherever you defined it
 
-
-def get_connection():
-    try:
-        cursor = mysql.connection.cursor()
-        return cursor
-    except mysql.connector.Error as e:
-        print("Database Connection Error:", e)
-        return None
 
 #login function
 
 from werkzeug.security import check_password_hash
-
 def check_login(username, password):
 
-    conn = get_connection()
-
+    conn = mysql.connection
     if not conn:
         return None
 
-    cursor = conn.cursor(dictionary=True)
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     try:
-
         query = """
             SELECT *
-            FROM employees
-            WHERE (email = %s OR phone = %s)
-            AND status = 'Active'
+            FROM tbl_user
+            WHERE email = %s
+            AND is_active = TRUE
         """
 
-        cursor.execute(query, (username, username))
+        cursor.execute(query, (username,))
         user = cursor.fetchone()
 
-        if user and check_password_hash(user["password"], password):
+        if user and check_password_hash(user["password_hash"], password):
             return user
 
         return None
@@ -49,34 +38,37 @@ def check_login(username, password):
 
     finally:
         cursor.close()
-        conn.close()
 
 #get employee office location
+def get_employee_location(employee_id):
 
-def get_employee_location(emp_id):
-    conn = get_connection()
+    conn = mysql.connection
     if not conn:
         return None
 
-    cursor = conn.cursor(dictionary=True)
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     try:
         query = """
             SELECT 
-                l.location_id,
-                l.location_name,
-                l.city,
-                l.latitude,
-                l.longitude,
-                l.radius
-            FROM employees e
-            JOIN locations l 
-            ON e.location_id = l.location_id
-            WHERE e.emp_id = %s
+                location_id,
+                location_name,
+                city,
+                latitude,
+                longitude,
+                radius
+            FROM tbl_location
+            WHERE location_id = (
+                SELECT location_id 
+                FROM employees 
+                WHERE employee_id = %s
+            )
         """
-        cursor.execute(query, (emp_id,))
-        location = cursor.fetchone()
-        return location
+
+        cursor.execute(query, (employee_id,))
+        return cursor.fetchone()
 
     except Exception as e:
         print("Location Error:", e)
@@ -84,22 +76,25 @@ def get_employee_location(emp_id):
 
     finally:
         cursor.close()
-        conn.close()
+        
 
 #get deputed location
 
-def get_deputed_location(emp_id):
-    conn = get_connection()
+def get_deputed_location(employee_id):
+
+    conn = mysql.connection
     if not conn:
         return None
 
-    cursor = conn.cursor(dictionary=True)
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     try:
         query = """
             SELECT 
                 deputed_id,
-                emp_id,
+                employee_id,
                 latitude,
                 longitude,
                 location_name,
@@ -107,19 +102,15 @@ def get_deputed_location(emp_id):
                 from_date,
                 to_date
             FROM employee_deputed_location
-            WHERE emp_id = %s
+            WHERE employee_id = %s
             AND CURDATE() >= from_date
             AND (to_date IS NULL OR CURDATE() <= to_date)
             ORDER BY from_date DESC
             LIMIT 1
         """
 
-        cursor.execute(query, (emp_id,))
-        deputed = cursor.fetchone()
-
-        print("ACTIVE DEPUTED FOUND:", deputed)
-
-        return deputed
+        cursor.execute(query, (employee_id,))
+        return cursor.fetchone()
 
     except Exception as e:
         print("Deputed Location Error:", e)
@@ -127,17 +118,51 @@ def get_deputed_location(emp_id):
 
     finally:
         cursor.close()
-        conn.close()
+        
 
 #holiday check
 
 def is_holiday(check_date):
 
+    conn = mysql.connection
+
+    if not conn:
+        return False
+
+    from MySQLdb.cursors import DictCursor
+    cursor = conn.cursor(DictCursor)
+    
+    try:
+        cursor.execute("""
+            SELECT 1
+            FROM holiday_master
+            WHERE holiday_date = %s
+            LIMIT 1
+        """, (check_date,))
+
+        result = cursor.fetchone()
+
+        print("HOLIDAY CHECK:", check_date, "RESULT:", result)
+
+        return result is not None
+
+    except Exception as e:
+        print("Holiday Error:", e)
+        return False
+
+    finally:
+        cursor.close()
+        
+        
+import calendar
+
+def is_weekly_off(check_date):
+     #Sunday
     if check_date.weekday() == 6:
         return True
 
+    # Saturday
     if check_date.weekday() == 5:
-
         month_calendar = calendar.monthcalendar(
             check_date.year,
             check_date.month
@@ -153,42 +178,87 @@ def is_holiday(check_date):
                     if saturday_count in [2, 4]:
                         return True
 
-    return False
+    return False     
+
+#leave 
+def is_on_approved_leave(employee_id, check_date):
+
+    conn = mysql.connection
+
+    from MySQLdb.cursors import DictCursor
+    cursor = conn.cursor(DictCursor)
+
+    try:
+
+        cursor.execute("""
+            SELECT 1
+            FROM tbl_leaves
+            WHERE employee_id = %s
+            AND status = 'Approved'
+            AND %s BETWEEN start_date AND end_date
+            LIMIT 1
+        """, (
+            employee_id,
+            check_date
+        ))
+
+        return cursor.fetchone() is not None
+
+    finally:
+        cursor.close()
 
 #day status
 
 def calculate_day_status(work_hours):
+
     if work_hours >= 8:
-        return "Full Day"
-    elif work_hours > 0:
+        return "Present"
+
+    elif work_hours >= 4:
         return "Half Day"
+
     else:
         return "Absent"
 
-
-
 # mark attendance
+def mark_attendance(employee_id, lat, lon, inside_geofence, action):
 
-def mark_attendance(emp_id, lat, lon, inside_geofence, action):
-
-    conn = get_connection()
+    print(">>>>>>>> INSIDE THIS mark_attendance() <<<<<<<<")
+    conn = mysql.connection
     if not conn:
         return {"status": "error", "message": "Database connection failed"}
 
-    cursor = conn.cursor(dictionary=True)
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     today = datetime.now().date()
     now = datetime.now()
 
     try:
+        # if is_weekly_off(today):
+        #     return {
+        #         "status": "warning",
+        #         "message": "Today is Weekly Off"
+        #     }
+
         if is_holiday(today):
-            return {"status": "warning", "message": "Today is Holiday"}
+            return {
+                "status": "warning",
+                "message": "Today is Holiday"
+            }
+
+        # if is_on_approved_leave(employee_id, today):
+        #     return {
+        #         "status": "warning",
+        #         "message": "You are on Approved Leave"
+        #     }   
 
         cursor.execute("""
             SELECT attendance_id, check_in, check_out
             FROM attendance_master
-            WHERE emp_id = %s AND attendance_date = %s
-        """, (emp_id, today))
+            WHERE employee_id = %s AND attendance_date = %s
+        """, (employee_id, today))
 
         record = cursor.fetchone()
 
@@ -197,20 +267,27 @@ def mark_attendance(emp_id, lat, lon, inside_geofence, action):
         if action == "checkin":
 
             checkin_time = datetime.now().time()
+            arrival_status = "On Time"
 
-            start_time = datetime.strptime("09:00:00", "%H:%M:%S").time()
-            end_time = datetime.strptime("16:00:00", "%H:%M:%S").time()
+            if checkin_time > datetime.strptime("10:00:00", "%H:%M:%S").time():
+                arrival_status = "Late"
+
+            start_time = datetime.strptime("9:00:00", "%H:%M:%S").time()
+            end_time = datetime.strptime("23:00:00", "%H:%M:%S").time()
 
             #  OUT OF TIME WINDOW
             if not (start_time <= checkin_time <= end_time):
                 return {
                     "status": "error",
-                    "message": "Check-in allowed only between 9 AM and 4 PM",
+                    "message": "Check-in allowed only between 9 AM and 7 PM",
                     "current_time": str(checkin_time)
                 }
 
-            if record:
-                return {"status": "warning", "message": "Already Checked In Today"}
+            if record and record["check_in"] is not None:
+                return {
+                    "status": "warning",
+                    "message": "Already Checked In Today"
+                }
 
             if not inside_geofence:
                 return {"status": "error", "message": "Cannot Check In - Outside Office"}
@@ -218,22 +295,39 @@ def mark_attendance(emp_id, lat, lon, inside_geofence, action):
             cursor.execute("""
                 INSERT INTO attendance_master
                 (
-                    emp_id,
+                    employee_id,
                     attendance_date,
                     check_in,
                     checkin_latitude,
                     checkin_longitude,
-                    status
+                    status,
+                    arrival_status
                 )
-                VALUES (%s,%s,%s,%s,%s,%s)
+                VALUES (%s,%s,%s,%s,%s,%s,%s)
             """, (
-                emp_id,
+                employee_id,
                 today,
                 now,
                 lat,
                 lon,
-                "PRESENT"
+                "Present",
+                arrival_status
             ))
+
+            conn.commit()
+
+            # ==========================================
+            # RESET TRACKING FOR NEW CHECK-IN
+            # ==========================================
+            cursor.execute("""
+                UPDATE tracking
+                SET
+                    outside_count = 0,
+                    warning_sent = 0,
+                    outside_since = NULL,
+                    location_status = 'Inside'
+                WHERE employee_id = %s
+            """, (employee_id,))
 
             conn.commit()
 
@@ -253,17 +347,32 @@ def mark_attendance(emp_id, lat, lon, inside_geofence, action):
             if not inside_geofence:
                 return {"status": "error", "message": "Cannot Check Out - Outside Office"}
 
-            work_seconds = (now - record["check_in"]).total_seconds()
+            check_in = record["check_in"]   # ✅ FIXED INDENTATION
+
+            # safe conversion
+            if isinstance(check_in, str):
+                check_in = datetime.strptime(check_in, "%Y-%m-%d %H:%M:%S")
+
+            work_seconds = (now - check_in).total_seconds()
             work_seconds = max(work_seconds, 0)
 
             work_hours = round(work_seconds / 3600, 2)
 
-            if work_hours >= 8:
-                final_status = "Full Day"
-            elif work_hours > 0:
-                final_status = "Half Day"
+            final_status = calculate_day_status(work_hours)
+
+            # =====================================
+            # OVERTIME CALCULATION
+            # Office timing ends at 7:00 PM
+            # =====================================
+
+            office_end = datetime.combine(today, time(19, 0))
+
+            if now > office_end:
+                overtime_minutes = int(
+                    (now - office_end).total_seconds() // 60
+                )
             else:
-                final_status = "Absent"
+                overtime_minutes = 0
 
             cursor.execute("""
                 UPDATE attendance_master
@@ -272,14 +381,18 @@ def mark_attendance(emp_id, lat, lon, inside_geofence, action):
                     checkout_latitude = %s,
                     checkout_longitude = %s,
                     work_hours = %s,
-                    status = %s
+                    overtime_minutes = %s,
+                    status = %s,
+                    checkout_type = %s
                 WHERE attendance_id = %s
             """, (
                 now,
                 lat,
                 lon,
                 work_hours,
+                overtime_minutes,
                 final_status,
+                "manual",
                 record["attendance_id"]
             ))
 
@@ -289,89 +402,168 @@ def mark_attendance(emp_id, lat, lon, inside_geofence, action):
                 "status": "success",
                 "message": f"Checked Out - {final_status}"
             }
-
         else:
             return {"status": "error", "message": "Invalid Action"}
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         conn.rollback()
-        print("Attendance Error:", e)
-        return {"status": "error", "message": "Attendance Failed"}
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
 
     finally:
         cursor.close()
-        conn.close()
 
-# auto mark absent 
+def attendance_engine():
 
-def auto_mark_absent():
+     conn = mysql.connection
+     cursor = conn.cursor()
 
-    conn = get_connection()
+     today = datetime.now().date()
+
+     # Stop on holiday or weekly off
+     if is_holiday(today) or is_weekly_off(today):
+         cursor.close()
+         return
+
+     # Insert Absent for employees who have no attendance record today
+     cursor.execute("""
+         INSERT INTO attendance_master (employee_id, attendance_date, status)
+         SELECT e.employee_id, %s, 'Absent'
+         FROM employees e
+         WHERE e.is_active = 1
+         AND e.employee_id NOT IN (
+             SELECT employee_id
+             FROM attendance_master
+             WHERE attendance_date = %s
+         )
+     """, (today, today))
+
+     conn.commit()
+     cursor.close()
+
+def auto_force_checkout():
+
+    conn = mysql.connection
+
     if not conn:
         return
 
-    cursor = conn.cursor(dictionary=True)
-    yesterday = datetime.now().date() - timedelta(days=1)
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
+
+    today = datetime.now().date()
+    now = datetime.now()
 
     try:
 
-        if is_holiday(yesterday):
-            return
+        # Find employees who checked in but forgot to check out
+        cursor.execute("""
+            SELECT
+                attendance_id,
+                employee_id,
+                check_in
+            FROM attendance_master
+            WHERE attendance_date = %s
+            AND check_in IS NOT NULL
+            AND check_out IS NULL
+        """, (today,))
 
-        cursor.execute("SELECT emp_id FROM employees WHERE status='Active'")
-        employees = cursor.fetchall()
+        records = cursor.fetchall()
 
-        for emp in employees:
+        for record in records:
 
+            check_in = record["check_in"]
+
+            # Safe conversion
+            if isinstance(check_in, str):
+                check_in = datetime.strptime(
+                    check_in,
+                    "%Y-%m-%d %H:%M:%S"
+                )
+
+            # Calculate work hours
+            work_seconds = (now - check_in).total_seconds()
+            work_seconds = max(work_seconds, 0)
+
+            work_hours = round(work_seconds / 3600, 2)
+
+            # Calculate final attendance status
+            final_status = calculate_day_status(work_hours)
+
+            # Overtime starts after 7:00 PM
+            office_end = datetime.combine(today, time(19, 0))
+
+            if now > office_end:
+                overtime_minutes = int(
+                    (now - office_end).total_seconds() // 60
+                )
+            else:
+                overtime_minutes = 0
+
+            # Update attendance
             cursor.execute("""
-                SELECT attendance_id 
-                FROM attendance_master
-                WHERE emp_id=%s AND attendance_date=%s
-            """, (emp["emp_id"], yesterday))
-
-            record = cursor.fetchone()
-
-            if not record:
-                cursor.execute("""
-                    INSERT INTO attendance_master
-                    (emp_id, attendance_date, status)
-                    VALUES (%s, %s, %s)
-                """, (emp["emp_id"], yesterday, "Absent"))
+                UPDATE attendance_master
+                SET
+                    check_out = %s,
+                    work_hours = %s,
+                    overtime_minutes = %s,
+                    status = %s,
+                    checkout_type = %s
+                WHERE attendance_id = %s
+            """, (
+                now,
+                work_hours,
+                overtime_minutes,
+                final_status,
+                "Auto Force Checkout",
+                record["attendance_id"]
+            ))
 
         conn.commit()
 
+        print(f"Auto Force Checkout Completed. Processed {len(records)} employees.")
+
     except Exception as e:
-        print("Auto Absent Error:", e)
         conn.rollback()
+        print("Auto Force Checkout Error:", e)
 
     finally:
         cursor.close()
-        conn.close()
-
 
 # get attendance history
 
-def get_attendance_history(emp_id):
+def get_attendance_history(employee_id):
 
-    conn = get_connection()
+    conn = mysql.connection
     if not conn:
         return []
 
-    cursor = conn.cursor(dictionary=True)
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     try:
         cursor.execute("""
-            SELECT 
+            SELECT
                 attendance_date,
                 check_in,
                 check_out,
                 work_hours,
-                status
+                status,
+                arrival_status,
+                overtime_minutes,
+                checkout_type
             FROM attendance_master
-            WHERE emp_id = %s
+            WHERE employee_id=%s
             ORDER BY attendance_date DESC
             LIMIT 30
-        """, (emp_id,))
+        """, (employee_id,))
 
         history = cursor.fetchall()
         return history
@@ -382,45 +574,47 @@ def get_attendance_history(emp_id):
 
     finally:
         cursor.close()
-        conn.close()
 
 # monthly report
 
-def get_employee_monthly_report(emp_id, month, year):
+def get_employee_monthly_report(employee_id, month, year):
 
-    cursor = mysql.connection.cursor()
-    cursor = mysql.connection.cursor(DictCursor)
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     cursor.execute("""
         SELECT 
-            e.emp_id,
-            e.full_name,
+            e.employee_id,
+            CONCAT(e.first_name,' ',e.last_name) AS full_name,
             a.attendance_date,
             a.check_in,
             a.check_out,
             a.status,
             a.work_hours
         FROM attendance_master a
-        JOIN employees e ON a.emp_id = e.emp_id
-        WHERE a.emp_id = %s
+        JOIN employees e ON a.employee_id = e.employee_id
+        WHERE a.employee_id = %s
         AND MONTH(a.attendance_date) = %s
         AND YEAR(a.attendance_date) = %s
-    """, (emp_id, month, year))
+    """, (employee_id, month, year))
 
     data = cursor.fetchall()
-    cursor.close()
 
     return data
 
-def get_admin_employee_report(emp_id, month, year):
+def get_admin_employee_report(employee_id, month, year):
 
-    cursor = mysql.connection.cursor()
-    cursor = mysql.connection.cursor(DictCursor)
+    conn = mysql.connection
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     cursor.execute("""
         SELECT 
-            e.emp_id,
-            e.full_name,
+            e.employee_id,
+            CONCAT(e.first_name,' ',e.last_name) AS full_name,
 
             COUNT(a.attendance_id) AS total_days,
 
@@ -436,17 +630,20 @@ def get_admin_employee_report(emp_id, month, year):
             ) AS attendance_percentage
 
         FROM attendance_master a
-        JOIN employees e ON a.emp_id = e.emp_id
+        JOIN employees e ON a.employee_id = e.employee_id
 
-        WHERE a.emp_id = %s
+        WHERE a.employee_id = %s
         AND MONTH(a.attendance_date) = %s
         AND YEAR(a.attendance_date) = %s
 
-        GROUP BY a.emp_id, e.full_name
-    """, (emp_id, month, year))
+        GROUP BY
+            a.employee_id,
+            e.first_name,
+            e.last_name
+    """, (employee_id, month, year))
 
     data = cursor.fetchall()
-    cursor.close()
+    
 
     return data
 
@@ -477,7 +674,7 @@ def calculate_summary(report):
     ) if total_days > 0 else 0
 
     return {
-        "emp_id": r["emp_id"],
+        "employee_id": r["employee_id"],
         "full_name": r["full_name"],
         "present": present,
         "absent": absent,
@@ -487,13 +684,15 @@ def calculate_summary(report):
     
 # dashboard summary
 
-def get_dashboard_summary(emp_id):
+def get_dashboard_summary(employee_id):
 
-    conn = get_connection()
+    conn = mysql.connection
     if not conn:
         return {}
 
-    cursor = conn.cursor(dictionary=True)
+    from MySQLdb.cursors import DictCursor
+
+    cursor = conn.cursor(DictCursor)
 
     today = datetime.now()
     first_day = today.replace(day=1).date()
@@ -502,30 +701,28 @@ def get_dashboard_summary(emp_id):
         cursor.execute("""
             SELECT status, COUNT(*) as total
             FROM attendance_master
-            WHERE emp_id=%s
+            WHERE employee_id=%s
             AND attendance_date >= %s
             GROUP BY status
-        """, (emp_id, first_day))
+        """, (employee_id, first_day))
 
         results = cursor.fetchall()
 
         summary = {
+            "Present": 0,
+            "Late": 0,
             "Full Day": 0,
             "Half Day": 0,
             "Absent": 0,
             "Holiday": 0,
-            "Outside Geofence": 0
+            "Leave": 0
         }
 
         for row in results:
             status = row["status"]
 
-            if status in ["Present", "Present (Late)"]:
-                summary["Full Day"] += row["total"]
-
-            elif status in summary:
+            if status in summary:
                 summary[status] = row["total"]
-
 
         return summary
 
@@ -535,4 +732,4 @@ def get_dashboard_summary(emp_id):
 
     finally:
         cursor.close()
-        conn.close()
+        

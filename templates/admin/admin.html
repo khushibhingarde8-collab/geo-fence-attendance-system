@@ -88,6 +88,8 @@
       <li onclick="showSection('tdscert')">Upload TDS</li> 
       <li onclick="showSection('salary')">Salary</li>
       <li onclick="showSection('attendance-report')">Attendance Report</li>
+      <li onclick="showSection('employee-tracking')">Employee Tracking</li>
+
         <!-- Website Dropdown -->
   <li class="sidebar-dropdown">
 
@@ -1263,76 +1265,14 @@ Update
     <!-- ATTENDANCE REPORT -->
 <section id="attendance-report" class="section">
 
-    <h1>Monthly Attendance Report</h1>
+   {% include 'admin/monthly_report.html' %}
 
-    <div class="top-card">
+</section>
 
-        <div class="controls">
+</section>
 
-            <div class="field">
-                <label>Month</label>
-                <select id="month">
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
-            </div>
-
-            <div class="field">
-                <label>Year</label>
-                <input type="number" id="year">
-            </div>
-
-            <div class="field">
-                <label>Employee ID</label>
-                <input type="number" id="emp_id">
-            </div>
-
-            <div class="field">
-                <label>Department</label>
-                <select id="department">
-                    <option value="">All Departments</option>
-                </select>
-            </div>
-            <br>
-            <button class="btn generate" onclick="loadReport()">
-                Generate Report
-            </button>
-
-            <button class="btn pdf" onclick="downloadPDF()">
-                Download PDF
-            </button>
-
-        </div>
-        <br>
-        <div class="legend">
-            <b>Status Legend:</b><br>
-
-            P = Present |
-            A = Absent |
-            HD = Half Day |
-            H = Holiday |
-            L = Approved Leave |
-            WO = Weekly Off
-        </div>
-
-    </div>
-
-    <div class="report-card">
-        <div class="table-container">
-            <table id="reportTable"></table>
-        </div>
-    </div>
-
+<section id="employee-tracking" class="section">
+    {% include 'admin/employee_tracking.html' %}
 </section>
 
 

@@ -3,7 +3,7 @@ from config import mysql
 from datetime import datetime
 from MySQLdb.cursors import DictCursor
 from flask_mail import Message
-from app import mail
+from extensions import mail
 from flask import current_app
 
 leave_bp = Blueprint("leave_bp", __name__)
