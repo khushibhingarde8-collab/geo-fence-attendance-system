@@ -5,9 +5,9 @@ from flask import render_template
 
 client_bp = Blueprint("client_bp", __name__)
 
-@client_bp.route("/client")
-def client_page():
-    return render_template("client/client.html")
+# @client_bp.route("/client")
+# def client_page():
+#     return render_template("client/client.html")
 
 @client_bp.route("/save_client", methods=["POST"])
 def save_client():

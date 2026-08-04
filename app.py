@@ -71,40 +71,6 @@ UPLOAD_PHOTO_FOLDER = 'static/profile_photos'
 if not os.path.exists(UPLOAD_PHOTO_FOLDER):
     os.makedirs(UPLOAD_PHOTO_FOLDER)
 
-# UPLOAD_RESUME_FOLDER = os.path.join(
-#     app.root_path,
-#     "static",
-#     "uploads",
-#     "resumes"
-# )
-
-# os.makedirs(UPLOAD_RESUME_FOLDER, exist_ok=True)
-
-
-
-
-
-
-# @app.route("/service")
-# def service():
-#     return render_template("service/service.html")
-
-# @app.route("/project")
-# def project():
-#     return render_template("project/project.html")
-
-# @app.route("/client")
-# def client():
-#     return render_template("client/client.html")
-
-# @app.route("/phoenix")
-# def phoenix():
-#     return render_template("phoenix/phoenix.html")
-
-# @app.route("/contact")
-# def contact():
-#     return render_template("contact/contact.html")
-
 
 
 @app.route("/upload_profile_photo", methods=["POST"])
@@ -209,13 +175,20 @@ def home():
 
     # Achievement
     cursor.execute("""
-        SELECT branches
-        FROM tbl_home_achievement
-        LIMIT 1
+    SELECT branches,
+           engineers_trained
+    FROM tbl_home_achievement
+    LIMIT 1
     """)
+
     achievement = cursor.fetchone()
 
-    branches = achievement[0] if achievement else 0
+    if achievement:
+        branches = achievement[0]
+        engineers_trained = achievement[1]
+    else:
+        branches = 0
+        engineers_trained = 0
 
     from datetime import datetime
     years_experience = datetime.now().year - 2016
@@ -293,6 +266,7 @@ def home():
         "home/home.html",
         purposes=purposes,
         branches=branches,
+        engineers_trained=engineers_trained,
         years_experience=years_experience,
         journeys=journeys,
         business_scopes=business_scopes,
@@ -306,44 +280,6 @@ def home():
     )
 
 
-@app.route("/gallery")
-def gallery():
-
-    cursor = mysql.connection.cursor()
-
-    cursor.execute("""
-        SELECT *
-        FROM tbl_gallery
-        WHERE category='Events'
-        ORDER BY created_at DESC
-    """)
-    events = cursor.fetchall()
-
-    cursor.execute("""
-        SELECT *
-        FROM tbl_gallery
-        WHERE category='Site Visits'
-        ORDER BY created_at DESC
-    """)
-    site_visits = cursor.fetchall()
-
-    cursor.execute("""
-        SELECT *
-        FROM tbl_gallery
-        WHERE category='Office Activities'
-        ORDER BY created_at DESC
-    """)
-    office_activities = cursor.fetchall()
-
-    cursor.close()
-
-    return render_template(
-        "about/gallery.html",
-        events=events,
-        site_visits=site_visits,
-        office_activities=office_activities
-    )
-    
 
 @app.route("/update_experience", methods=["POST"])
 def update_experience():
@@ -854,31 +790,7 @@ def admin():
     project_count = cursor.fetchone()[0]
 
 
-    # cursor.execute("""
-    # SELECT 
-    #     e.employee_code,
-    #     e.first_name,
-    #     e.last_name,
-    #     e.dob,
-    #     e.doj,
-    #     e.grade_id,
-    #     e.phone,
-    #     e.email,
-    #     e.comp_mail,
-    #     e.gender,
-    #     e.profile_photo,
     
-    #     CONCAT(rm.first_name,' ',rm.last_name) AS reporting_manager
-    
-    # FROM employees e
-    
-    # LEFT JOIN employees rm
-    # ON e.reporting_manager_id = rm.employee_id
-    
-    # WHERE e.email = %s
-    # AND e.is_active = TRUE
-    # """, (email,))
-
 
     # Fetch pending leaves
     cursor.execute("""
@@ -1034,7 +946,19 @@ FROM clients
 
     # Service details (prevent undefined variable)
     try:
-        cursor.execute("SELECT * FROM tbl_service_details ORDER BY id DESC")
+        cursor.execute("""
+        SELECT
+            d.id,
+            s.title,
+            d.long_description,
+            d.image,
+            d.service_id
+        FROM tbl_service_details d
+        JOIN tbl_services s
+            ON d.service_id = s.id
+        ORDER BY d.id DESC
+        """)
+        
         service_details = cursor.fetchall()
     except Exception:
         service_details = []
@@ -1060,17 +984,17 @@ FROM clients
 
     if row:
         contact_data = {
-        "contact_id": row[0],
-        "description": row[1],
-        "short_address": row[2],
-        "email1": row[3],
-        "email2": row[4],
-        "phone1": row[5],
-        "phone2": row[6],
-        "weekday_hours": row[7],
-        "saturday_hours": row[8],
-        "map_link": row[9]
-    }
+            "contact_id": row[0],
+            "description": row[1],
+            "short_address": row[2],
+            "email1": row[3],
+            "email2": row[4],
+            "phone1": row[5],
+            "phone2": row[6],
+            "weekday_hours": row[7],
+            "saturday_hours": row[8],
+            "map_link": row[9]
+        }
     else:
      contact_data = {}
      
@@ -1082,7 +1006,7 @@ FROM clients
     """)
 
     contact_list = cursor.fetchall()
-    contact_data = contact_list[0] if contact_list else None
+
 
     cursor.execute("SELECT * FROM tbl_social_links")
     social_links = cursor.fetchall()
@@ -1249,23 +1173,34 @@ FROM clients
     # PHOENIX CATALOGS
     # ==========================
     cursor.execute("""
-    SELECT *
+    SELECT
+        catalog_id,
+        title,
+        pdf_file,
+        display_order,
+        is_active
     FROM tbl_phoenix_catalog
     ORDER BY display_order
     """)
     phoenix_catalogs = cursor.fetchall()
 
+    print(type(phoenix_catalogs[0]))
+    print(phoenix_catalogs[0])
 
     # ==========================
     # PHOENIX CERTIFICATES
     # ==========================
     cursor.execute("""
-    SELECT *
+    SELECT
+        certificate_id,
+        title,
+        image,
+        display_order,
+        is_active
     FROM tbl_phoenix_certificate
     ORDER BY display_order
     """)
     phoenix_certificates = cursor.fetchall()
-
 
     cursor.execute("""
         SELECT

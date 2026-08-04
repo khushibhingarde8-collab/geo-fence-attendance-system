@@ -8,21 +8,21 @@ project_bp = Blueprint("project_bp", __name__)
 # =========================
 # PROJECT PAGE
 # =========================
-@project_bp.route("/project")
-def project():
-    return render_template("project/project.html")
+# @project_bp.route("/project")
+# def project():
+#     return render_template("project/project.html")
 
 
 # =========================
 # PROJECT DETAIL PAGE
 # =========================
-@project_bp.route("/project-detail")
-def project_detail():
-    return render_template("project/projectDetail.html")
+# @project_bp.route("/project-detail")
+# def project_detail():
+#     return render_template("project/projectDetail.html")
 
-@project_bp.route("/project-list")
-def project_list():
-    return render_template("project/projectList.html")
+# @project_bp.route("/project-list")
+# def project_list():
+#     return render_template("project/projectList.html")
 
 @project_bp.route("/save_project", methods=["POST"])
 def save_project():

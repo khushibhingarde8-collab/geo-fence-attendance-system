@@ -96,37 +96,37 @@ document.querySelectorAll("img").forEach((img) => {
   img.setAttribute("draggable", "false");
 });
 
-/* ==============================
-   DEVTOOLS DETECTION
-============================== */
-(function () {
-  function detectDevTools() {
-    const widthThreshold = window.outerWidth - window.innerWidth > 160;
-    const heightThreshold = window.outerHeight - window.innerHeight > 160;
+// /* ==============================
+//    DEVTOOLS DETECTION
+// ============================== */
+// (function () {
+//   function detectDevTools() {
+//     const widthThreshold = window.outerWidth - window.innerWidth > 160;
+//     const heightThreshold = window.outerHeight - window.innerHeight > 160;
 
-    if (widthThreshold || heightThreshold) {
-      document.body.innerHTML = `
-                <div style="
-                    height:100vh;
-                    display:flex;
-                    justify-content:center;
-                    align-items:center;
-                    flex-direction:column;
-                    font-family:Arial;
-                    background:#0b0a24;
-                    color:white;
-                    text-align:center;
-                    padding:20px;
-                ">
-                    <h1>Access Restricted</h1>
-                    <p>Developer tools are disabled on this website.</p>
-                </div>
-            `;
-    }
-  }
+//     if (widthThreshold || heightThreshold) {
+//       document.body.innerHTML = `
+//                 <div style="
+//                     height:100vh;
+//                     display:flex;
+//                     justify-content:center;
+//                     align-items:center;
+//                     flex-direction:column;
+//                     font-family:Arial;
+//                     background:#0b0a24;
+//                     color:white;
+//                     text-align:center;
+//                     padding:20px;
+//                 ">
+//                     <h1>Access Restricted</h1>
+//                     <p>Developer tools are disabled on this website.</p>
+//                 </div>
+//             `;
+//     }
+//   }
 
-  setInterval(detectDevTools, 1000);
-})();
+//   setInterval(detectDevTools, 1000);
+// })();
 
 /* ==============================
    DISABLE CONSOLE LOG ACCESS
@@ -233,37 +233,37 @@ document.querySelectorAll("img").forEach((img) => {
   img.setAttribute("draggable", "false");
 });
 
-/* ==============================
-   DEVTOOLS DETECTION
-============================== */
-(function () {
-  function detectDevTools() {
-    const widthThreshold = window.outerWidth - window.innerWidth > 160;
-    const heightThreshold = window.outerHeight - window.innerHeight > 160;
+// /* ==============================
+//    DEVTOOLS DETECTION
+// ============================== */
+// (function () {
+//   function detectDevTools() {
+//     const widthThreshold = window.outerWidth - window.innerWidth > 160;
+//     const heightThreshold = window.outerHeight - window.innerHeight > 160;
 
-    if (widthThreshold || heightThreshold) {
-      document.body.innerHTML = `
-                <div style="
-                    height:100vh;
-                    display:flex;
-                    justify-content:center;
-                    align-items:center;
-                    flex-direction:column;
-                    font-family:Arial;
-                    background:#0b0a24;
-                    color:white;
-                    text-align:center;
-                    padding:20px;
-                ">
-                    <h1>Access Restricted</h1>
-                    <p>Developer tools are disabled on this website.</p>
-                </div>
-            `;
-    }
-  }
+//     if (widthThreshold || heightThreshold) {
+//       document.body.innerHTML = `
+//                 <div style="
+//                     height:100vh;
+//                     display:flex;
+//                     justify-content:center;
+//                     align-items:center;
+//                     flex-direction:column;
+//                     font-family:Arial;
+//                     background:#0b0a24;
+//                     color:white;
+//                     text-align:center;
+//                     padding:20px;
+//                 ">
+//                     <h1>Access Restricted</h1>
+//                     <p>Developer tools are disabled on this website.</p>
+//                 </div>
+//             `;
+//     }
+//   }
 
-  setInterval(detectDevTools, 1000);
-})();
+//   setInterval(detectDevTools, 1000);
+// })();
 
 /* ==============================
    DISABLE CONSOLE LOG ACCESS

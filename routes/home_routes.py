@@ -143,7 +143,7 @@ def save_business_scope():
 
 # -----------------------------------client page ------------------------------
 
-@home_bp.route("/website-client")
+@home_bp.route("/website_client")
 def website_client():
 
     cursor = mysql.connection.cursor()
@@ -167,6 +167,7 @@ def website_client():
         FROM client_testimonials
         ORDER BY id DESC
     """)
+
     testimonials = cursor.fetchall()
 
     cursor.close()
@@ -196,6 +197,7 @@ def update_website_client_content():
     cursor.close()
 
     return redirect("/admin#website_clients")
+
 
 @home_bp.route("/website/save_client", methods=["POST"])
 def save_website_client():
@@ -370,6 +372,7 @@ def save_website_client():
 
 
     return redirect("/admin#website_clients")
+
 
 @home_bp.route("/website/save_client_testimonial", methods=["POST"])
 def save_website_client_testimonial():
@@ -585,6 +588,9 @@ def save_gallery():
     category = request.form.get("category")
     image = request.files.get("image")
 
+    # NEW
+    is_featured = 1 if request.form.get("is_featured") else 0
+
     image_path = ""
 
     if action == "INSERT":
@@ -596,9 +602,10 @@ def save_gallery():
             image_path = filepath.replace("\\", "/")
 
         cursor.execute("""
-            INSERT INTO tbl_gallery (title, category, image_path)
-            VALUES (%s,%s,%s)
-        """, (title, category, image_path))
+            INSERT INTO tbl_gallery
+            (title, category, image_path, is_featured)
+            VALUES (%s, %s, %s, %s)
+        """, (title, category, image_path, is_featured))
 
     elif action == "UPDATE":
 
@@ -610,21 +617,27 @@ def save_gallery():
 
             cursor.execute("""
                 UPDATE tbl_gallery
-                SET title=%s, category=%s, image_path=%s
+                SET title=%s,
+                    category=%s,
+                    image_path=%s,
+                    is_featured=%s
                 WHERE gallery_id=%s
-            """, (title, category, image_path, gallery_id))
+            """, (title, category, image_path, is_featured, gallery_id))
 
         else:
             cursor.execute("""
                 UPDATE tbl_gallery
-                SET title=%s, category=%s
+                SET title=%s,
+                    category=%s,
+                    is_featured=%s
                 WHERE gallery_id=%s
-            """, (title, category, gallery_id))
+            """, (title, category, is_featured, gallery_id))
 
     elif action == "DELETE":
 
         cursor.execute("""
-            DELETE FROM tbl_gallery WHERE gallery_id=%s
+            DELETE FROM tbl_gallery
+            WHERE gallery_id=%s
         """, (gallery_id,))
 
     mysql.connection.commit()
@@ -638,15 +651,28 @@ def gallery():
     cursor = mysql.connection.cursor()
 
     cursor.execute("""
+        SELECT DISTINCT category
+        FROM tbl_gallery
+        ORDER BY category
+    """)
+    categories = cursor.fetchall()
+
+    cursor.execute("""
         SELECT *
         FROM tbl_gallery
         ORDER BY created_at DESC
     """)
-
     all_gallery = cursor.fetchall()
+
     cursor.close()
 
-    return render_template("about/gallery.html", all_gallery=all_gallery)
+    print(categories)
+    print(all_gallery)
+    return render_template(
+        "about/gallery.html",
+        all_gallery=all_gallery,
+        categories=categories
+    )
 
 @home_bp.route("/update_service_content", methods=["POST"])
 def update_service_content():

@@ -82,11 +82,11 @@
             <div class="about-dropdown">
               <a href="/about">About Us</a>
               <a href="/service">Services</a>
-              <a href="/project">Projects</a>
+              <a href="/website_project">Projects</a>
             </div>
           </div>
 
-          <a href="/client" class="nav-item">Clients</a>
+          <a href="/website_client" class="nav-item">Clients</a>
 
           <a href="/phoenix" class="nav-item"> Phoenix Contact </a>
 
@@ -105,14 +105,31 @@
       </div>
     </nav>
 
-    <!-- News Belt -->
-    <!-- News Belt -->
+    <!-- NEWS BAR -->
     <div class="news-bar">
-      <marquee>
-        {% for news in news_list %} 🚨 {{ news[1] }} {% if news[4] %} |
-        <a href="{{ news[4] }}" target="_blank">Read More</a>
-        {% endif %} &nbsp;&nbsp;&nbsp;&nbsp; {% endfor %}
-      </marquee>
+      <div class="news-track" id="newsTrack">
+        {% for news in news_list %}
+        <div
+          class="news-item"
+          data-title="{{ news[1] }}"
+          data-desc="{{ news[2] }}"
+          data-img="{% if news[5] %}{{ url_for('static', filename='uploads/news/' ~ news[5]) }}{% endif %}"
+        >
+          🚨 {{ news[1] }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- NEWS POPUP -->
+    <div class="news-detail" id="newsDetail">
+      <span class="close-btn" id="closeNews">×</span>
+
+      <div class="news-content">
+        <h3 id="detailTitle"></h3>
+        <img id="detailImg" />
+        <p id="detailDesc"></p>
+      </div>
     </div>
 
     <!-- HERO SECTION -->
@@ -264,33 +281,25 @@
     <section class="gallery-section">
       <div class="gallery-header">
         <h2>Our Presence & Performance</h2>
-
         <a href="/gallery" class="view-all-btn"> View All → </a>
       </div>
-
       <div class="gallery-container">
         {% for image in home_gallery %}
-
         <div class="gallery-card">
           <img src="/{{ image[3] }}" alt="{{ image[1] }}" />
         </div>
-
         {% endfor %}
       </div>
     </section>
 
     <!-- FULL GALLERY MODAL -->
-
     <div id="galleryModal" class="gallery-modal">
       <span class="close" onclick="closeGallery()">×</span>
-
       <div class="gallery-grid">
         {% for image in all_gallery %}
-
         <div class="gallery-card">
           <img src="/{{ image[3] }}" alt="{{ image[1] }}" />
         </div>
-
         {% endfor %}
       </div>
     </div>

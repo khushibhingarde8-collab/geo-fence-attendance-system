@@ -261,10 +261,10 @@ function validateProjectDates() {
     }
 }
 
-startDateInput.addEventListener("change", validateProjectDates);
-endDateInput.addEventListener("change", validateProjectDates);
-
-
+if (startDateInput && endDateInput) {
+    startDateInput.addEventListener("change", validateProjectDates);
+    endDateInput.addEventListener("change", validateProjectDates);
+}
 
 const dobInput = document.getElementById("dob");
 const dojInput = document.getElementById("doj");
@@ -300,9 +300,10 @@ function validateEmployeeDates() {
 
 }
 
-dobInput.addEventListener("change", validateEmployeeDates);
-dojInput.addEventListener("change", validateEmployeeDates);
-
+if (dobInput && dojInput) {
+    dobInput.addEventListener("change", validateEmployeeDates);
+    dojInput.addEventListener("change", validateEmployeeDates);
+}
 
 
 
@@ -388,16 +389,33 @@ function fillService(id, title, description) {
   });
 }
 
-function fillServiceDetail(id, longDescription, image) {
-  document.getElementById("service_detail_id").value = id;
+// function fillServiceDetail(id, longDescription, image) {
+//   document.getElementById("service_detail_id").value = id;
 
-  document.getElementById("detail_long_description").value = longDescription;
+//   document.getElementById("detail_long_description").value = longDescription;
 
-  // Scroll to the form
-  window.scrollTo({
-    top: document.getElementById("detail_service_id").offsetTop - 100,
-    behavior: "smooth",
-  });
+//   // Scroll to the form
+//   window.scrollTo({
+//     top: document.getElementById("detail_service_id").offsetTop - 100,
+//     behavior: "smooth",
+//   });
+// }
+
+function fillServiceDetail(id, serviceId, description) {
+    document.getElementById("service_detail_id").value = id;
+    document.getElementById("detail_service_id").value = serviceId;
+    document.getElementById("detail_long_description").value = description;
+}
+
+function fillServiceFromButton(btn) {
+
+    document.getElementById("service_id").value = btn.dataset.id;
+    document.getElementById("service_title").value = btn.dataset.title;
+    document.getElementById("service_description").value = btn.dataset.description;
+
+    document.getElementById("service").scrollIntoView({
+        behavior: "smooth"
+    });
 }
 
 function fillScope(id, title, description) {
@@ -563,3 +581,23 @@ function editHero(id) {
 if (document.getElementById("heroTable")) {
   loadHero();
 }
+
+const filterButtons = document.querySelectorAll(".filter-btn");
+const galleryItems = document.querySelectorAll(".gallery-item");
+
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    filterButtons.forEach((btn) => btn.classList.remove("active"));
+    button.classList.add("active");
+
+    const filter = button.dataset.filter;
+
+    galleryItems.forEach((item) => {
+      if (filter === "all" || item.dataset.category === filter) {
+        item.style.display = "block";
+      } else {
+        item.style.display = "none";
+      }
+    });
+  });
+});
