@@ -236,11 +236,11 @@ def mark_attendance(employee_id, lat, lon, inside_geofence, action):
     now = datetime.now()
 
     try:
-        # if is_weekly_off(today):
-        #     return {
-        #         "status": "warning",
-        #         "message": "Today is Weekly Off"
-        #     }
+        if is_weekly_off(today):
+            return {
+                "status": "warning",
+                "message": "Today is Weekly Off"
+            }
 
         if is_holiday(today):
             return {
@@ -248,11 +248,11 @@ def mark_attendance(employee_id, lat, lon, inside_geofence, action):
                 "message": "Today is Holiday"
             }
 
-        # if is_on_approved_leave(employee_id, today):
-        #     return {
-        #         "status": "warning",
-        #         "message": "You are on Approved Leave"
-        #     }   
+        if is_on_approved_leave(employee_id, today):
+            return {
+               "status": "warning",
+                "message": "You are on Approved Leave"
+            }   
 
         cursor.execute("""
             SELECT attendance_id, check_in, check_out

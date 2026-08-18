@@ -10,6 +10,7 @@ auth_bp = Blueprint("auth_bp", __name__)
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
 
+    print("LOGIN WORKING FILE:", __file__)
     print("LOGIN ROUTE HIT")
 
     # show login page
@@ -19,10 +20,23 @@ def login():
     print("FORM:", request.form)
 
     # login logic
-    email = request.form["email"]
-    password = request.form["password"]
+    data = request.get_json(silent=True)
 
+    if data:
+        email = data.get("email")
+        password = data.get("password")
+        fcm_token = data.get("fcm_token")
+    else:
+        email = request.form.get("email")
+        password = request.form.get("password")
+        fcm_token = request.form.get("fcm_token")
+
+    print("EMAIL:", email)
+    print("PASSWORD RECEIVED:", bool(password))
+    print("FCM TOKEN RECEIVED:", bool(fcm_token))
+    
     cursor = mysql.connection.cursor()
+    print("DB CONNECTED")
 
     cursor.execute("""
         SELECT u.user_id, u.password_hash, r.role_name
@@ -39,6 +53,16 @@ def login():
     print("Entered Email:", email)
     print("Entered Password:", password)
 
+    print("===== DEBUG =====")
+
+    if user:
+        result = check_password_hash(user[1], password)
+        print("Password Match =", result)
+    else:
+        print("User Not Found")
+
+    print("===== END DEBUG =====")
+
     if user and check_password_hash(user[1], password):
 
         session["user_id"] = user[0]
@@ -53,8 +77,14 @@ def login():
 
         emp = cursor.fetchone()
 
+        print("Employee query result:", emp)
+
         if emp:
             session["employee_id"] = emp[0]
+
+        print("LOGIN EMAIL:", email)
+        print("EMPLOYEE FOUND:", emp)
+        print("SESSION:", dict(session))   
 
 
         # save login activity
@@ -67,6 +97,7 @@ def login():
         cursor.close()
 
         # 🔀 ROLE BASED REDIRECT
+        print("ROLE FROM DATABASE:", user[2])
         if user[2] == "admin":
             return redirect("/admin")
         else:

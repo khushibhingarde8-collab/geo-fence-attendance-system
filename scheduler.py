@@ -2,6 +2,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import date
 from flask_mail import Message
 
+from routes.monthly_leave_credit import monthly_leave_credit
 from config import mysql
 from extensions import mail
 from database import attendance_engine, auto_force_checkout
@@ -216,6 +217,10 @@ def start_scheduler(app):
         with app.app_context():
             auto_force_checkout()
 
+    def run_monthly_leave_credit():
+        with app.app_context():
+            monthly_leave_credit()
+
     # Birthday & Work Anniversary (9:00 AM)
     scheduler.add_job(
         run_send_wishes,
@@ -245,7 +250,15 @@ def start_scheduler(app):
         id="auto_force_checkout",
         replace_existing=True
     )
-
+    scheduler.add_job(
+        run_monthly_leave_credit,
+        trigger="cron",
+        day=1,
+        hour=0,
+        minute=0,
+        id="monthly_leave_credit",
+        replace_existing=True
+    )
     scheduler.start()
 
     return scheduler

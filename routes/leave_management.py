@@ -77,21 +77,30 @@ def dashboard():
     row = cur.fetchone()
     employee_id = row["employee_id"]
 
-    cur.execute("""
-        SELECT COUNT(*) AS approved
-        FROM tbl_leaves
-        WHERE employee_id=%s AND status='Approved'
-    """, (employee_id,))
-    approved = cur.fetchone()["approved"]
-
+    # Pending leave count
     cur.execute("""
         SELECT COUNT(*) AS pending
         FROM tbl_leaves
-        WHERE employee_id=%s AND status='Pending'
+        WHERE employee_id=%s
+        AND status='Pending'
     """, (employee_id,))
     pending = cur.fetchone()["pending"]
 
-    available = 12 - approved
+    # Leave balance
+    cur.execute("""
+        SELECT total_leaves, used_leaves
+        FROM leave_balance
+        WHERE employee_id=%s
+    """, (employee_id,))
+
+    balance = cur.fetchone()
+
+    if balance:
+        available = float(balance["total_leaves"])
+        approved = float(balance["used_leaves"])
+    else:
+        available = 0
+        approved = 0
 
     cur.close()
 
@@ -185,6 +194,23 @@ def apply_leave():
         return jsonify({"error": "Invalid dates"}), 400
 
     total_days = (ed - sd).days + 1
+    cur.execute("""
+        SELECT total_leaves
+        FROM leave_balance
+        WHERE employee_id=%s
+    """, (employee_id,))
+
+    balance = cur.fetchone()
+
+    if not balance:
+        return jsonify({"error": "Leave balance not found"}), 404
+
+    available = float(balance["total_leaves"])
+
+    if total_days > available:
+        return jsonify({
+            "error": "Insufficient leave balance"
+        }), 400
 
     # overlap check
     cur.execute("""
@@ -432,27 +458,87 @@ def approve_leave(leave_id):
 
     cur = mysql.connection.cursor(DictCursor)
 
-    cur.execute("""
-        UPDATE tbl_leaves l
+    try:
+        # Get leave request details
+        cur.execute("""
+            SELECT
+                l.employee_id,
+                l.total_days,
+                e.reporting_manager_id
+            FROM tbl_leaves l
+            JOIN employees e
+            ON l.employee_id = e.employee_id
+            WHERE l.leave_id=%s
+        """, (leave_id,))
 
-        JOIN employees e
-        ON l.employee_id = e.employee_id
+        leave = cur.fetchone()
 
-        SET l.status='Approved'
+        if not leave:
+            return jsonify({"error": "Leave request not found"}), 404
 
-        WHERE l.leave_id=%s
-        AND e.reporting_manager_id=%s
-    """, (leave_id, manager_id))
+        # Check if this manager is authorized
+        if leave["reporting_manager_id"] != manager_id:
+            return jsonify({"error": "Unauthorized"}), 403
 
-    mysql.connection.commit()
+        employee_id = leave["employee_id"]
+        total_days = float(leave["total_days"])
 
-    cur.close()
+        # Get employee leave balance
+        cur.execute("""
+            SELECT
+                total_leaves,
+                used_leaves
+            FROM leave_balance
+            WHERE employee_id=%s
+        """, (employee_id,))
 
-    return jsonify({
-        "message": "Leave Approved Successfully"
-    })
+        balance = cur.fetchone()
 
+        if not balance:
+            return jsonify({"error": "Leave balance not found"}), 404
 
+        available = float(balance["total_leaves"])
+        used = float(balance["used_leaves"])
+
+        # Check sufficient balance
+        if available < total_days:
+            return jsonify({
+                "error": "Insufficient leave balance"
+            }), 400
+
+        # Approve leave
+        cur.execute("""
+            UPDATE tbl_leaves
+            SET status='Approved'
+            WHERE leave_id=%s
+        """, (leave_id,))
+
+        # Deduct leave balance
+        cur.execute("""
+            UPDATE leave_balance
+            SET
+                total_leaves = total_leaves - %s,
+                used_leaves = used_leaves + %s
+            WHERE employee_id=%s
+        """, (total_days, total_days, employee_id))
+
+        mysql.connection.commit()
+
+        return jsonify({
+            "message": "Leave Approved Successfully"
+        })
+
+    except Exception as e:
+
+        mysql.connection.rollback()
+
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+    finally:
+
+        cur.close()
 # =========================================================
 # REJECT LEAVE
 # =========================================================

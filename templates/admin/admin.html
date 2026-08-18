@@ -46,11 +46,11 @@
             <div class="about-dropdown">
               <a href="/about">About Us</a>
               <a href="/service">Services</a>
-              <a href="/website_project">Projects</a>
+              <a href="/project">Projects</a>
             </div>
           </div>
 
-      <a href="/website_client" class="nav-item" >Client</a>
+      <a href="/client" class="nav-item" >Client</a>
 
       <a href="/phoenix" class="nav-item"> Phoenix Contact </a>
 
@@ -1320,7 +1320,6 @@ Update
 
         <br>
 
-        <div class="table-responsive">
         <table border="1" width="100%">
 
             <tr>
@@ -1381,7 +1380,6 @@ Update
             {% endfor %}
 
         </table>
-        </div>
 
     </div>
 
@@ -1596,7 +1594,6 @@ Update
 
         <br>
 
-        <div class="table-responsive">
         <table border="1" width="100%">
 
             <tr>
@@ -1658,7 +1655,7 @@ Update
             {% endfor %}
 
         </table>
-</div>
+
     </div>
 
 </div>
@@ -1723,7 +1720,6 @@ Update
 
         <br>
 
-        <div class="table-responsive">
         <table border="1" width="100%">
 
             <tr>
@@ -1747,9 +1743,9 @@ Update
     type="button"
     class="update-btn"
     onclick="fillScope(
-        '{{ scope[0] }}',
-        '{{ scope[1] }}',
-        '{{ scope[2] }}'
+        '{{ scope[0]|tojson }}',
+        '{{ scope[1]|tojson }}',
+        '{{ scope[2]|tojson }}'
     )">
     Edit
 </button>
@@ -1781,7 +1777,6 @@ Update
             {% endfor %}
 
         </table>
-        </div>
 
     </div>
 
@@ -1865,7 +1860,6 @@ Update
 
         <br>
 
-        <div class="table-responsive">
         <table border="1" width="100%">
 
             <tr>
@@ -1942,7 +1936,7 @@ Update
             {% endfor %}
 
         </table>
-</div>
+
     </div>
 
 </div>
@@ -1964,40 +1958,30 @@ Update
 
                 <input type="hidden" name="gallery_id" id="gallery_id">
 
-                
+                <label>Title</label>
+                <input type="text" name="title" id="gallery_title" class="form-control" required>
 
                 <label>Category</label>
                 <select name="category" id="gallery_category" class="form-control" required>
-                    <option value="">Select Category</option>
-                    <option value="Site Visits">Site Visits</option>
-                    <option value="Team">Team</option>
                     <option value="Events">Events</option>
-                    <option value="Training">Training</option>
-                    <option value="Interns">Interns</option>
-                    <option value="Global Partners">Global Partners</option>
+                    <option value="Site Visits">Site Visits</option>
+                    <option value="Office Activity">Office Activity</option>
+                    <option value="Others">Others</option>
                 </select>
 
                 <label>Image</label>
                 <input type="file" name="image" class="form-control">
 
-
-                <div class="featured-checkbox">
-                    <label>
-                        <input type="checkbox" name="is_featured" id="is_featured" value="1">
-                        <span>Show on Home Page</span>
-                    </label>
-                </div>
                 <br>
 
                 <button type="submit" name="action" value="INSERT" class="add-button">
                     Add
                 </button>
 
-                <!-- <button type="submit" name="action" value="UPDATE" class="update-btn">
+                <button type="submit" name="action" value="UPDATE" class="update-btn">
                     Update
-                </button> -->
+                </button>
 
-                
             </form>
 
             <hr>
@@ -2005,7 +1989,6 @@ Update
             <!-- TABLE -->
             <div style="overflow-x:auto;">
 
-                <div class="table-responsive">
                 <table border="1" width="100%" style="text-align:center; font-size:14px;">
 
                     <tr>
@@ -2032,7 +2015,16 @@ Update
 
                         <td>
 
-                
+                            <!-- EDIT -->
+                            <button type="button"
+                                class="update-btn"
+                                onclick="fillGallery(
+                                    '{{ g[0] }}',
+                                    '{{ g[1] }}',
+                                    '{{ g[2] }}'
+                                )">
+                                Edit
+                            </button>
 
                             <!-- DELETE -->
                             <form method="POST"
@@ -2058,7 +2050,7 @@ Update
                     {% endfor %}
 
                 </table>
-                </div>
+
             </div>
 
         </div>
@@ -2132,7 +2124,6 @@ Update
 
 <br>
 
-<div class="table-responsive">
 <table border="1" width="100%" class="table table-bordered">
     <thead>
         <tr>
@@ -2167,9 +2158,9 @@ Update
             type="button"
             class="update-btn"
             onclick="fillService(
-                '{{ s[0] }}',
-                '{{ s[1] }}',
-                '{{ s[2] }}'
+                '{{ s[0]|tojson }}',
+                '{{ s[1]|tojson }}',
+                '{{ s[2]|tojson }}'
             )">
             Edit
         </button>
@@ -2187,7 +2178,7 @@ Update
     {% endfor %}
     </tbody>
 </table>
-</div>
+
 </div>
 </div>
 
@@ -2255,7 +2246,6 @@ Update
 
 <h3>Service Detail Records</h3>
 
-<div class="table-responsive">
 <table border="1" width="100%">
     <tr>
         <th>ID</th>
@@ -2289,16 +2279,15 @@ Update
 
         <td>
 
-           <button
-    type="button"
-    class="update-btn"
-    onclick="fillServiceDetail(
-        '{{ d[0] }}',
-        '{{ d[4] }}',
-        `{{ d[2] }}`
-    )">
-    Edit
-</button>
+            <button
+                type="button"
+                class="update-btn"
+                onclick="fillServiceDetail(
+    '{{ d[0]|tojson }}',
+    '{{ d[2]|tojson }}'
+)">
+                Edit
+            </button>
 
             <a href="/delete_service_detail/{{ d[0] }}"
                class="delete-btn"
@@ -2312,7 +2301,7 @@ Update
     {% endfor %}
 
 </table>
-</div>
+
 </div>
 </div>
 <!-- ================= 4. SERVICE FEATURES ================= -->
@@ -2381,7 +2370,7 @@ Save Features
 
 
 
-<div class="table-responsive">
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -2400,23 +2389,13 @@ Save Features
             <td>{{ f[2] }}</td>
 
             <td>
-                <button
-                type="button"
-                class="update-btn"
-                onclick="fillServiceDetail(
-    '{{ f[0] }}',
-    '{{ f[1] }}',
-    '{{ f[2] }}'
-)">
-                Edit
-            </button>
+                <a href="/edit_feature/{{ f[0] }}" class="btn btn-primary btn-sm">Edit</a>
                 <a href="/delete_feature/{{ f[0] }}" class="btn btn-danger btn-sm">Delete</a>
             </td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
-</div>
 
 <!-- ================= 3. TESTIMONIALS ================= -->
 <div class="card" style="margin-top:30px;">
@@ -2447,7 +2426,6 @@ Save Features
 
 <br>
 
-<div class="table-responsive">
 <table border="1" width="100%">
 {% for t in testimonials %}
 <tr>
@@ -2465,7 +2443,6 @@ Save Features
 </tr>
 {% endfor %}
 </table>
-</div>
 
 </div>
 </div>
@@ -2500,7 +2477,6 @@ Save Features
 
 <br>
 
-<div class="table-responsive">
 <table border="1" width="100%">
 {% for m in team %}
 <tr>
@@ -2518,7 +2494,6 @@ Save Features
 </tr>
 {% endfor %}
 </table>
-</div>
 
 </div>
 </div>
@@ -2644,124 +2619,176 @@ Update Client
 </form>
 
 
+<hr>
 
 
-
-
- <!-- CLIENT TABLE -->
 
 <!-- CLIENT TABLE -->
+
 <div class="client-table-wrapper">
-    <div class="table-responsive">
 
-        <table class="table table-bordered client-table">
 
-            <thead>
-                <tr>
-                    <th>Logo</th>
-                    <th>Name</th>
-                    <th>Website</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+<table class="table table-bordered client-table">
 
-            <tbody>
 
-                {% if website_clients %}
+<thead>
 
-                    {% for client in website_clients %}
+<tr>
 
-                    <tr>
+<th>Logo</th>
 
-                        <!-- Logo -->
-                        <td>
-                            {% if client[2] %}
-                                <img
-                                    src="/{{ client[2] }}"
-                                    alt="{{ client[1] }}"
-                                    class="client-logo-preview">
-                            {% else %}
-                                No Logo
-                            {% endif %}
-                        </td>
+<th>Name</th>
 
-                        <!-- Client Name -->
-                        <td>
-                            {{ client[1] }}
-                        </td>
+<th>Website</th>
 
-                        <!-- Website -->
-                        <td>
-                            {% if client[3] %}
-                                <a href="{{ client[3] }}" target="_blank">
-                                    {{ client[3] }}
-                                </a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
+<th>Actions</th>
 
-                        <!-- Actions -->
-                        <td>
+</tr>
 
-                            <div class="action-btns">
+</thead>
 
-                                <button
-                                    type="button"
-                                    class="update-btn"
-                                    onclick="fillClient(
-                                        '{{ client[0] }}',
-                                        '{{ client[1] }}',
-                                        '{{ client[3] }}'
-                                    )">
-                                    Edit
-                                </button>
 
-                                <form
-                                    method="POST"
-                                    action="/website/save_client"
-                                    style="display:inline; margin:0;">
 
-                                    <input
-                                        type="hidden"
-                                        name="client_id"
-                                        value="{{ client[0] }}">
+<tbody>
 
-                                    <button
-                                        type="submit"
-                                        name="action"
-                                        value="DELETE"
-                                        class="delete-btn"
-                                        onclick="return confirm('Delete this client?')">
-                                        Delete
-                                    </button>
 
-                                </form>
+{% if website_clients %}
 
-                            </div>
 
-                        </td>
+{% for client in website_clients %}
 
-                    </tr>
 
-                    {% endfor %}
+<tr>
 
-                {% else %}
 
-                    <tr>
-                        <td colspan="4" style="text-align:center;">
-                            No clients available.
-                        </td>
-                    </tr>
+<td>
 
-                {% endif %}
+{% if client[2] %}
 
-            </tbody>
+<img
+src="/{{client[2]}}"
+class="client-logo-preview">
 
-        </table>
+{% else %}
 
-    </div>
+No Logo
+
+{% endif %}
+
+</td>
+
+
+
+<td>
+
+{{client[1]}}
+
+</td>
+
+
+
+<td>
+
+{% if client[3] %}
+
+<a href="{{client[3]}}"
+target="_blank">
+
+{{client[3]}}
+
+</a>
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+
+
+<td>
+
+
+<button
+type="button"
+class="update-btn"
+onclick='fillClient(
+"{{ client[0] }}",
+"{{ client[1] }}",
+"{{ client[3] }}"
+)'>
+Edit
+</button>
+
+
+
+
+<form method="POST"
+      action="/website/save_client"
+      style="display:inline;">
+
+
+<input
+type="hidden"
+name="client_id"
+value="{{client[0]}}">
+
+
+
+<button
+type="submit"
+name="action"
+value="DELETE"
+class="delete-btn">
+
+Delete
+
+</button>
+
+
+</form>
+
+
+</td>
+
+
+</tr>
+
+
+
+{% endfor %}
+
+
+
+{% else %}
+
+
+<tr>
+
+<td colspan="4"
+style="text-align:center;">
+
+No clients available.
+
+</td>
+
+</tr>
+
+
+{% endif %}
+
+
+
+</tbody>
+
+
+</table>
+
+
 </div>
+
 
 </div>
 
@@ -2824,7 +2851,6 @@ Update Client
 
             <hr>
 
-            <div class="table-responsive">
             <table class="table table-bordered">
 
                 <thead>
@@ -2898,7 +2924,7 @@ Update Client
                 </tbody>
 
             </table>
-            </div>
+
         </div>
 
     </div>
@@ -3037,7 +3063,6 @@ Update
 
 <br>
 
-<div class="table-responsive">
 <table>
 
 <tr>
@@ -3105,7 +3130,6 @@ Delete
 {% endfor %}
 
 </table>
-</div>
 
 </div>
 </div>
@@ -3176,7 +3200,12 @@ Delete
                 rows="6"
                 class="form-control"></textarea>
 
-            
+            <label>Project Image (Optional)</label>
+
+            <input
+                type="file"
+                name="project_image"
+                class="form-control">
 
             <label>Team Size</label>
 
@@ -3252,7 +3281,6 @@ Delete
 
 <div class="table-scroll">
 
-    <div class="table-responsive">
 <table class="project-table">
 
 <thead>
@@ -3374,7 +3402,7 @@ Delete
 </tbody>
 
 </table>
-</div>
+
 </div>
 
 </div>
@@ -3422,13 +3450,11 @@ Delete
                 name="image"
                 accept="image/*">
         </div>
-<br>
-        <button type="submit" class="update-btn">Save Hero</button>
+
+        <button type="submit">Save Hero</button>
 
     </form>
-    <br>
 
-    <div class="table-responsive">
     <table class="table">
 
         <thead>
@@ -3466,8 +3492,8 @@ Delete
         class="update-btn"
         onclick="fillHero(
             '{{ about_heroes.id }}',
-            '{{ about_heroes.title }}',
-            '{{ about_heroes.description }}'
+            `{{ about_heroes.title }}`,
+            `{{ about_heroes.description }}`
         )">
         Edit
     </button>
@@ -3486,8 +3512,6 @@ Delete
 </tbody>
 
     </table>
-    </div>
-<br>
 
     <!-- Experience Section -->
     <div class="card">
@@ -3511,12 +3535,12 @@ Delete
                 name="title"
                 value="{{ experience.title if experience else '' }}"
                 required>
-<br>
-            <button type="submit" class="update-btn">Update</button>
+
+            <button type="submit">Update</button>
 
         </form>
 
-    </div><br>
+    </div>
 
     <!-- Circle Points -->
     <div class="card">
@@ -3541,13 +3565,12 @@ Delete
 
             </select>
 
-           <br> <button type="submit" class="update-btn">Add Point</button>
+            <button type="submit">Add Point</button>
 
         </form>
 
     </div>
 
-    <div class="table-responsive">
     <table class="table">
 
         <thead>
@@ -3560,7 +3583,7 @@ Delete
             </tr>
 
         </thead>
-<br>
+
         <tbody>
 
             {% for item in circle_texts %}
@@ -3576,12 +3599,12 @@ Delete
                 <td>
 
                     <a href="/edit_circle_text/{{ item.id }}"
-                       class="btn btn-warning update-btn">
+                       class="btn btn-warning">
                         Edit
                     </a>
 
                     <a href="/delete_circle_text/{{ item.id }}"
-                       class="btn btn-danger delete-btn"
+                       class="btn btn-danger"
                        onclick="return confirm('Delete?')">
                         Delete
                     </a>
@@ -3595,9 +3618,7 @@ Delete
         </tbody>
 
     </table>
-    </div>
 
-<br><br>
 <!-- about profile-->
     <div id="aboutProfile" class="card">
 
@@ -3630,14 +3651,14 @@ Delete
                 accept="image/*">
         </div>
 
-        <button type="submit" class="update-btn">
+        <button type="submit">
             Save / Update
         </button>
 
     </form>
 
     <br>
-<div class="table-responsive">
+
     <table class="table">
 
         <thead>
@@ -3669,7 +3690,7 @@ Delete
             <td>{{ profile.status }}</td>
 
             <td>
-                <a href="/delete_about_profile/{{ profile.id }}" class="delete-btn">
+                <a href="/delete_about_profile/{{ profile.id }}">
                     Delete
                 </a>
             </td>
@@ -3681,9 +3702,9 @@ Delete
         </tbody>
 
     </table>
+
 </div>
-</div>
-<br><br>
+
 <div class="card" id="commitment">
 
     <h3>Commitment Section</h3>
@@ -3733,7 +3754,7 @@ Delete
 
         <br><br>
 
-        <button type="submit" class="update-btn">
+        <button type="submit">
 
             {% if edit_commitment %}
                 Update
@@ -3747,12 +3768,11 @@ Delete
 
 </div>
 
-<br><br>
+
 <div class="card">
 
     <h3>Commitment Details</h3>
 
-    <div class="table-responsive">
     <table>
 
         <tr>
@@ -3786,18 +3806,18 @@ Delete
             </td>
 
             <td>
-<div class="action-btns">
-                <a href="/edit_commitment/{{ commitment.id }}" class="update-btn">
+
+                <a href="/edit_commitment/{{ commitment.id }}">
                     Edit
                 </a>
 
-                
+                |
 
-                <a href="/delete_commitment/{{ commitment.id }}" class="delete-btn"
+                <a href="/delete_commitment/{{ commitment.id }}"
                    onclick="return confirm('Delete this record?')">
                     Delete
                 </a>
-</div>
+
             </td>
 
         </tr>
@@ -3805,10 +3825,9 @@ Delete
         {% endfor %}
 
     </table>
-</div>
 
 </div>
-<br><br>
+
 <div class="card" id="teamManagement">
 
     <h3>Team Member Management</h3>
@@ -3871,7 +3890,7 @@ Delete
 
 <br><br>
 
-<button id="submitBtn" type="submit" class="update-btn">
+<button id="submitBtn" type="submit">
     {% if edit_team %}
         Update
     {% else %}
@@ -3883,25 +3902,22 @@ Delete
 
 </div>
 
-<br>
+
 <div class="card">
 
     <h3>Team Members List</h3>
-<div class="table-responsive">
 
-    <div class="table-responsive">
     <table>
 
-       <tr>
-    <th>Image</th>
-    <th>Name</th>
-    <th>Designation</th>
-    <th>Description</th>
-    <th>Experience</th>
-    <th>Email</th>
-    <th>Order</th>
-    <th>Action</th>
-</tr>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Designation</th>
+            <th>Experience</th>
+            <th>Email</th>
+            <th>Order</th>
+            <th>Action</th>
+        </tr>
 
         {% for team in team_members %}
 
@@ -3933,31 +3949,28 @@ Delete
 
             <td>
 
-         <div class="action-btns">
+<a href="javascript:void(0);"
+onclick="editTeam(
+'{{ team.id }}',
+'{{ team.name|tojson }}',
+'{{ team.designation|tojson }}',
+'{{ team.description|tojson }}',
+'{{ team.experience|tojson }}',
+'{{ team.email|tojson }}',
+'{{ team.display_order }}',
+'{{ team.image|tojson }}'
+)">
+    Edit
+</a>
 
-        <a href="javascript:void(0);" class="update-btn"
-        onclick="editTeam(
-        '{{ team.id }}',
-        '{{ team.name|tojson }}',
-        '{{ team.designation|tojson }}',
-        '{{ team.description|tojson }}',
-        '{{ team.experience|tojson }}',
-        '{{ team.email|tojson }}',
-        '{{ team.display_order }}',
-        '{{ team.image|tojson }}'
-        )">
-            Edit
-        </a>
+                |
 
-                
-
-                <a href="/delete_team_member/{{ team.id }}" class="delete-btn"
+                <a href="/delete_team_member/{{ team.id }}"
                    onclick="return confirm('Delete this member?')">
 
                     Delete
 
                 </a>
-                </div>
 
             </td>
 
@@ -3966,16 +3979,15 @@ Delete
         {% endfor %}
 
     </table>
-    </div>
-
-</div>
 
 </div>
 </section>
 
 
+
+
  
-<!-- ================= CONTACT ================= -->
+ <!-- ================= CONTACT ================= -->
 <section id="contact" class="section">
 
 <h1>Contact Page Management</h1>
@@ -4067,7 +4079,7 @@ Delete
 
 </div>
 
-<div class="table-responsive">
+
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -4103,25 +4115,22 @@ Delete
 
             <td>
                 <!-- EDIT -->
-            <div class="action-btns">
-
-                <a href="/edit_contact/{{ row[0] }}" class="btn btn-primary btn-sm update-btn">
+                <a href="/edit_contact/{{ row[0] }}" class="btn btn-primary btn-sm">
                     Edit
                 </a>
 
                 <!-- DELETE -->
                 <a href="/delete_contact/{{ row[0] }}"
-                   class="btn btn-danger btn-sm delete-btn"
+                   class="btn btn-danger btn-sm"
                    onclick="return confirm('Are you sure you want to delete this record?')">
                     Delete
                 </a>
-             </div>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-</div>
+
 
 
 <hr>
@@ -4186,7 +4195,7 @@ Delete
 </div>
 
 <br>
-<div class="table-responsive">
+
 <table class="table table-bordered">
 
     <thead>
@@ -4245,12 +4254,12 @@ Delete
                 <td>
 
                     <a href="/edit_social_links/{{ row[0] }}"
-                       class="btn btn-primary btn-sm update-btn">
+                       class="btn btn-primary btn-sm">
                         Edit
                     </a>
 
                     <a href="/delete_social_links/{{ row[0] }}"
-                       class="btn btn-danger btn-sm delete-btn"
+                       class="btn btn-danger btn-sm"
                        onclick="return confirm('Delete these social links?')">
                         Delete
                     </a>
@@ -4274,8 +4283,9 @@ Delete
     </tbody>
 
 </table>
-</div>
 </section>
+
+
 
 <!-- ================= FAQ PAGE ================= -->
 <section id="faq" class="section">
@@ -4361,8 +4371,7 @@ Delete
 </div>
 
 <div class="card-body">
-    
-<div class="table-responsive">
+
 <table class="table table-bordered">
 
 <thead>
@@ -4439,7 +4448,7 @@ style="display:inline;">
 </tbody>
 
 </table>
-</div>
+
 </div>
 
 </div>
@@ -4452,6 +4461,310 @@ style="display:inline;">
     <!-- ================================================= -->
 
     <section id="phoenix-admin" class="section">
+
+     
+    <!-- ================= PHOENIX CATEGORY ================= -->
+    <!-- <div class="card">
+
+        <div class="card-header">
+            <h2>Phoenix Categories</h2>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST" id="phoenixCategoryForm">
+
+                <input type="hidden"
+                      name="category_id"
+                      id="phoenix_category_id">
+
+                <label>Title</label>
+                <input type="text"
+                      name="title"
+                      id="phoenix_title"
+                      class="form-control">
+
+                <label>Description</label>
+                <textarea name="description"
+                          id="phoenix_description"
+                          class="form-control"
+                          rows="4"></textarea>
+
+                <label>Icon</label>
+                <input type="text"
+                      name="icon"
+                      id="phoenix_icon"
+                      class="form-control">
+
+                <label>Slug</label>
+                <input type="text"
+                      name="slug"
+                      id="phoenix_slug"
+                      class="form-control">
+
+                <label>Display Order</label>
+                <input type="number"
+                      name="display_order"
+                      id="phoenix_display_order"
+                      value="0"
+                      class="form-control">
+
+                <label>Active</label>
+                <select name="is_active"
+                        id="phoenix_is_active"
+                        class="form-control">
+
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+
+                </select>
+
+                <br>
+
+                <button type="submit"
+                        formaction="/add-phoenix-category"
+                        class="add-button">
+                    Add Category
+                </button>
+
+                <button type="submit"
+                        formaction="/update-phoenix-category"
+                        class="update-btn">
+                    Update Category
+                </button>
+
+            </form>
+
+            <br>
+
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Slug</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for c in phoenix_categories %}
+
+                <tr>
+
+                    <td>{{ c[0] }}</td>
+                    <td>{{ c[1] }}</td>
+                    <td>{{ c[4] }}</td>
+                    <td>{{ c[5] }}</td>
+
+                    <td>
+                        {% if c[6] %}
+                            Active
+                        {% else %}
+                            Inactive
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <button type="button"
+                                class="update-btn"
+                                onclick="fillPhoenixCategory(
+                                    '{{ c[0] }}',
+                                    '{{ c[1] }}',
+                                    '{{ c[2] }}',
+                                    '{{ c[3] }}',
+                                    '{{ c[4] }}',
+                                    '{{ c[5] }}',
+                                    '{{ c[6] }}'
+                                )">
+                            Edit
+                        </button>
+
+                        <form method="POST"
+                              action="/delete-phoenix-category/{{ c[0] }}"
+                              style="display:inline;">
+
+                            <button type="submit"
+                                    class="delete-btn">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+    </div> -->
+
+    <!-- ================= PHOENIX PRODUCTS ================= -->
+    <!-- <div class="card" style="margin-top:20px;">
+
+        <div class="card-header">
+            <h2>Phoenix Products</h2>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST"
+                  enctype="multipart/form-data"
+                  id="phoenixProductForm">
+
+                <input type="hidden"
+                      name="product_id"
+                      id="phoenix_product_id">
+
+                <label>Slug</label>
+                <input type="text"
+                      name="slug"
+                      id="phoenix_product_slug"
+                      class="form-control">
+
+                <label>Title</label>
+                <input type="text"
+                      name="title"
+                      id="phoenix_product_title"
+                      class="form-control">
+
+                <label>Description</label>
+                <textarea name="description"
+                          id="phoenix_product_description"
+                          class="form-control"
+                          rows="5"></textarea>
+
+                <label>Product Image</label>
+                <input type="file"
+                      name="product_image"
+                      class="form-control">
+
+                <label>Features</label>
+                <textarea name="features"
+                          id="phoenix_features"
+                          rows="5"
+                          class="form-control"></textarea>
+
+                <label>Advantages</label>
+                <textarea name="advantages"
+                          id="phoenix_advantages"
+                          rows="5"
+                          class="form-control"></textarea>
+
+                <label>Specifications</label>
+                <textarea name="specifications"
+                          id="phoenix_specifications"
+                          rows="5"
+                          class="form-control"></textarea>
+
+                <label>Display Order</label>
+                <input type="number"
+                      name="display_order"
+                      id="phoenix_product_order"
+                      value="0"
+                      class="form-control">
+
+                <label>Active</label>
+                <select name="is_active"
+                        id="phoenix_product_active"
+                        class="form-control">
+
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+
+                </select>
+
+                <br>
+
+                <button type="submit"
+                        formaction="/add-phoenix-product"
+                        class="add-button">
+                    Add Product
+                </button>
+
+                <button type="submit"
+                        formaction="/update-phoenix-product"
+                        class="update-btn">
+                    Update Product
+                </button>
+
+            </form>
+
+            <br>
+
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Slug</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for p in phoenix_products %}
+
+                <tr>
+
+                    <td>{{ p[0] }}</td>
+                    <td>{{ p[2] }}</td>
+                    <td>{{ p[1] }}</td>
+                    <td>{{ p[8] }}</td>
+
+                    <td>
+                        {% if p[9] %}
+                            Active
+                        {% else %}
+                            Inactive
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <button type="button"
+                                class="update-btn"
+                                onclick="fillPhoenixProduct(
+                                    '{{ p[0] }}',
+                                    '{{ p[1] }}',
+                                    '{{ p[2] }}',
+                                    '{{ p[3] }}',
+                                    '{{ p[5] }}',
+                                    '{{ p[6] }}',
+                                    '{{ p[7] }}',
+                                    '{{ p[8] }}',
+                                    '{{ p[9] }}'
+                                )">
+                            Edit
+                        </button>
+
+                        <form method="POST"
+                              action="/delete-phoenix-product/{{ p[0] }}"
+                              style="display:inline;">
+
+                            <button type="submit"
+                                    class="delete-btn">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+    </div> -->
 
 
 
@@ -4519,7 +4832,6 @@ style="display:inline;">
 
             <br>
 
-            <div class="table-responsive">
             <table>
 
                 <tr>
@@ -4532,63 +4844,62 @@ style="display:inline;">
                 </tr>
 
                 {% for c in phoenix_catalogs %}
-<tr>
 
-    <td>{{ c.catalog_id }}</td>
+                <tr>
 
-    <td>{{ c.title }}</td>
+                    <td>{{ c[0] }}</td>
+                    <td>{{ c[1] }}</td>
 
-    <td>
-        {% if c.pdf_file %}
-            <a href="{{ url_for('phoenix_bp.phoenix_catalog_file',
-                                filename=c.pdf_file) }}"
-               target="_blank">
-                View PDF
-            </a>
-        {% endif %}
-    </td>
+                    <td>
+                        {% if c[2] %}
+                        <a href="{{ url_for('static', filename=c[2]) }}" target="_blank">
+                          View PDF
+                        </a>
+                        {% endif %}
+                    </td>
 
-    <td>{{ c.display_order }}</td>
+                    <td>{{ c[3] }}</td>
 
-    <td>
-        {% if c.is_active %}
-            Active
-        {% else %}
-            Inactive
-        {% endif %}
-    </td>
+                    <td>
+                        {% if c[4] %}
+                            Active
+                        {% else %}
+                            Inactive
+                        {% endif %}
+                    </td>
 
-    <td>
+                    <td>
 
-        <button
-            type="button"
-            class="update-btn"
-            onclick="fillPhoenixCatalog(
-                '{{ c.catalog_id }}',
-                '{{ c.title }}',
-                '{{ c.display_order }}',
-                '{{ c.is_active }}'
-            )">
-            Edit
-        </button>
+                        <button type="button"
+                                class="update-btn"
+                                onclick="fillPhoenixCatalog(
+                                    '{{ c[0] }}',
+                                    '{{ c[1] }}',
+                                    '{{ c[3] }}',
+                                    '{{ c[4] }}'
+                                )">
+                            Edit
+                        </button>
 
-        <form method="POST"
-              action="/delete-phoenix-catalog/{{ c.catalog_id }}"
-              style="display:inline;">
+                        <form method="POST"
+                              action="/delete-phoenix-catalog/{{ c[0] }}"
+                              style="display:inline;">
 
-            <button type="submit"
-                    class="delete-btn">
-                Delete
-            </button>
+                            <button type="submit"
+                                    class="delete-btn">
+                                Delete
+                            </button>
 
-        </form>
+                        </form>
 
-    </td>
+                    </td>
 
-</tr>
-{% endfor %}
+                </tr>
+
+                {% endfor %}
+
             </table>
-            </div>
+
         </div>
 
     </div>
@@ -4656,73 +4967,75 @@ style="display:inline;">
 
             <br>
 
-            <div class="table-responsive">
             <table>
 
-    <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Image</th>
-        <th>Order</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Image</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
 
-    {% for c in phoenix_certificates %}
+                {% for c in phoenix_certificates %}
 
-    <tr>
+                <tr>
 
-        <td>{{ c.certificate_id }}</td>
+                    <td>{{ c[0] }}</td>
+                    <td>{{ c[1] }}</td>
 
-        <td>{{ c.title }}</td>
-
-        <td><img src="{{ url_for('static', filename=c.certificate_image) }}"
+                    <td>
+                        {% if c[2] %}
+                        <img src="{{ url_for('static', filename=c[2]) }}"
      width="80"
      height="80"
-     style="object-fit:cover;"></td>
+     style="object-fit:cover;">
+                        {% endif %}
+                    </td>
 
-        <td>{{ c.display_order }}</td>
+                    <td>{{ c[3] }}</td>
 
-        <td>
-            {% if c.is_active %}
-                Active
-            {% else %}
-                Inactive
-            {% endif %}
-        </td>
+                    <td>
+                        {% if c[4] %}
+                            Active
+                        {% else %}
+                            Inactive
+                        {% endif %}
+                    </td>
 
-        <td>
+                    <td>
 
-            <button type="button"
-                    class="update-btn"
-                    onclick="fillPhoenixCertificate(
-                        '{{ c.certificate_id }}',
-                        '{{ c.title }}',
-                        '{{ c.display_order }}',
-                        '{{ c.is_active }}'
-                    )">
-                Edit
-            </button>
+                        <button type="button"
+                                class="update-btn"
+                                onclick="fillPhoenixCertificate(
+                                    '{{ c[0] }}',
+                                    '{{ c[1] }}',
+                                    '{{ c[3] }}',
+                                    '{{ c[4] }}'
+                                )">
+                            Edit
+                        </button>
 
-            <form method="POST"
-                  action="/delete-phoenix-certificate/{{ c.certificate_id }}"
-                  style="display:inline;">
+                        <form method="POST"
+                              action="/delete-phoenix-certificate/{{ c[0] }}"
+                              style="display:inline;">
 
-                <button type="submit"
-                        class="delete-btn">
-                    Delete
-                </button>
+                            <button type="submit"
+                                    class="delete-btn">
+                                Delete
+                            </button>
 
-            </form>
+                        </form>
 
-        </td>
+                    </td>
 
-    </tr>
+                </tr>
 
-    {% endfor %}
+                {% endfor %}
 
-</table>
-            </div>
+            </table>
+
         </div>
 
     </div>
@@ -4989,8 +5302,6 @@ style="display:inline;">
             <h2>Uploaded Salary Sheets History</h2>
         </div>
         <div class="salary-history" style="overflow-x: auto;">
-
-            <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
@@ -5017,7 +5328,6 @@ style="display:inline;">
                     {% endif %}
                 </tbody>
             </table>
-            </div>
         </div>
     </div>
 
@@ -5279,8 +5589,6 @@ level
 
     document.getElementById("grade_level").value = level;
 }
-
-
 
 </script>
 <script>

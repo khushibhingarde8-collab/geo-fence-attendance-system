@@ -128,16 +128,6 @@ def send_reset_otp():
         cursor.close()
 
 
-@mobile_auth_bp.route("/api/test_send_reset_otp")
-def test_send_reset_otp():
-
-    send_reset_otp_email(
-        "khushibhingarde8@gmail.com",   # Replace with your email
-        "123456"
-    )
-
-    return "OTP Email Sent"
-
 # =====================================================
 # VERIFY RESET OTP
 # =====================================================
@@ -499,6 +489,59 @@ def api_forgot_password():
             "status": "error",
             "message": "Server error"
         })
+
+    finally:
+        cursor.close()
+
+# =====================================================
+# SAVE FCM TOKEN
+# =====================================================
+@mobile_auth_bp.route("/api/save_fcm_token", methods=["POST"])
+def save_fcm_token():
+
+    data = request.get_json()
+
+    employee_id = data.get("emp_id")
+    token = data.get("token")
+
+    if not employee_id or not token:
+        return jsonify({
+            "status": "error",
+            "message": "Employee ID and token are required"
+        }), 400
+
+    conn = mysql.connection
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute("""
+            UPDATE employees
+            SET fcm_token = %s
+            WHERE employee_id = %s
+        """, (token, employee_id))
+
+        conn.commit()
+
+        print("========== FCM TOKEN SAVED ==========")
+        print("Employee ID:", employee_id)
+        print("FCM Token:", token)
+
+        return jsonify({
+            "status": "success",
+            "message": "FCM token saved successfully"
+        }), 200
+
+    except Exception as e:
+
+        conn.rollback()
+
+        print("SAVE FCM TOKEN ERROR:", e)
+
+        return jsonify({
+            "status": "error",
+            "message": "Failed to save FCM token"
+        }), 500
 
     finally:
         cursor.close()

@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+
+mobile app/android/app/google-services.json

@@ -16,6 +16,7 @@ import pandas as pd
 from openai import images
 import MySQLdb
 from MySQLdb.cursors import DictCursor
+from flask_cors import CORS
 
 
 
@@ -65,6 +66,7 @@ mobile_auth_bp = routes.mobile_auth.mobile_auth_bp
 
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = "secret123"
 
 
@@ -1202,8 +1204,13 @@ FROM clients
     """)
     phoenix_catalogs = cursor.fetchall()
 
-    print(type(phoenix_catalogs[0]))
-    print(phoenix_catalogs[0])
+    print("Phoenix Catalogs:", phoenix_catalogs)
+
+    if phoenix_catalogs:
+        print(type(phoenix_catalogs[0]))
+        print(phoenix_catalogs[0])
+    else:
+        print("No records found in tbl_phoenix_catalog")
 
     # ==========================
     # PHOENIX CERTIFICATES
@@ -1700,6 +1707,33 @@ def add_employee_login():
         INSERT INTO tbl_user_role(user_id, role_id)
         VALUES(%s, %s)
     """, (user_id, role_id))
+
+    # Check whether app login already exists
+    cursor.execute("""
+    SELECT app_user_id
+    FROM app_users
+    WHERE employee_id=%s
+    """, (emp[0],))
+
+    existing = cursor.fetchone()
+
+    if not existing:
+
+        cursor.execute("""
+        INSERT INTO app_users
+        (
+            employee_id,
+            app_email,
+            app_password,
+            is_first_login
+        )
+        VALUES(%s,%s,%s,%s)
+        """, (
+            emp[0],
+            login_email,
+            hashed_password,
+            True
+        ))
 
     mysql.connection.commit()
 

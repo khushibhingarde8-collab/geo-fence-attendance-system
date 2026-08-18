@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import date
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
+from werkzeug.security import generate_password_hash
 
 employee_bp = Blueprint("employee_bp", __name__)
 
@@ -35,6 +36,7 @@ def save_employee():
 
     email = request.form["email"]
     comp_mail = request.form["comp_mail"]
+    
 
     gender = request.form.get("gender")
     department_id = request.form.get("department_id")
@@ -229,7 +231,26 @@ def save_employee():
                 grade_id
             ))
 
+            # Get the newly inserted employee ID
+            employee_id = cursor.lastrowid
+
+            print("New Employee ID:", employee_id)
+
+            # Create leave balance
+            cursor.execute("""
+                INSERT INTO leave_balance
+                (
+                    employee_id,
+                    total_leaves,
+                    used_leaves
+                )
+                VALUES (%s, 1.5, 0)
+            """, (employee_id,))
+
+            
+
             flash("✅ Employee Added Successfully!", "employee_msg")
+
 
 
 
