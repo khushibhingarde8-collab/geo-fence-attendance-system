@@ -94,7 +94,7 @@ Geo-Fence-Attendance-System/
 ![Employee Report](./screenshots/Employee%20report.jpg)
 
 ### Profile
-![Employee Profile](./screenshots/profile.jpg)
+![Employee Profile](./screenshots/Profile.jpg)
 
 ### Login
-![Login](./screenshots/login.jpg)
+![Login](./screenshots/Login.jpg)
