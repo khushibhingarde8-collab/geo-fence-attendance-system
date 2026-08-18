@@ -54,11 +54,3 @@ Geo-Fence-Attendance-System/
 ├── database.py
 ├── scheduler.py
 └── README.md
-
-![Employee Report](./screenshots/Employee%20report.jpg)
-
-### Profile
-![Employee Profile](./screenshots/Profile.jpg)
-
-### Login
-![Login](./screenshots/Login.jpg)
