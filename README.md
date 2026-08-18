@@ -58,40 +58,37 @@ Geo-Fence-Attendance-System/
 ## Screenshots
 
 ### System Workflow
-![Attendance System Workflow](screenshots/Attendance%20system%20workflow.png)
+![Attendance System Workflow](screenshots/attendance-workflow.png)
 
 ### Admin Dashboard
-![Admin Dashboard](screenshots/Admin%20dashboard.jpeg)
+![Admin Dashboard](screenshots/admin-dashboard.jpeg)
 
 ### Live Map for Admin
-![Live Map](screenshots/Live%20map%20for%20admin.jpeg)
+![Live Map](screenshots/live-map.jpeg)
 
 ### Employee Dashboard
-![Employee Dashboard](screenshots/Employee%20dashboard.jpg)
+![Employee Dashboard](screenshots/employee-dashboard.jpg)
 
 ### Attendance History
-![Attendance History](screenshots/Attendance%20history.jpeg)
+![Attendance History](screenshots/attendance-history.jpeg)
 
 ### Monthly Report
-![Monthly Report](screenshots/Monthly%20report.png)
+![Monthly Report](screenshots/monthly-report.png)
 
 ### Leave Dashboard
-![Leave Dashboard](screenshots/Leave%20dashboard.jpg)
+![Leave Dashboard](screenshots/leave-dashboard.jpg)
 
 ### Leave Application
-![Leave Application](screenshots/Leave%20application.jpg)
+![Leave Application](screenshots/leave-application.jpg)
 
 ### Employee Tracking
-![Employee Tracking](screenshots/Employee%20tracking.jpg)
+![Employee Tracking](screenshots/employee-tracking.jpg)
 
-### Employee Tracking Alerts
-![Employee Tracking Alerts](screenshots/Employee%20tracking%20alerts.)
-
-### Notifications
-![Employee Notification](screenshots/Employee%20notification.jpg)
+### Employee Notification
+![Employee Notification](screenshots/employee-notification.jpg)
 
 ### Profile
-![Employee Profile](screenshots/Profile.jpg)
+![Profile](screenshots/profile.jpg)
 
 ### Login
-![Login](screenshots/Login.jpg)
+![Login](screenshots/login.jpg)
