@@ -54,3 +54,44 @@ Geo-Fence-Attendance-System/
 ├── database.py
 ├── scheduler.py
 └── README.md
+
+## Screenshots
+
+### System Workflow
+![Attendance System Workflow](screenshots/Attendance%20system%20workflow.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/Admin%20dashboard.jpeg)
+
+### Live Map for Admin
+![Live Map](screenshots/Live%20map%20for%20admin.jpeg)
+
+### Employee Dashboard
+![Employee Dashboard](screenshots/Employee%20dashboard.jpg)
+
+### Attendance History
+![Attendance History](screenshots/Attendance%20history.jpeg)
+
+### Monthly Report
+![Monthly Report](screenshots/Monthly%20report.png)
+
+### Leave Dashboard
+![Leave Dashboard](screenshots/Leave%20dashboard.jpg)
+
+### Leave Application
+![Leave Application](screenshots/Leave%20application.jpg)
+
+### Employee Tracking
+![Employee Tracking](screenshots/Employee%20tracking.jpg)
+
+### Employee Tracking Alerts
+![Employee Tracking Alerts](screenshots/Employee%20tracking%20alerts.)
+
+### Notifications
+![Employee Notification](screenshots/Employee%20notification.jpg)
+
+### Profile
+![Employee Profile](screenshots/Profile.jpg)
+
+### Login
+![Login](screenshots/Login.jpg)
